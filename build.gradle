@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.jojolaptech.camel'
+version = '0.0.1-SNAPSHOT'
+description = 'Camel JPA importer'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+ext {
+    camelVersion = '4.6.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation "org.apache.camel.springboot:camel-spring-boot-starter:${camelVersion}"
+    implementation "org.apache.camel:camel-jpa:${camelVersion}"
+    implementation 'com.mysql:mysql-connector-j:9.5.0'
+    implementation "io.hypersistence:hypersistence-utils-hibernate-62:3.7.6"
+    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+

@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: camel-jpa-tn
+  datasource:
+    mysql:
+      url: jdbc:mysql://localhost:3306/tender?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true&useServerPrepStmts=true&cachePrepStmts=true
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 20
+        minimum-idle: 5
+        connection-timeout: 30000
+        idle-timeout: 600000
+        max-lifetime: 1800000
+        leak-detection-threshold: 60000
+        auto-commit: false
+    postgres:
+      url: jdbc:postgresql://localhost:5432/tender?reWriteBatchedInserts=true
+      username: postgres
+      password: password
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 20
+        minimum-idle: 5
+        connection-timeout: 30000
+        idle-timeout: 600000
+        max-lifetime: 1800000
+        leak-detection-threshold: 60000
+        auto-commit: false
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+          order_inserts: true
+          order_updates: true
+        format_sql: false
+        generate_statistics: false
+
+logging:
+  level:
+    root: INFO
+    com.jojolaptech.camel: INFO
+    org.apache.camel: INFO
+    org:
+      hibernate:
+        SQL: INFO
+      apache:
+        camel:
+          component:
+            jpa: INFO
+
+camel:
+  springboot:
+    main-run-controller: true
+  component:
+    jpa:
+      transaction-manager: "#mysqlTransactionManager"
+

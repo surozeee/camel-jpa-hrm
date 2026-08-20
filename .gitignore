@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+out/
+# IDEs/editors
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+target/
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+application-local.yml
+
+# Environment variables
+.env
