@@ -21,6 +21,9 @@ import java.util.List;
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = {"email_address", "mobile_number"}))
 public class UserEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(unique = true, nullable = false)
     private String emailAddress;
 

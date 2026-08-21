@@ -20,6 +20,9 @@ import java.util.List;
 @Table(name = "permission")
 public class PermissionEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String name;
 
     @Column(unique = true, nullable = false)

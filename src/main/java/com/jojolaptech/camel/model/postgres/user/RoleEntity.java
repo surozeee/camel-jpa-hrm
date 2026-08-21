@@ -18,6 +18,9 @@ import java.util.UUID;
 @Table(name = "role")
 public class RoleEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String name;
     private String description;
 
