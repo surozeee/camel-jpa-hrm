@@ -15,6 +15,9 @@ import java.util.UUID;
 @Builder
 public class BranchEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(nullable = false)
     private String name;
 

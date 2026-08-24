@@ -8,13 +8,22 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "hrm_department")
+@Table(
+        name = "hrm_department",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"mysql_id", "mysql_branch_id"})
+)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
 public class DepartmentEntity extends BaseAuditEntity {
+
+    @Column(name = "mysql_id", nullable = false)
+    private Long mysqlId;
+
+    @Column(name = "mysql_branch_id", nullable = false)
+    private Long mysqlBranchId;
 
     @Column(nullable = false)
     private String name;
