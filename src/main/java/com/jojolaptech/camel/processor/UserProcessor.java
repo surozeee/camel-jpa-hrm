@@ -1,5 +1,7 @@
 package com.jojolaptech.camel.processor;
 
+import com.jojolaptech.camel.model.mysql.Employee;
+import com.jojolaptech.camel.model.mysql.EmployeeSecUser;
 import com.jojolaptech.camel.model.mysql.SecUser;
 import com.jojolaptech.camel.model.mysql.SecUserSecRole;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
@@ -70,6 +72,11 @@ public class UserProcessor implements Processor {
                         .collect(Collectors.toMap(RoleEntity::getMysqlId, role -> role));
 
         Set<Long> employeeUserIds = employeeSecUserRepository.findEmployeeUserIds(userIds);
+        Map<Long, Employee> employeeByUserId = employeeSecUserRepository.findByUserIdInWithEmployee(userIds).stream()
+                .collect(Collectors.toMap(
+                        link -> link.getUser().getId(),
+                        EmployeeSecUser::getEmployee,
+                        (left, right) -> left));
 
         List<UserEntity> toSave = new ArrayList<>();
         Set<String> emailsInBatch = new HashSet<>();
@@ -100,9 +107,12 @@ public class UserProcessor implements Processor {
             }
 
             UserStatusEnum userStatus = resolveUserStatus(source);
+            Employee employee = employeeByUserId.get(source.getId());
+            String mobileNumber = employee == null ? null : trimToNull(employee.getPhone());
             UserEntity user = UserEntity.builder()
                     .mysqlId(source.getId())
                     .emailAddress(email)
+                    .mobileNumber(mobileNumber)
                     .password(source.getPassword())
                     .accountNonExpired(!source.isAccountExpired())
                     .accountNonLocked(!source.isAccountLocked())
@@ -124,6 +134,14 @@ public class UserProcessor implements Processor {
 
         log.info("User batch imported {} of {} secUser rows", toSave.size(), batch.size());
         exchange.setProperty("batchImported", toSave.size());
+    }
+
+    private static String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
     private static UserStatusEnum resolveUserStatus(SecUser source) {

@@ -4,10 +4,8 @@ import com.jojolaptech.camel.model.postgres.user.enums.PermissionForEnum;
 import com.jojolaptech.camel.model.postgres.user.enums.UserTypeEnum;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 final class HrmAuthorityMapper {
 
@@ -34,22 +32,33 @@ final class HrmAuthorityMapper {
     }
 
     static List<UserTypeEnum> userTypes(Collection<String> authorities, boolean employeeLinked) {
-        Set<UserTypeEnum> types = new LinkedHashSet<>();
+        return List.of(resolvePrimaryUserType(authorities, employeeLinked));
+    }
+
+    static UserTypeEnum resolvePrimaryUserType(Collection<String> authorities, boolean employeeLinked) {
         if (authorities != null) {
             for (String authority : authorities) {
-                UserTypeEnum mapped = userType(authority);
-                if (mapped != null) {
-                    types.add(mapped);
+                if (userType(authority) == UserTypeEnum.SUPER_ADMIN) {
+                    return UserTypeEnum.SUPER_ADMIN;
+                }
+            }
+            for (String authority : authorities) {
+                if (userType(authority) == UserTypeEnum.COMPANY_ADMIN) {
+                    return UserTypeEnum.COMPANY_ADMIN;
                 }
             }
         }
         if (employeeLinked) {
-            types.add(UserTypeEnum.EMPLOYEE);
+            return UserTypeEnum.EMPLOYEE;
         }
-        if (types.isEmpty()) {
-            types.add(UserTypeEnum.COMPANY_USER);
+        if (authorities != null) {
+            for (String authority : authorities) {
+                if (userType(authority) == UserTypeEnum.EMPLOYEE) {
+                    return UserTypeEnum.EMPLOYEE;
+                }
+            }
         }
-        return new ArrayList<>(types);
+        return UserTypeEnum.COMPANY_USER;
     }
 
     static UserTypeEnum userType(String authority) {
@@ -61,8 +70,6 @@ final class HrmAuthorityMapper {
             case "ADMIN", "SUPERADMIN", "SUPER_ADMIN" -> UserTypeEnum.SUPER_ADMIN;
             case "COMPANY" -> UserTypeEnum.COMPANY_ADMIN;
             case "EMPLOYEE" -> UserTypeEnum.EMPLOYEE;
-            case "DEPART" -> UserTypeEnum.BRANCH_USER;
-            case "MANAGER" -> UserTypeEnum.MANAGER;
             default -> null;
         };
     }
