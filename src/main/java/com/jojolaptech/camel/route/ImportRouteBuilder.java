@@ -3,7 +3,10 @@ package com.jojolaptech.camel.route;
 
 
 import com.jojolaptech.camel.processor.AttParamsProcessor;
+import com.jojolaptech.camel.processor.AttShiftPatternProcessor;
+import com.jojolaptech.camel.processor.AttTimeTableShiftProcessor;
 
+import com.jojolaptech.camel.processor.BranchHolidayProcessor;
 import com.jojolaptech.camel.processor.BranchAddressProcessor;
 
 import com.jojolaptech.camel.processor.BranchLeaveTypeProcessor;
@@ -14,16 +17,20 @@ import com.jojolaptech.camel.processor.CompanyAddressProcessor;
 
 import com.jojolaptech.camel.processor.CompanyProcessor;
 
-import com.jojolaptech.camel.processor.DepartmentParentLinkProcessor;
+import com.jojolaptech.camel.processor.EmployeeLeaveAccumulationProcessor;
+import com.jojolaptech.camel.processor.EmployeeProcessor;
 
+import com.jojolaptech.camel.processor.DepartmentParentLinkProcessor;
 import com.jojolaptech.camel.processor.DepartmentProcessor;
 
 import com.jojolaptech.camel.processor.FiscalYearClosingParameterProcessor;
 
 import com.jojolaptech.camel.processor.FiscalYearProcessor;
 
+import com.jojolaptech.camel.processor.LeaveAccumulationRuleProcessor;
 import com.jojolaptech.camel.processor.LeaveTypeProcessor;
 
+import com.jojolaptech.camel.processor.OvertimeAccLeaveParamsProcessor;
 import com.jojolaptech.camel.processor.PayrollRuleProcessor;
 
 import com.jojolaptech.camel.processor.PrivilegeProcessor;
@@ -34,8 +41,13 @@ import com.jojolaptech.camel.processor.TaxationProcessor;
 
 import com.jojolaptech.camel.processor.UserDetailProcessor;
 
+import com.jojolaptech.camel.processor.UserPortalLinkProcessor;
 import com.jojolaptech.camel.processor.UserProcessor;
 
+import com.jojolaptech.camel.repository.mysql.AttHolidayDateRepository;
+import com.jojolaptech.camel.repository.mysql.AttShiftRepository;
+import com.jojolaptech.camel.repository.mysql.AttTimeTableRepository;
+import com.jojolaptech.camel.repository.mysql.AutoLeaveAccParamsRepository;
 import com.jojolaptech.camel.repository.mysql.BranchDepartmentRepository;
 
 import com.jojolaptech.camel.repository.mysql.BranchRepository;
@@ -44,6 +56,9 @@ import com.jojolaptech.camel.repository.mysql.CompanyFiscalYearClosingParameterR
 
 import com.jojolaptech.camel.repository.mysql.CompanyRepository;
 
+import com.jojolaptech.camel.repository.mysql.EmployeeRepository;
+import com.jojolaptech.camel.repository.mysql.LeaveAccumulationRepository;
+import com.jojolaptech.camel.repository.mysql.OvertimeAccLeaveParamsRepository;
 import com.jojolaptech.camel.repository.mysql.DepartmentRepository;
 
 import com.jojolaptech.camel.repository.mysql.FiscalYearRepository;
@@ -120,6 +135,16 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final BranchLeaveTypeProcessor branchLeaveTypeProcessor;
 
+    private final AttTimeTableShiftProcessor attTimeTableShiftProcessor;
+
+    private final AttShiftPatternProcessor attShiftPatternProcessor;
+
+    private final BranchHolidayProcessor branchHolidayProcessor;
+
+    private final LeaveAccumulationRuleProcessor leaveAccumulationRuleProcessor;
+
+    private final OvertimeAccLeaveParamsProcessor overtimeAccLeaveParamsProcessor;
+
     private final FiscalYearClosingParameterProcessor fiscalYearClosingParameterProcessor;
 
     private final AttParamsProcessor attParamsProcessor;
@@ -127,9 +152,15 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final DepartmentProcessor departmentProcessor;
     private final DepartmentParentLinkProcessor departmentParentLinkProcessor;
 
+    private final EmployeeProcessor employeeProcessor;
+
+    private final EmployeeLeaveAccumulationProcessor employeeLeaveAccumulationProcessor;
+
     private final UserProcessor userProcessor;
 
     private final UserDetailProcessor userDetailProcessor;
+
+    private final UserPortalLinkProcessor userPortalLinkProcessor;
 
     private final RequestmapRepository requestmapRepository;
 
@@ -150,6 +181,20 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final CompanyFiscalYearClosingParameterRepository companyFiscalYearClosingParameterRepository;
 
     private final LeavesRepository leavesRepository;
+
+    private final AttTimeTableRepository attTimeTableRepository;
+
+    private final AttShiftRepository attShiftRepository;
+
+    private final AttHolidayDateRepository attHolidayDateRepository;
+
+    private final AutoLeaveAccParamsRepository autoLeaveAccParamsRepository;
+
+    private final OvertimeAccLeaveParamsRepository overtimeAccLeaveParamsRepository;
+
+    private final EmployeeRepository employeeRepository;
+
+    private final LeaveAccumulationRepository leaveAccumulationRepository;
 
     private final DepartmentRepository departmentRepository;
 
@@ -263,45 +308,93 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
+                .to("direct:att-timetable-shift-migration")
+
+                .log("Step 12 completed: att-timetable-shift-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:att-shift-pattern-migration")
+
+                .log("Step 13 completed: att-shift-pattern-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:branch-holiday-migration")
+
+                .log("Step 14 completed: branch-holiday-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:leave-accumulation-rule-migration")
+
+                .log("Step 15 completed: leave-accumulation-rule-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:overtime-acc-leave-params-migration")
+
+                .log("Step 16 completed: overtime-acc-leave-params-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
                 .to("direct:fy-closing-parameter-migration")
 
-                .log("Step 12 completed: fy-closing-parameter-migration")
+                .log("Step 17 completed: fy-closing-parameter-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:att-params-migration")
 
-                .log("Step 13 completed: att-params-migration")
+                .log("Step 18 completed: att-params-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:department-migration")
 
-                .log("Step 14 completed: department-migration")
+                .log("Step 19 completed: department-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:department-orphan-migration")
 
-                .log("Step 15 completed: department-orphan-migration")
+                .log("Step 20 completed: department-orphan-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:department-parent-link")
 
-                .log("Step 16 completed: department-parent-link")
+                .log("Step 21 completed: department-parent-link")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-migration")
+
+                .log("Step 22 completed: employee-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-leave-accumulation-migration")
+
+                .log("Step 23 completed: employee-leave-accumulation-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:user-migration")
 
-                .log("Step 17 completed: user-migration")
+                .log("Step 24 completed: user-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:user-detail-migration")
 
-                .log("Step 18 completed: user-detail-migration")
+                .log("Step 25 completed: user-detail-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:user-portal-link-migration")
+
+                .log("Step 26 completed: user-portal-link-migration")
 
                 .process(exchange -> {
 
@@ -349,6 +442,18 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int branchLeaveTypeCount = exchange.getProperty("branchLeaveTypeCount", 0, Integer.class);
 
+                    int attTimeTableShiftCount = exchange.getProperty("attTimeTableShiftCount", 0, Integer.class);
+
+                    int attShiftPatternCount = exchange.getProperty("attShiftPatternCount", 0, Integer.class);
+
+                    int branchHolidayCount = exchange.getProperty("branchHolidayCount", 0, Integer.class);
+
+                    int leaveAccumulationRuleCount =
+                            exchange.getProperty("leaveAccumulationRuleCount", 0, Integer.class);
+
+                    int overtimeAccLeaveParamsCount =
+                            exchange.getProperty("overtimeAccLeaveParamsCount", 0, Integer.class);
+
                     int fyClosingParameterCount = exchange.getProperty("fyClosingParameterCount", 0, Integer.class);
 
                     int attParamsCount = exchange.getProperty("attParamsCount", 0, Integer.class);
@@ -359,9 +464,16 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int departmentParentLinkCount = exchange.getProperty("departmentParentLinkCount", 0, Integer.class);
 
+                    int employeeCount = exchange.getProperty("employeeCount", 0, Integer.class);
+
+                    int employeeLeaveAccumulationCount =
+                            exchange.getProperty("employeeLeaveAccumulationCount", 0, Integer.class);
+
                     int userCount = exchange.getProperty("userCount", 0, Integer.class);
 
                     int userDetailCount = exchange.getProperty("userDetailCount", 0, Integer.class);
+
+                    int userPortalLinkCount = exchange.getProperty("userPortalLinkCount", 0, Integer.class);
 
 
 
@@ -401,19 +513,35 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     log.info("11. leaves -> hrm_branch_leave_type:       {}", branchLeaveTypeCount);
 
-                    log.info("12. FY closing params -> checklist:         {}", fyClosingParameterCount);
+                    log.info("12. attTimeTable -> hrm_branch_shift:       {}", attTimeTableShiftCount);
 
-                    log.info("13. company defaults / attParams:          {}", attParamsCount);
+                    log.info("13. attShift -> shift weekday/weekend:      {}", attShiftPatternCount);
 
-                    log.info("14. department (branchDepartment -> dept):  {}", departmentCount);
+                    log.info("14. attHoliday -> hrm_branch_holiday:       {}", branchHolidayCount);
 
-                    log.info("15. department orphan (department -> dept): {}", departmentOrphanCount);
+                    log.info("15. autoLeaveAcc -> accumulation rule:      {}", leaveAccumulationRuleCount);
 
-                    log.info("16. department parent links:               {}", departmentParentLinkCount);
+                    log.info("16. overtimeAcc -> leave policy flags:     {}", overtimeAccLeaveParamsCount);
 
-                    log.info("17. user (secUser -> users):               {}", userCount);
+                    log.info("17. FY closing params -> checklist:         {}", fyClosingParameterCount);
 
-                    log.info("18. user detail (employee -> profile):   {}", userDetailCount);
+                    log.info("18. company defaults / attParams:          {}", attParamsCount);
+
+                    log.info("19. department (branchDepartment -> dept):  {}", departmentCount);
+
+                    log.info("20. department orphan (department -> dept): {}", departmentOrphanCount);
+
+                    log.info("21. department parent links:               {}", departmentParentLinkCount);
+
+                    log.info("22. employee -> employee:                  {}", employeeCount);
+
+                    log.info("23. leaveAccumulation -> leave_accumulation: {}", employeeLeaveAccumulationCount);
+
+                    log.info("24. user (secUser -> users):               {}", userCount);
+
+                    log.info("25. user detail (employee -> profile):   {}", userDetailCount);
+
+                    log.info("26. user portal links:                     {}", userPortalLinkCount);
 
                     log.info("--------------------------------------------");
 
@@ -421,9 +549,12 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                             privilegeCount + roleCount + companyCount + companyAddressCount + branchCount
                                     + branchAddressCount + fiscalYearCount + taxationCount + payrollRuleCount
-                                    + leaveTypeCount + branchLeaveTypeCount + fyClosingParameterCount + attParamsCount
-                                    + departmentCount + departmentOrphanCount + departmentParentLinkCount + userCount
-                                    + userDetailCount);
+                                    + leaveTypeCount + branchLeaveTypeCount + attTimeTableShiftCount
+                                    + attShiftPatternCount + branchHolidayCount + leaveAccumulationRuleCount
+                                    + overtimeAccLeaveParamsCount + fyClosingParameterCount + attParamsCount
+                                    + departmentCount + departmentOrphanCount + departmentParentLinkCount
+                                    + employeeCount + employeeLeaveAccumulationCount + userCount + userDetailCount
+                                    + userPortalLinkCount);
 
                     log.info("==========================================");
 
@@ -975,6 +1106,248 @@ public class ImportRouteBuilder extends RouteBuilder {
 
 
 
+        from("direct:att-timetable-shift-migration")
+
+                .routeId("att-timetable-shift-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = attTimeTableRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No attTimeTable rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(attTimeTableShiftProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "att-timetable-shift-migration", "attTimeTableShiftCount"));
+
+
+
+        from("direct:att-shift-pattern-migration")
+
+                .routeId("att-shift-pattern-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = attShiftRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No attShift rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(attShiftPatternProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "att-shift-pattern-migration", "attShiftPatternCount"));
+
+
+
+        from("direct:branch-holiday-migration")
+
+                .routeId("branch-holiday-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = attHolidayDateRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No attHolidayDate rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(branchHolidayProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "branch-holiday-migration", "branchHolidayCount"));
+
+
+
+        from("direct:leave-accumulation-rule-migration")
+
+                .routeId("leave-accumulation-rule-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("paramDate").ascending());
+
+                        var resultPage = autoLeaveAccParamsRepository.findDistinctParamDates(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No autoLeaveAccParams paramDate rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(leaveAccumulationRuleProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange ->
+                        finishCount(exchange, "leave-accumulation-rule-migration", "leaveAccumulationRuleCount"));
+
+
+
+        from("direct:overtime-acc-leave-params-migration")
+
+                .routeId("overtime-acc-leave-params-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("paramDate").ascending());
+
+                        var resultPage = overtimeAccLeaveParamsRepository.findDistinctParamDates(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No overtimeAccLeaveParams paramDate rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(overtimeAccLeaveParamsProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange ->
+                        finishCount(exchange, "overtime-acc-leave-params-migration", "overtimeAccLeaveParamsCount"));
+
+
+
         from("direct:fy-closing-parameter-migration")
 
                 .routeId("fy-closing-parameter-migration")
@@ -1227,6 +1600,103 @@ public class ImportRouteBuilder extends RouteBuilder {
 
 
 
+        from("direct:employee-migration")
+
+                .routeId("employee-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = employeeRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No employee rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "employee-migration", "employeeCount"));
+
+
+
+        from("direct:employee-leave-accumulation-migration")
+
+                .routeId("employee-leave-accumulation-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = leaveAccumulationRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No leaveAccumulation rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeLeaveAccumulationProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange ->
+                        finishCount(exchange, "employee-leave-accumulation-migration", "employeeLeaveAccumulationCount"));
+
+
+
         from("direct:user-migration")
 
                 .routeId("user-migration")
@@ -1328,6 +1798,54 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end()
 
                 .process(exchange -> finishCount(exchange, "user-detail-migration", "userDetailCount"));
+
+
+
+        from("direct:user-portal-link-migration")
+
+                .routeId("user-portal-link-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = secUserRepository.findAll(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No secUser rows in this page for user portal links, continuing...")
+
+                        .otherwise()
+
+                            .process(userPortalLinkProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "user-portal-link-migration", "userPortalLinkCount"));
 
     }
 

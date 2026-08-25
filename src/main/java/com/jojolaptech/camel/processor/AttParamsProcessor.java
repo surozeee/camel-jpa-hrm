@@ -117,9 +117,9 @@ public class AttParamsProcessor implements Processor {
             Set<UUID> existingRosterBranches = rosterSettingsRepository.findExistingBranchIds(branchIds);
             Set<Long> existingShiftBranches =
                     branchShiftRepository.findMysqlBranchIdsByMysqlBranchIdIn(branchMysqlIds);
-            Map<Long, BranchShiftEntity> shiftByBranchMysqlId =
+            Map<Long, List<BranchShiftEntity>> shiftsByBranchMysqlId =
                     branchShiftRepository.findByMysqlBranchIdIn(branchMysqlIds).stream()
-                            .collect(Collectors.toMap(BranchShiftEntity::getMysqlBranchId, Function.identity()));
+                            .collect(Collectors.groupingBy(BranchShiftEntity::getMysqlBranchId));
 
             for (BranchEntity branch : branches) {
                 if (!existingLeavePolicyBranches.contains(branch.getMysqlId())) {
@@ -131,15 +131,17 @@ public class AttParamsProcessor implements Processor {
                     existingRosterBranches.add(branch.getId());
                 }
 
-                BranchShiftEntity shift = shiftByBranchMysqlId.get(branch.getMysqlId());
-                if (shift == null && !existingShiftBranches.contains(branch.getMysqlId())) {
-                    shift = buildDefaultShift(branch);
+                List<BranchShiftEntity> shifts =
+                        new ArrayList<>(shiftsByBranchMysqlId.getOrDefault(branch.getMysqlId(), List.of()));
+                if (shifts.isEmpty() && !existingShiftBranches.contains(branch.getMysqlId())) {
+                    BranchShiftEntity shift = buildDefaultShift(branch);
                     branchShifts.add(shift);
-                    shiftByBranchMysqlId.put(branch.getMysqlId(), shift);
+                    shifts.add(shift);
                     existingShiftBranches.add(branch.getMysqlId());
                 }
-                if (shift != null) {
-                    pendingShiftRules.add(new PendingShiftRule(branch, branch.getMysqlId(), values));
+                shiftsByBranchMysqlId.put(branch.getMysqlId(), shifts);
+                for (BranchShiftEntity shift : shifts) {
+                    pendingShiftRules.add(new PendingShiftRule(branch, shift, values));
                 }
             }
         }
@@ -180,23 +182,19 @@ public class AttParamsProcessor implements Processor {
         }
         if (!branchShifts.isEmpty()) {
             branchShiftRepository.saveAll(branchShifts);
+            branchShiftRepository.flush();
             imported += branchShifts.size();
         }
         if (!pendingShiftRules.isEmpty()) {
-            Set<Long> shiftBranchIds = pendingShiftRules.stream()
-                    .map(PendingShiftRule::mysqlBranchId)
+            Set<UUID> shiftIds = pendingShiftRules.stream()
+                    .map(rule -> rule.shift().getId())
+                    .filter(java.util.Objects::nonNull)
                     .collect(Collectors.toSet());
-            Map<Long, BranchShiftEntity> persistedShifts = branchShiftRepository.findByMysqlBranchIdIn(shiftBranchIds)
-                    .stream()
-                    .collect(Collectors.toMap(BranchShiftEntity::getMysqlBranchId, Function.identity()));
-            Set<UUID> existingRuleShiftIds =
-                    branchShiftRuleRepository.findExistingBranchShiftIds(persistedShifts.values().stream()
-                            .map(BranchShiftEntity::getId)
-                            .collect(Collectors.toSet()));
+            Set<UUID> existingRuleShiftIds = branchShiftRuleRepository.findExistingBranchShiftIds(shiftIds);
             List<BranchShiftRuleEntity> newRules = new ArrayList<>();
             for (PendingShiftRule pending : pendingShiftRules) {
-                BranchShiftEntity shift = persistedShifts.get(pending.mysqlBranchId());
-                if (shift == null || existingRuleShiftIds.contains(shift.getId())) {
+                BranchShiftEntity shift = pending.shift();
+                if (shift.getId() == null || existingRuleShiftIds.contains(shift.getId())) {
                     continue;
                 }
                 newRules.add(buildShiftRule(pending.branch(), shift, pending.values()));
@@ -370,6 +368,6 @@ public class AttParamsProcessor implements Processor {
         return value != null ? value : fallback;
     }
 
-    private record PendingShiftRule(BranchEntity branch, Long mysqlBranchId, AttParamValues values) {
+    private record PendingShiftRule(BranchEntity branch, BranchShiftEntity shift, AttParamValues values) {
     }
 }

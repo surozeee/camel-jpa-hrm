@@ -28,4 +28,11 @@ public interface PgBranchRepository extends JpaRepository<BranchEntity, UUID> {
             order by b.mysqlId asc
             """)
     List<BranchEntity> findByCompanyMysqlIdOrderByMysqlIdAsc(@Param("companyMysqlId") Long companyMysqlId);
+
+    @Query("""
+            select b from BranchEntity b join fetch b.company c
+            where c.mysqlId in :companyMysqlIds
+            order by b.mysqlId asc
+            """)
+    List<BranchEntity> findByCompanyMysqlIdIn(@Param("companyMysqlIds") Collection<Long> companyMysqlIds);
 }

@@ -21,4 +21,12 @@ public interface EmployeeSecUserRepository extends JpaRepository<EmployeeSecUser
             where e.user.id in :userIds
             """)
     List<EmployeeSecUser> findByUserIdInWithEmployee(@Param("userIds") Collection<Long> userIds);
+
+    @Query("""
+            select e from EmployeeSecUser e
+            join fetch e.user
+            join fetch e.employee
+            where e.employee.id in :employeeIds
+            """)
+    List<EmployeeSecUser> findByEmployeeIdInWithUser(@Param("employeeIds") Collection<Long> employeeIds);
 }

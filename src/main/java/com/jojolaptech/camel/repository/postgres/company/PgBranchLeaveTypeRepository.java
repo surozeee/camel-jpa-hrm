@@ -18,4 +18,15 @@ public interface PgBranchLeaveTypeRepository extends JpaRepository<BranchLeaveTy
     List<Object[]> findExistingKeys(
             @Param("branchMysqlIds") Collection<Long> branchMysqlIds,
             @Param("leaveMysqlIds") Collection<Long> leaveMysqlIds);
+
+    @Query("""
+            select b from BranchLeaveTypeEntity b
+            where b.mysqlLeaveId in :leaveMysqlIds and b.mysqlBranchId in :branchMysqlIds
+            """)
+    List<BranchLeaveTypeEntity> findByMysqlLeaveIdInAndMysqlBranchIdIn(
+            @Param("leaveMysqlIds") Collection<Long> leaveMysqlIds,
+            @Param("branchMysqlIds") Collection<Long> branchMysqlIds);
+
+    @Query("select b from BranchLeaveTypeEntity b where b.mysqlLeaveId in :leaveMysqlIds")
+    List<BranchLeaveTypeEntity> findByMysqlLeaveIdIn(@Param("leaveMysqlIds") Collection<Long> leaveMysqlIds);
 }

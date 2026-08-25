@@ -14,4 +14,7 @@ public interface PgLeavePolicyRepository extends JpaRepository<LeavePolicyEntity
 
     @Query("select l.mysqlBranchId from LeavePolicyEntity l where l.mysqlBranchId in :mysqlBranchIds")
     Set<Long> findMysqlBranchIdsByMysqlBranchIdIn(@Param("mysqlBranchIds") Collection<Long> mysqlBranchIds);
+
+    @Query("select l from LeavePolicyEntity l where l.mysqlBranchId in :mysqlBranchIds")
+    java.util.List<LeavePolicyEntity> findByMysqlBranchIdIn(@Param("mysqlBranchIds") Collection<Long> mysqlBranchIds);
 }

@@ -21,6 +21,9 @@ import java.util.UUID;
 @Table(name = "hrm_branch_leave_accumulation_rule")
 public class BranchLeaveAccumulationRuleEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "scope_level", nullable = false, length = 32)
     @Builder.Default

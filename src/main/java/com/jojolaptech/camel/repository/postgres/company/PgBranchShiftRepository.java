@@ -21,4 +21,20 @@ public interface PgBranchShiftRepository extends JpaRepository<BranchShiftEntity
 
     @Query("select s from BranchShiftEntity s where s.mysqlBranchId in :mysqlBranchIds")
     List<BranchShiftEntity> findByMysqlBranchIdIn(@Param("mysqlBranchIds") Collection<Long> mysqlBranchIds);
+
+    @Query("""
+            select s.mysqlId, s.mysqlBranchId from BranchShiftEntity s
+            where s.mysqlId in :mysqlIds and s.mysqlBranchId in :mysqlBranchIds
+            """)
+    List<Object[]> findExistingShiftKeys(
+            @Param("mysqlIds") Collection<Long> mysqlIds,
+            @Param("mysqlBranchIds") Collection<Long> mysqlBranchIds);
+
+    @Query("""
+            select s from BranchShiftEntity s
+            where s.mysqlId in :mysqlIds and s.mysqlBranchId in :mysqlBranchIds
+            """)
+    List<BranchShiftEntity> findByMysqlIdInAndMysqlBranchIdIn(
+            @Param("mysqlIds") Collection<Long> mysqlIds,
+            @Param("mysqlBranchIds") Collection<Long> mysqlBranchIds);
 }

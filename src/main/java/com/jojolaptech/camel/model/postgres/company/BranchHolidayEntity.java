@@ -16,6 +16,9 @@ import java.util.UUID;
 @Table(name = "hrm_branch_holiday")
 public class BranchHolidayEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id")
+    private Long mysqlId;
+
     @Column(nullable = false)
     private String name;
 

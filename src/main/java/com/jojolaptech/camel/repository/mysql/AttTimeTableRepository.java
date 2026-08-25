@@ -13,4 +13,9 @@ public interface AttTimeTableRepository extends JpaRepository<AttTimeTable, Long
 
     @Query("SELECT t FROM AttTimeTable t JOIN FETCH t.company WHERE t.company.id IN :companyIds")
     List<AttTimeTable> findByCompanyIdIn(@Param("companyIds") Collection<Long> companyIds);
+
+    @Query(
+            value = "SELECT t FROM AttTimeTable t JOIN FETCH t.company",
+            countQuery = "SELECT count(t) FROM AttTimeTable t")
+    org.springframework.data.domain.Page<AttTimeTable> findMigratable(org.springframework.data.domain.Pageable pageable);
 }

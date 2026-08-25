@@ -17,7 +17,11 @@ import java.util.UUID;
 @Table(name = "hrm_branch_shift")
 public class BranchShiftEntity extends BaseAuditEntity {
 
-    @Column(name = "mysql_branch_id", unique = true)
+    /** Legacy {@code attTimeTable.id} when migrated from timetable. */
+    @Column(name = "mysql_id")
+    private Long mysqlId;
+
+    @Column(name = "mysql_branch_id")
     private Long mysqlBranchId;
 
     @Column(nullable = false)
