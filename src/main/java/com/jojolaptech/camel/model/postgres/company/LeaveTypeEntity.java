@@ -15,6 +15,9 @@ import java.util.List;
 @Table(name = "hrm_leave_type")
 public class LeaveTypeEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(nullable = false, unique = true)
     private String name;
 

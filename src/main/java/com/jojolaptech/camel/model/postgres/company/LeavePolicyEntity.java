@@ -21,6 +21,9 @@ import java.util.UUID;
 @Table(name = "hrm_leave_policy")
 public class LeavePolicyEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_branch_id", unique = true)
+    private Long mysqlBranchId;
+
     @Column(name = "branch_id", nullable = false)
     private UUID branchId;
 

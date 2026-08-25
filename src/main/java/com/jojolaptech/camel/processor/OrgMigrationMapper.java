@@ -25,11 +25,19 @@ final class OrgMigrationMapper {
     }
 
     static String companyDescription(Company source) {
-        return joinParts(source.getAddress(), source.getFax() == null ? null : "Fax: " + source.getFax());
+        return null;
     }
 
     static String branchDescription(Branch source) {
-        return joinParts(source.getAddress(), source.getFaxNo() == null ? null : "Fax: " + source.getFaxNo());
+        return null;
+    }
+
+    static boolean hasCompanyAddress(Company source) {
+        return trimToNull(source.getAddress()) != null || trimToNull(source.getFax()) != null;
+    }
+
+    static boolean hasBranchAddress(Branch source) {
+        return trimToNull(source.getAddress()) != null || trimToNull(source.getFaxNo()) != null;
     }
 
     static String departmentDescription(Department source) {

@@ -17,6 +17,9 @@ import java.util.UUID;
 @Table(name = "hrm_branch_shift")
 public class BranchShiftEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_branch_id", unique = true)
+    private Long mysqlBranchId;
+
     @Column(nullable = false)
     private String name;
 

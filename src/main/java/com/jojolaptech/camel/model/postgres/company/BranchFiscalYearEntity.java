@@ -17,7 +17,13 @@ import java.util.UUID;
 @Entity
 @Table(name = "hrm_branch_fiscal_year")
 public class BranchFiscalYearEntity extends BaseAuditEntity {
-    
+
+    @Column(name = "mysql_id")
+    private Long mysqlId;
+
+    @Column(name = "mysql_branch_id")
+    private Long mysqlBranchId;
+
     @Column(nullable = false, unique = true)
     private String fiscalYear;
 

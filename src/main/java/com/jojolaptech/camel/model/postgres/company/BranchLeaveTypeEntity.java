@@ -16,6 +16,12 @@ import java.util.UUID;
 @Table(name = "hrm_branch_leave_type", uniqueConstraints = @UniqueConstraint(columnNames = {"branch_id", "leave_type_id"}))
 public class BranchLeaveTypeEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_branch_id")
+    private Long mysqlBranchId;
+
+    @Column(name = "mysql_leave_id")
+    private Long mysqlLeaveId;
+
     private Boolean isPaid;
 
     private Boolean requiresApproval;

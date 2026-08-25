@@ -27,6 +27,9 @@ import java.util.UUID;
 })
 public class CompanyFiscalYearClosingParameterEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(name = "company_id", nullable = false)
     private UUID companyId;
 

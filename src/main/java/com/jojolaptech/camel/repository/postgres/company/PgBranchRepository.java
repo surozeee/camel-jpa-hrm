@@ -17,7 +17,7 @@ public interface PgBranchRepository extends JpaRepository<BranchEntity, UUID> {
     @Query("select b.mysqlId from BranchEntity b where b.mysqlId in :mysqlIds")
     Set<Long> findMysqlIdsByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
 
-    @Query("select b from BranchEntity b where b.mysqlId in :mysqlIds")
+    @Query("select b from BranchEntity b left join fetch b.branchAddress where b.mysqlId in :mysqlIds")
     List<BranchEntity> findByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
 
     Optional<BranchEntity> findByMysqlId(Long mysqlId);

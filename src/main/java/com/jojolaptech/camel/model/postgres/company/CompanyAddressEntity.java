@@ -16,12 +16,18 @@ import java.util.UUID;
 @Builder
 public class CompanyAddressEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
+    @Column(name = "company_id", nullable = false)
+    private UUID companyId;
+
     @Column(nullable = false)
     private String streetAddress;
 
     private String streetAddress2;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private UUID city;
 
     private String postalCode;
