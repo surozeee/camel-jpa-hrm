@@ -9,7 +9,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 final class AttendanceMigrationMapper {
 
@@ -22,6 +24,13 @@ final class AttendanceMigrationMapper {
 
     static String shiftCode(Long timeTableMysqlId, Long branchMysqlId) {
         return "TT-" + timeTableMysqlId + "-B-" + branchMysqlId;
+    }
+
+    static AttTimeTable primaryTimeTable(List<AttTimeTable> tables) {
+        if (tables == null || tables.isEmpty()) {
+            return null;
+        }
+        return tables.stream().min(Comparator.comparing(AttTimeTable::getId)).orElse(null);
     }
 
     static BranchShiftEntity toBranchShift(

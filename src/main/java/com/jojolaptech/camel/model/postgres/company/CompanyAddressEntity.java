@@ -30,6 +30,18 @@ public class CompanyAddressEntity extends BaseAuditEntity {
     @Column(nullable = true)
     private UUID city;
 
+    @Column(name = "city_name")
+    private String cityName;
+
+    private UUID countryId;
+
+    private UUID stateId;
+
+    private UUID districtId;
+
+    /** Legacy display / free-text state or province name. */
+    private String state;
+
     private String postalCode;
 
     @Enumerated(EnumType.STRING)

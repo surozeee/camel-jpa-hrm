@@ -30,6 +30,14 @@ public final class AttParamsMigrationMapper {
         }
     }
 
+    public static AttParamValues forShift(AttParamValues companyValues, com.jojolaptech.camel.model.mysql.AttTimeTable timeTable) {
+        AttParamValues shiftValues = companyValues.copy();
+        if (timeTable != null) {
+            applyTimeTableDefaults(shiftValues, timeTable.getLateIn(), timeTable.getEarlyOut());
+        }
+        return shiftValues;
+    }
+
     public static class AttParamValues {
         public Boolean verifyLeaveAccumulation;
         public Boolean enableRosterShift;
@@ -91,11 +99,68 @@ public final class AttParamsMigrationMapper {
             return lateInMinutes != null
                     || earlyOutMinutes != null
                     || gracePeriodMinutes != null
+                    || minimumWorkingHours != null
                     || allowOvertime != null
                     || consecutiveLatePunchSalaryDeductionEnabled != null
                     || sandwichLeaveApplicable != null
+                    || allowFlexibleTiming != null
+                    || maxOvertimeHoursPerWeek != null
                     || maxOtCheckInMinutes != null
-                    || maxOtCheckOutMinutes != null;
+                    || maxOtCheckOutMinutes != null
+                    || minsPerBasicSalOt != null
+                    || cumulativeHoursLimitMinutes != null;
+        }
+
+        AttParamValues copy() {
+            AttParamValues copy = new AttParamValues();
+            copy.verifyLeaveAccumulation = verifyLeaveAccumulation;
+            copy.enableRosterShift = enableRosterShift;
+            copy.enableAutomaticAccrual = enableAutomaticAccrual;
+            copy.enableCarryForward = enableCarryForward;
+            copy.enableLeaveExpiry = enableLeaveExpiry;
+            copy.allowNegativeBalance = allowNegativeBalance;
+            copy.enableNotifications = enableNotifications;
+            copy.rosterRequireApproval = rosterRequireApproval;
+            copy.allowEmployeeShiftChangeRequest = allowEmployeeShiftChangeRequest;
+            copy.allowUpdateWhenAttendanceExists = allowUpdateWhenAttendanceExists;
+            copy.rosterCaptureBeforeMinutes = rosterCaptureBeforeMinutes;
+            copy.rosterCaptureAfterMinutes = rosterCaptureAfterMinutes;
+            copy.rosterAllowPunchReuse = rosterAllowPunchReuse;
+            copy.duplicatePunchIntervalSeconds = duplicatePunchIntervalSeconds;
+            copy.singlePunchMode = singlePunchMode;
+            copy.enableBreakTracking = enableBreakTracking;
+            copy.autoRecalculateAttendance = autoRecalculateAttendance;
+            copy.lateInMinutes = lateInMinutes;
+            copy.earlyOutMinutes = earlyOutMinutes;
+            copy.gracePeriodMinutes = gracePeriodMinutes;
+            copy.minimumWorkingHours = minimumWorkingHours;
+            copy.allowOvertime = allowOvertime;
+            copy.otBeforeShift = otBeforeShift;
+            copy.otAfterShift = otAfterShift;
+            copy.maxOvertimeHoursPerWeek = maxOvertimeHoursPerWeek;
+            copy.maxOtCheckInMinutes = maxOtCheckInMinutes;
+            copy.maxOtCheckOutMinutes = maxOtCheckOutMinutes;
+            copy.minsPerBasicSalOt = minsPerBasicSalOt;
+            copy.consecutiveLatePunchSalaryDeductionEnabled = consecutiveLatePunchSalaryDeductionEnabled;
+            copy.consecutiveLatePunchCount = consecutiveLatePunchCount;
+            copy.earlyExceedCount = earlyExceedCount;
+            copy.salaryDaysDeductedAfterLatePunches = salaryDaysDeductedAfterLatePunches;
+            copy.lateEarlyDeductionBasisMinutes = lateEarlyDeductionBasisMinutes;
+            copy.sandwichLeaveApplicable = sandwichLeaveApplicable;
+            copy.allowFlexibleTiming = allowFlexibleTiming;
+            copy.flexibleTimingWindowMinutes = flexibleTimingWindowMinutes;
+            copy.cumulativeHoursLimitMinutes = cumulativeHoursLimitMinutes;
+            copy.cumulativeLeaveMysqlId = cumulativeLeaveMysqlId;
+            copy.nonAccumulatedLeaveMysqlId = nonAccumulatedLeaveMysqlId;
+            copy.leaveOverwriteHoliday = leaveOverwriteHoliday;
+            copy.countPresentOnOffLeaveHoliday = countPresentOnOffLeaveHoliday;
+            copy.allowWebCheckInOut = allowWebCheckInOut;
+            copy.disableEmployeeCheckInOut = disableEmployeeCheckInOut;
+            copy.disableLeaveApplicationNotification = disableLeaveApplicationNotification;
+            copy.enableEncashmentAtClose = enableEncashmentAtClose;
+            copy.settleLeaveOnTermination = settleLeaveOnTermination;
+            copy.fyCloseNonSelectedAction = fyCloseNonSelectedAction;
+            return copy;
         }
 
         public Boolean resolvedAllowOvertime() {

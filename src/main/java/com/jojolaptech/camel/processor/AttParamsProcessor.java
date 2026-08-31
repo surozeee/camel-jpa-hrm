@@ -69,11 +69,11 @@ public class AttParamsProcessor implements Processor {
         Map<Long, List<com.jojolaptech.camel.model.mysql.AttParams>> attParamsByCompany =
                 attParamsRepository.findByCompanyIdIn(companyMysqlIds).stream()
                         .collect(Collectors.groupingBy(row -> row.getCompany().getId()));
-        Map<Long, AttTimeTable> timeTableByCompany = attTimeTableRepository.findByCompanyIdIn(companyMysqlIds).stream()
-                .collect(Collectors.toMap(
-                        row -> row.getCompany().getId(),
-                        Function.identity(),
-                        (left, right) -> left.getId() <= right.getId() ? left : right));
+        List<AttTimeTable> companyTimeTables = attTimeTableRepository.findByCompanyIdIn(companyMysqlIds);
+        Map<Long, List<AttTimeTable>> timeTablesByCompany = companyTimeTables.stream()
+                .collect(Collectors.groupingBy(row -> row.getCompany().getId()));
+        Map<Long, AttTimeTable> timeTableById = companyTimeTables.stream()
+                .collect(Collectors.toMap(AttTimeTable::getId, Function.identity(), (left, right) -> left));
 
         List<LeavePolicyEntity> leavePolicies = new ArrayList<>();
         List<BranchRosterSettingsEntity> rosterSettings = new ArrayList<>();
@@ -95,9 +95,11 @@ public class AttParamsProcessor implements Processor {
 
             AttParamValues values = AttParamsMigrationMapper.fromAttParams(
                     attParamsByCompany.getOrDefault(mysqlCompany.getId(), List.of()));
-            AttTimeTable timeTable = timeTableByCompany.get(mysqlCompany.getId());
-            if (timeTable != null) {
-                AttParamsMigrationMapper.applyTimeTableDefaults(values, timeTable.getLateIn(), timeTable.getEarlyOut());
+            AttTimeTable primaryTimeTable =
+                    AttendanceMigrationMapper.primaryTimeTable(timeTablesByCompany.get(mysqlCompany.getId()));
+            if (primaryTimeTable != null) {
+                AttParamsMigrationMapper.applyTimeTableDefaults(
+                        values, primaryTimeTable.getLateIn(), primaryTimeTable.getEarlyOut());
             }
 
             applyCompanyFlags(company, mysqlCompany, values);
@@ -134,14 +136,18 @@ public class AttParamsProcessor implements Processor {
                 List<BranchShiftEntity> shifts =
                         new ArrayList<>(shiftsByBranchMysqlId.getOrDefault(branch.getMysqlId(), List.of()));
                 if (shifts.isEmpty() && !existingShiftBranches.contains(branch.getMysqlId())) {
-                    BranchShiftEntity shift = buildDefaultShift(branch);
+                    BranchShiftEntity shift = buildFallbackShift(branch, primaryTimeTable);
                     branchShifts.add(shift);
                     shifts.add(shift);
                     existingShiftBranches.add(branch.getMysqlId());
                 }
                 shiftsByBranchMysqlId.put(branch.getMysqlId(), shifts);
                 for (BranchShiftEntity shift : shifts) {
-                    pendingShiftRules.add(new PendingShiftRule(branch, shift, values));
+                    AttTimeTable shiftTimeTable = resolveShiftTimeTable(shift, primaryTimeTable, timeTableById);
+                    AttParamValues shiftValues = AttParamsMigrationMapper.forShift(values, shiftTimeTable);
+                    if (shiftValues.hasShiftRules()) {
+                        pendingShiftRules.add(new PendingShiftRule(branch, shift, shiftValues));
+                    }
                 }
             }
         }
@@ -311,7 +317,16 @@ public class AttParamsProcessor implements Processor {
                 .build();
     }
 
-    private BranchShiftEntity buildDefaultShift(BranchEntity branch) {
+    private BranchShiftEntity buildFallbackShift(BranchEntity branch, AttTimeTable primaryTimeTable) {
+        if (primaryTimeTable != null) {
+            BranchShiftEntity shift = AttendanceMigrationMapper.toBranchShift(primaryTimeTable, branch);
+            if (shift.getName() == null || shift.getName().isBlank()) {
+                shift.setName("Default Shift");
+            }
+            shift.setDescription("Fallback shift from attTimeTable id=" + primaryTimeTable.getId()
+                    + " during AttParams migration");
+            return shift;
+        }
         return BranchShiftEntity.builder()
                 .mysqlBranchId(branch.getMysqlId())
                 .branchId(branch.getId())
@@ -322,8 +337,19 @@ public class AttParamsProcessor implements Processor {
                 .workingHours(8)
                 .isFlexible(false)
                 .isNightShift(false)
-                .description("Default shift created during AttParams migration")
+                .description("Default shift created during AttParams migration (no attTimeTable found)")
                 .build();
+    }
+
+    private static AttTimeTable resolveShiftTimeTable(
+            BranchShiftEntity shift, AttTimeTable primaryTimeTable, Map<Long, AttTimeTable> timeTableById) {
+        if (shift.getMysqlId() != null) {
+            AttTimeTable mapped = timeTableById.get(shift.getMysqlId());
+            if (mapped != null) {
+                return mapped;
+            }
+        }
+        return primaryTimeTable;
     }
 
     private BranchShiftRuleEntity buildShiftRule(
