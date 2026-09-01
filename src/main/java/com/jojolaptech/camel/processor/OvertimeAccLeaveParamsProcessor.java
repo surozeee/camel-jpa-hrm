@@ -1,9 +1,16 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.OvertimeAccLeaveParams;
+import com.jojolaptech.camel.model.postgres.company.BranchEntity;
+import com.jojolaptech.camel.model.postgres.company.BranchLeaveAccumulationRuleEntity;
+import com.jojolaptech.camel.model.postgres.company.BranchLeaveTypeEntity;
 import com.jojolaptech.camel.model.postgres.company.CompanyEntity;
 import com.jojolaptech.camel.model.postgres.company.LeavePolicyEntity;
+import com.jojolaptech.camel.processor.OvertimeAccLeaveMigrationMapper.OtAccValues;
+import com.jojolaptech.camel.processor.OvertimeAccLeaveMigrationMapper.OtBundleKey;
 import com.jojolaptech.camel.repository.mysql.OvertimeAccLeaveParamsRepository;
+import com.jojolaptech.camel.repository.postgres.company.PgBranchLeaveAccumulationRuleRepository;
+import com.jojolaptech.camel.repository.postgres.company.PgBranchLeaveTypeRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgBranchRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgCompanyRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgLeavePolicyRepository;
@@ -14,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -32,6 +38,8 @@ public class OvertimeAccLeaveParamsProcessor implements Processor {
     private final PgCompanyRepository companyRepository;
     private final PgBranchRepository branchRepository;
     private final PgLeavePolicyRepository leavePolicyRepository;
+    private final PgBranchLeaveTypeRepository branchLeaveTypeRepository;
+    private final PgBranchLeaveAccumulationRuleRepository accumulationRuleRepository;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -48,42 +56,72 @@ public class OvertimeAccLeaveParamsProcessor implements Processor {
             return;
         }
 
-        Map<String, List<OvertimeAccLeaveParams>> bundles = rows.stream()
+        Map<String, List<OvertimeAccLeaveParams>> rowsByCompanyAndDate = rows.stream()
                 .filter(row -> row.getCompany() != null && row.getParamDate() != null)
                 .collect(Collectors.groupingBy(row -> row.getCompany().getId() + ":" + row.getParamDate().getTime()));
 
-        Set<Long> companyMysqlIds = bundles.values().stream()
-                .map(list -> list.getFirst().getCompany().getId())
+        Map<OtBundleKey, List<OvertimeAccLeaveParams>> bundles = rowsByCompanyAndDate.values().stream()
+                .collect(Collectors.toMap(OtBundleKey::from, group -> group, (left, right) -> left));
+
+        Set<Long> companyMysqlIds = bundles.keySet().stream()
+                .map(OtBundleKey::companyMysqlId)
                 .collect(Collectors.toSet());
         Map<Long, CompanyEntity> companies = companyRepository.findByMysqlIdIn(companyMysqlIds).stream()
                 .collect(Collectors.toMap(CompanyEntity::getMysqlId, company -> company, (left, right) -> left));
 
-        Map<Long, List<com.jojolaptech.camel.model.postgres.company.BranchEntity>> branchesByCompany =
+        Map<Long, List<BranchEntity>> branchesByCompany =
                 branchRepository.findByCompanyMysqlIdIn(companyMysqlIds).stream()
                         .collect(Collectors.groupingBy(branch -> branch.getCompany().getMysqlId()));
 
+        Set<Long> leaveMysqlIds = bundles.values().stream()
+                .map(OvertimeAccLeaveMigrationMapper::fromParams)
+                .map(OtAccValues::getLeaveMysqlId)
+                .filter(id -> id != null && id > 0)
+                .collect(Collectors.toSet());
         Set<Long> branchMysqlIds = branchesByCompany.values().stream()
                 .flatMap(List::stream)
-                .map(com.jojolaptech.camel.model.postgres.company.BranchEntity::getMysqlId)
+                .map(BranchEntity::getMysqlId)
                 .collect(Collectors.toSet());
+        Map<String, BranchLeaveTypeEntity> branchLeaveTypeByKey =
+                branchLeaveTypeRepository
+                        .findByMysqlLeaveIdInAndMysqlBranchIdIn(leaveMysqlIds, branchMysqlIds)
+                        .stream()
+                        .collect(Collectors.toMap(
+                                row -> row.getMysqlLeaveId() + ":" + row.getMysqlBranchId(),
+                                row -> row,
+                                (left, right) -> left));
+
         Map<Long, LeavePolicyEntity> policyByBranchMysqlId =
                 leavePolicyRepository.findByMysqlBranchIdIn(branchMysqlIds).stream()
                         .collect(Collectors.toMap(
                                 LeavePolicyEntity::getMysqlBranchId, policy -> policy, (left, right) -> left));
 
+        Set<Long> ruleMysqlIds = new HashSet<>();
+        for (Map.Entry<OtBundleKey, List<OvertimeAccLeaveParams>> entry : bundles.entrySet()) {
+            long bundleId = OvertimeAccLeaveMigrationMapper.bundleMysqlId(entry.getValue());
+            List<BranchEntity> branches =
+                    branchesByCompany.getOrDefault(entry.getKey().companyMysqlId(), List.of());
+            for (BranchEntity branch : branches) {
+                ruleMysqlIds.add(OvertimeAccLeaveMigrationMapper.ruleMysqlId(bundleId, branch.getMysqlId()));
+            }
+        }
+        Set<Long> existingRuleMysqlIds = accumulationRuleRepository.findMysqlIdsByMysqlIdIn(ruleMysqlIds);
+
         int imported = 0;
         List<CompanyEntity> companiesToUpdate = new ArrayList<>();
         List<LeavePolicyEntity> policiesToUpdate = new ArrayList<>();
+        List<BranchLeaveAccumulationRuleEntity> rulesToSave = new ArrayList<>();
         Set<Long> touchedCompanies = new HashSet<>();
 
-        for (List<OvertimeAccLeaveParams> params : bundles.values()) {
-            OvertimeAccLeaveParams sample = params.getFirst();
-            Long companyMysqlId = sample.getCompany().getId();
+        for (Map.Entry<OtBundleKey, List<OvertimeAccLeaveParams>> entry : bundles.entrySet()) {
+            List<OvertimeAccLeaveParams> params = entry.getValue();
+            OtAccValues values = OvertimeAccLeaveMigrationMapper.fromParams(params);
+            Long companyMysqlId = entry.getKey().companyMysqlId();
             CompanyEntity company = companies.get(companyMysqlId);
             if (company == null) {
                 continue;
             }
-            OtLeaveValues values = OtLeaveValues.fromParams(params);
+
             if (!touchedCompanies.contains(companyMysqlId)) {
                 company.setEnableTimeOvertime(true);
                 companiesToUpdate.add(company);
@@ -91,19 +129,69 @@ public class OvertimeAccLeaveParamsProcessor implements Processor {
                 imported++;
             }
 
-            String remarkSuffix = values.toRemarks();
-            for (com.jojolaptech.camel.model.postgres.company.BranchEntity branch :
-                    branchesByCompany.getOrDefault(companyMysqlId, List.of())) {
+            String remarkSuffix = buildPolicyRemarks(params, values);
+            for (BranchEntity branch : branchesByCompany.getOrDefault(companyMysqlId, List.of())) {
                 LeavePolicyEntity policy = policyByBranchMysqlId.get(branch.getMysqlId());
-                if (policy == null) {
+                if (policy != null) {
+                    if (values.isEnabled()) {
+                        policy.setEnableAutomaticAccrual(true);
+                        policy.setEnableLeaveAccumulation(true);
+                    }
+                    policy.setRemarks(appendRemarks(policy.getRemarks(), remarkSuffix));
+                    policiesToUpdate.add(policy);
+                    imported++;
+                }
+            }
+
+            if (!values.isEnabled()) {
+                continue;
+            }
+            Long leaveMysqlId = values.getLeaveMysqlId();
+            if (leaveMysqlId == null || leaveMysqlId <= 0) {
+                log.warn(
+                        "Skipping overtimeAccLeaveParams bundle company mysqlId={}, paramDate={}, missing leave id",
+                        companyMysqlId,
+                        new Date(entry.getKey().paramDateEpochMs()));
+                continue;
+            }
+
+            long bundleId = OvertimeAccLeaveMigrationMapper.bundleMysqlId(params);
+            List<BranchEntity> branches = branchesByCompany.getOrDefault(companyMysqlId, List.of());
+            if (branches.isEmpty()) {
+                log.warn(
+                        "Skipping overtimeAccLeaveParams bundle company mysqlId={}, leave mysqlId={}, no branches",
+                        companyMysqlId,
+                        leaveMysqlId);
+                continue;
+            }
+
+            String ruleRemarks = buildRuleRemarks(params, values);
+            for (BranchEntity branch : branches) {
+                BranchLeaveTypeEntity branchLeaveType =
+                        branchLeaveTypeByKey.get(leaveMysqlId + ":" + branch.getMysqlId());
+                if (branchLeaveType == null) {
                     continue;
                 }
-                if (values.isEnabled()) {
-                    policy.setEnableAutomaticAccrual(true);
-                    policy.setEnableLeaveAccumulation(true);
+                long mysqlId = OvertimeAccLeaveMigrationMapper.ruleMysqlId(bundleId, branch.getMysqlId());
+                if (existingRuleMysqlIds.contains(mysqlId)) {
+                    continue;
                 }
-                policy.setRemarks(appendRemarks(policy.getRemarks(), remarkSuffix));
-                policiesToUpdate.add(policy);
+
+                rulesToSave.add(BranchLeaveAccumulationRuleEntity.builder()
+                        .mysqlId(mysqlId)
+                        .branchLeaveType(branchLeaveType)
+                        .accumulationEnabled(true)
+                        .unit(values.getUnit())
+                        .accumulationPeriod(values.getAccumulationPeriod())
+                        .leaveDays(values.getLeaveDays())
+                        .requireConfirmation(values.getRequireConfirmation() != null
+                                ? values.getRequireConfirmation()
+                                : false)
+                        .effectiveFrom(values.getEffectiveFrom())
+                        .description("OT leave accumulation from overtimeAccLeaveParams")
+                        .remarks(ruleRemarks)
+                        .build());
+                existingRuleMysqlIds.add(mysqlId);
                 imported++;
             }
         }
@@ -114,7 +202,27 @@ public class OvertimeAccLeaveParamsProcessor implements Processor {
         if (!policiesToUpdate.isEmpty()) {
             leavePolicyRepository.saveAll(policiesToUpdate.stream().distinct().toList());
         }
+        if (!rulesToSave.isEmpty()) {
+            accumulationRuleRepository.saveAll(rulesToSave);
+        }
         exchange.setProperty("batchImported", imported);
+    }
+
+    private static String buildPolicyRemarks(List<OvertimeAccLeaveParams> params, OtAccValues values) {
+        StringBuilder remarks = new StringBuilder("OT leave acc from overtimeAccLeaveParams bundle minId=")
+                .append(OvertimeAccLeaveMigrationMapper.bundleMysqlId(params));
+        if (values.getLeaveMysqlId() != null) {
+            remarks.append("; leaveId=").append(values.getLeaveMysqlId());
+        }
+        if (values.getUnit() != null) {
+            remarks.append("; unit=").append(values.getUnit());
+        }
+        remarks.append("; leaveDays=").append(values.getLeaveDays());
+        return remarks.toString();
+    }
+
+    private static String buildRuleRemarks(List<OvertimeAccLeaveParams> params, OtAccValues values) {
+        return buildPolicyRemarks(params, values);
     }
 
     private static String appendRemarks(String existing, String addition) {
@@ -128,55 +236,5 @@ public class OvertimeAccLeaveParamsProcessor implements Processor {
             return existing;
         }
         return existing + "; " + addition;
-    }
-
-    @Getter
-    private static final class OtLeaveValues {
-        private boolean enabled = true;
-        private Long leaveMysqlId;
-        private String daysToAdd;
-        private String minutesToAdd;
-
-        static OtLeaveValues fromParams(List<OvertimeAccLeaveParams> params) {
-            OtLeaveValues values = new OtLeaveValues();
-            for (OvertimeAccLeaveParams param : params) {
-                if (param.getParamName() == null || param.getParamValue() == null) {
-                    continue;
-                }
-                switch (param.getParamName().trim()) {
-                    case "LeaveId" -> values.leaveMysqlId = parseLong(param.getParamValue());
-                    case "DaysToAdd" -> values.daysToAdd = param.getParamValue().trim();
-                    case "MinutesToAdd" -> values.minutesToAdd = param.getParamValue().trim();
-                    case "isEditable", "enabled", "isActive" ->
-                            values.enabled = !"false".equalsIgnoreCase(param.getParamValue().trim());
-                    default -> {
-                        // ignore unknown params
-                    }
-                }
-            }
-            return values;
-        }
-
-        String toRemarks() {
-            StringBuilder remarks = new StringBuilder("OT leave acc from overtimeAccLeaveParams");
-            if (leaveMysqlId != null) {
-                remarks.append("; leaveId=").append(leaveMysqlId);
-            }
-            if (daysToAdd != null) {
-                remarks.append("; daysToAdd=").append(daysToAdd);
-            }
-            if (minutesToAdd != null) {
-                remarks.append("; minutesToAdd=").append(minutesToAdd);
-            }
-            return remarks.toString();
-        }
-
-        private static Long parseLong(String value) {
-            try {
-                return Long.parseLong(value.trim());
-            } catch (NumberFormatException ignored) {
-                return null;
-            }
-        }
     }
 }

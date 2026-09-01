@@ -1,5 +1,6 @@
 package com.jojolaptech.camel.processor;
 
+import com.jojolaptech.camel.model.mysql.CompanyEmployee;
 import com.jojolaptech.camel.model.mysql.EmployeeSecUser;
 import com.jojolaptech.camel.model.mysql.SecUser;
 import com.jojolaptech.camel.model.mysql.SecUserSecRole;
@@ -10,7 +11,9 @@ import com.jojolaptech.camel.model.postgres.user.BranchUserEntity;
 import com.jojolaptech.camel.model.postgres.user.CompanyUserEntity;
 import com.jojolaptech.camel.model.postgres.user.EmployeeUserEntity;
 import com.jojolaptech.camel.model.postgres.user.UserEntity;
+import com.jojolaptech.camel.model.postgres.user.enums.PermissionForEnum;
 import com.jojolaptech.camel.model.postgres.user.enums.UserTypeEnum;
+import com.jojolaptech.camel.processor.UserPortalLinkMapper.PortalKind;
 import com.jojolaptech.camel.repository.mysql.CompanyEmployeeRepository;
 import com.jojolaptech.camel.repository.mysql.EmployeeSecUserRepository;
 import com.jojolaptech.camel.repository.mysql.SecUserSecRoleRepository;
@@ -24,7 +27,6 @@ import com.jojolaptech.camel.repository.postgres.user.PgUserRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -83,26 +85,42 @@ public class UserPortalLinkProcessor implements Processor {
         Map<Long, EmployeeEntity> employeesByMysqlId = employeeRepository.findByMysqlIdIn(employeeMysqlIds).stream()
                 .collect(Collectors.toMap(EmployeeEntity::getMysqlId, employee -> employee, (left, right) -> left));
 
-        Map<Long, Long> companyMysqlIdByEmployeeId = companyEmployeeRepository.findByEmployeeIdIn(employeeMysqlIds)
-                .stream()
+        Map<Long, CompanyEmployee> activeCompanyEmployeeByEmployeeMysqlId =
+                companyEmployeeRepository.findByEmployeeIdIn(employeeMysqlIds).stream()
+                        .collect(Collectors.groupingBy(row -> row.getEmployee().getId()))
+                        .entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> EmployeeMigrationMapper.pickActiveCompanyEmployee(entry.getValue())));
+
+        Set<Long> companyMysqlIds = activeCompanyEmployeeByEmployeeMysqlId.values().stream()
                 .filter(row -> row.getCompany() != null)
-                .collect(Collectors.toMap(
-                        row -> row.getEmployee().getId(),
-                        row -> row.getCompany().getId(),
-                        (left, right) -> left));
-        Set<Long> companyMysqlIds = new HashSet<>(companyMysqlIdByEmployeeId.values());
+                .map(row -> row.getCompany().getId())
+                .collect(Collectors.toSet());
         Map<Long, CompanyEntity> companiesByMysqlId = companyRepository.findByMysqlIdIn(companyMysqlIds).stream()
                 .collect(Collectors.toMap(CompanyEntity::getMysqlId, company -> company, (left, right) -> left));
-        Map<UUID, BranchEntity> branchesByUuid = branchRepository.findByCompanyMysqlIdIn(companyMysqlIds).stream()
+        Map<Long, List<BranchEntity>> branchesByCompanyMysqlId =
+                branchRepository.findByCompanyMysqlIdIn(companyMysqlIds).stream()
+                        .collect(Collectors.groupingBy(branch -> branch.getCompany().getMysqlId()));
+        Map<UUID, BranchEntity> branchesByUuid = branchesByCompanyMysqlId.values().stream()
+                .flatMap(List::stream)
                 .collect(Collectors.toMap(BranchEntity::getId, branch -> branch, (left, right) -> left));
 
         Map<Long, List<SecUserSecRole>> rolesByUserId = secUserSecRoleRepository.findBySecUserIdIn(userIds).stream()
                 .collect(Collectors.groupingBy(link -> link.getSecUser().getId()));
 
-        Map<String, CompanyEntity> companyByEmail = companyRepository.findAll().stream()
-                .filter(company -> company.getEmail() != null && !company.getEmail().isBlank())
+        Set<String> lookupEmails = new HashSet<>();
+        for (SecUser source : batch) {
+            UserEntity user = usersByMysqlId.get(source.getId());
+            if (user != null) {
+                addEmail(lookupEmails, user.getEmailAddress());
+            }
+            addEmail(lookupEmails, source.getUsername());
+        }
+        Map<String, CompanyEntity> companyByEmail = companyRepository.findByEmailIgnoreCaseIn(lookupEmails).stream()
                 .collect(Collectors.toMap(
-                        company -> company.getEmail().trim().toLowerCase(Locale.ROOT),
+                        company -> UserPortalLinkMapper.normalizeEmail(company.getEmail()),
                         company -> company,
                         (left, right) -> left));
 
@@ -117,62 +135,89 @@ public class UserPortalLinkProcessor implements Processor {
                 continue;
             }
 
+            List<String> authorities = rolesByUserId.getOrDefault(source.getId(), List.of()).stream()
+                    .map(link -> link.getSecRole().getAuthority())
+                    .toList();
             EmployeeSecUser employeeLink = employeeLinkByUserId.get(source.getId());
-            if (employeeLink != null && !linkedEmployeeUsers.contains(source.getId())) {
-                EmployeeEntity employee = employeesByMysqlId.get(employeeLink.getEmployee().getId());
-                if (employee != null) {
-                    UUID companyId = resolveCompanyId(employee, companyMysqlIdByEmployeeId, companiesByMysqlId);
+            EmployeeEntity employee = employeeLink == null
+                    ? null
+                    : employeesByMysqlId.get(employeeLink.getEmployee().getId());
+            UserTypeEnum userType = HrmAuthorityMapper.resolvePrimaryUserType(authorities, employeeLink != null);
+            PermissionForEnum roleScope = HrmAuthorityMapper.roleScope(firstAuthority(authorities));
+            PortalKind portalKind = UserPortalLinkMapper.resolvePortalKind(
+                    userType, roleScope, employeeLink != null, employee != null);
+
+            switch (portalKind) {
+                case EMPLOYEE -> {
+                    if (linkedEmployeeUsers.contains(source.getId())) {
+                        continue;
+                    }
+                    if (employee == null) {
+                        log.warn(
+                                "Skipping employee portal link for secUser id={}, employee mysqlId={} not migrated",
+                                source.getId(),
+                                employeeLink.getEmployee().getId());
+                        continue;
+                    }
+                    UUID companyId = UserPortalLinkMapper.resolveCompanyId(
+                            employee, activeCompanyEmployeeByEmployeeMysqlId, companiesByMysqlId);
+                    UUID branchId = UserPortalLinkMapper.resolveBranchId(
+                            employee,
+                            activeCompanyEmployeeByEmployeeMysqlId,
+                            companiesByMysqlId,
+                            branchesByCompanyMysqlId);
                     employeeUsers.add(EmployeeUserEntity.builder()
                             .user(user)
                             .employeeId(employee.getId())
                             .companyId(companyId)
-                            .branchId(employee.getBranchId())
+                            .branchId(branchId)
                             .build());
                     linkedEmployeeUsers.add(source.getId());
                     imported++;
-                    continue;
                 }
-            }
-
-            List<String> authorities = rolesByUserId.getOrDefault(source.getId(), List.of()).stream()
-                    .map(link -> link.getSecRole().getAuthority())
-                    .toList();
-            UserTypeEnum userType = HrmAuthorityMapper.resolvePrimaryUserType(authorities, employeeLink != null);
-
-            if (userType == UserTypeEnum.COMPANY_ADMIN && !linkedCompanyUsers.contains(source.getId())) {
-                CompanyEntity company = resolveCompanyByEmail(source.getUsername(), companyByEmail);
-                if (company != null) {
+                case COMPANY -> {
+                    if (linkedCompanyUsers.contains(source.getId())) {
+                        continue;
+                    }
+                    CompanyEntity company = resolveCompany(user, source, employeeLink, companyByEmail, activeCompanyEmployeeByEmployeeMysqlId, companiesByMysqlId);
+                    if (company == null) {
+                        log.warn("Skipping company portal link for secUser id={}, company not resolved", source.getId());
+                        continue;
+                    }
                     companyUsers.add(CompanyUserEntity.builder()
                             .user(user)
                             .companyId(company.getId())
                             .build());
                     linkedCompanyUsers.add(source.getId());
                     imported++;
-                    continue;
                 }
-            }
-
-            if (userType == UserTypeEnum.EMPLOYEE && employeeLink != null) {
-                continue;
-            }
-
-            if (HrmAuthorityMapper.roleScope(firstAuthority(authorities)) == com.jojolaptech.camel.model.postgres.user.enums.PermissionForEnum.BRANCH
-                    && !linkedBranchUsers.contains(source.getId())
-                    && employeeLink != null) {
-                EmployeeEntity employee = employeesByMysqlId.get(employeeLink.getEmployee().getId());
-                if (employee != null && employee.getBranchId() != null) {
-                    BranchEntity branch = branchesByUuid.get(employee.getBranchId());
-                    UUID companyId = branch != null && branch.getCompany() != null
-                            ? branch.getCompany().getId()
-                            : resolveCompanyId(employee, companyMysqlIdByEmployeeId, companiesByMysqlId);
+                case BRANCH -> {
+                    if (linkedBranchUsers.contains(source.getId())) {
+                        continue;
+                    }
+                    UUID branchId = UserPortalLinkMapper.resolveBranchId(
+                            employee,
+                            activeCompanyEmployeeByEmployeeMysqlId,
+                            companiesByMysqlId,
+                            branchesByCompanyMysqlId);
+                    if (branchId == null) {
+                        log.warn("Skipping branch portal link for secUser id={}, branch not resolved", source.getId());
+                        continue;
+                    }
+                    UUID companyId = UserPortalLinkMapper.resolveBranchCompanyId(branchId, branchesByUuid);
+                    if (companyId == null) {
+                        companyId = UserPortalLinkMapper.resolveCompanyId(
+                                employee, activeCompanyEmployeeByEmployeeMysqlId, companiesByMysqlId);
+                    }
                     branchUsers.add(BranchUserEntity.builder()
                             .user(user)
-                            .branchId(employee.getBranchId())
+                            .branchId(branchId)
                             .companyId(companyId)
                             .build());
                     linkedBranchUsers.add(source.getId());
                     imported++;
                 }
+                case NONE -> log.debug("No portal link for secUser id={}, userType={}", source.getId(), userType);
             }
         }
 
@@ -188,24 +233,35 @@ public class UserPortalLinkProcessor implements Processor {
         exchange.setProperty("batchImported", imported);
     }
 
-    private static UUID resolveCompanyId(
-            EmployeeEntity employee,
-            Map<Long, Long> companyMysqlIdByEmployeeId,
+    private static CompanyEntity resolveCompany(
+            UserEntity user,
+            SecUser source,
+            EmployeeSecUser employeeLink,
+            Map<String, CompanyEntity> companyByEmail,
+            Map<Long, CompanyEmployee> activeCompanyEmployeeByEmployeeMysqlId,
             Map<Long, CompanyEntity> companiesByMysqlId) {
-        Long companyMysqlId = companyMysqlIdByEmployeeId.get(employee.getMysqlId());
-        if (companyMysqlId == null) {
-            return null;
+        CompanyEntity company = UserPortalLinkMapper.resolveCompanyByEmail(user.getEmailAddress(), companyByEmail);
+        if (company != null) {
+            return company;
         }
-        CompanyEntity company = companiesByMysqlId.get(companyMysqlId);
-        return company != null ? company.getId() : null;
+        company = UserPortalLinkMapper.resolveCompanyByEmail(source.getUsername(), companyByEmail);
+        if (company != null) {
+            return company;
+        }
+        if (employeeLink != null) {
+            return UserPortalLinkMapper.resolveCompanyFromEmployee(
+                    employeeLink.getEmployee().getId(),
+                    activeCompanyEmployeeByEmployeeMysqlId,
+                    companiesByMysqlId);
+        }
+        return null;
     }
 
-    private static CompanyEntity resolveCompanyByEmail(
-            String username, Map<String, CompanyEntity> companyByEmail) {
-        if (username == null || username.isBlank()) {
-            return null;
+    private static void addEmail(Set<String> emails, String value) {
+        String normalized = UserPortalLinkMapper.normalizeEmail(value);
+        if (normalized != null) {
+            emails.add(normalized);
         }
-        return companyByEmail.get(username.trim().toLowerCase(Locale.ROOT));
     }
 
     private static String firstAuthority(List<String> authorities) {

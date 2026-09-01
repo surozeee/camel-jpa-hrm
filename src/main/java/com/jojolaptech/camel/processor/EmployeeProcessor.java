@@ -19,7 +19,6 @@ import com.jojolaptech.camel.repository.postgres.company.PgEmployeeRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,6 +55,7 @@ public class EmployeeProcessor implements Processor {
         Set<Long> employeeIds = batch.stream().map(Employee::getId).collect(Collectors.toSet());
         Set<Long> existingIds = employeeRepository.findMysqlIdsByMysqlIdIn(employeeIds);
         Set<String> reservedEmails = new HashSet<>(employeeRepository.findExistingEmailsLowerCase(List.of()));
+        Set<String> reservedEmployeeCodes = new HashSet<>(employeeRepository.findAllEmployeeCodes());
 
         Map<Long, List<CompanyEmployee>> companyEmployeesByEmployeeId =
                 companyEmployeeRepository.findByEmployeeIdIn(employeeIds).stream()
@@ -84,18 +84,30 @@ public class EmployeeProcessor implements Processor {
                 .map(row -> row.getBranch().getId())
                 .collect(Collectors.toSet()));
 
+        Set<Long> companyMysqlIds = companyEmployeesByEmployeeId.values().stream()
+                .flatMap(List::stream)
+                .filter(row -> row.getCompany() != null)
+                .map(row -> row.getCompany().getId())
+                .collect(Collectors.toSet());
+
         Map<Long, BranchEntity> branchByMysqlId = branchRepository.findByMysqlIdIn(branchMysqlIds).stream()
                 .collect(Collectors.toMap(BranchEntity::getMysqlId, branch -> branch, (left, right) -> left));
+        Map<Long, List<BranchEntity>> branchesByCompanyMysqlId =
+                branchRepository.findByCompanyMysqlIdIn(companyMysqlIds).stream()
+                        .collect(Collectors.groupingBy(branch -> branch.getCompany().getMysqlId()));
 
         Set<Long> departmentMysqlIds = branchDepartmentsByEmployeeId.values().stream()
                 .flatMap(List::stream)
                 .filter(row -> row.getDepartment() != null)
                 .map(row -> row.getDepartment().getId())
                 .collect(Collectors.toSet());
+        departmentMysqlIds.addAll(branchesByCompanyMysqlId.values().stream()
+                .flatMap(List::stream)
+                .map(BranchEntity::getMysqlId)
+                .collect(Collectors.toSet()));
         Map<String, DepartmentEntity> departmentByKey =
                 departmentRepository
-                        .findByMysqlIdInAndMysqlBranchIdIn(departmentMysqlIds, branchMysqlIds)
-                        .stream()
+                        .findByMysqlIdInAndMysqlBranchIdIn(departmentMysqlIds, branchMysqlIds).stream()
                         .collect(Collectors.toMap(
                                 row -> EmployeeMigrationMapper.departmentKey(row.getMysqlId(), row.getMysqlBranchId()),
                                 row -> row,
@@ -115,21 +127,22 @@ public class EmployeeProcessor implements Processor {
             EmployeeBranch employeeBranch = EmployeeMigrationMapper.pickActiveBranch(
                     branchesByEmployeeId.getOrDefault(source.getId(), List.of()));
 
-            if (branchDepartment == null && employeeBranch == null) {
-                log.warn("Skipping employee id={}, no branch assignment", source.getId());
-                continue;
-            }
-
             EmployeeEntity entity = EmployeeMigrationMapper.toEmployee(
                     source,
                     companyEmployee,
                     branchDepartment,
                     employeeBranch,
                     branchByMysqlId,
+                    branchesByCompanyMysqlId,
                     departmentByKey,
                     secUserByEmployeeId,
-                    reservedEmails);
-            reservedEmails.add(entity.getEmail().toLowerCase(Locale.ROOT));
+                    reservedEmails,
+                    reservedEmployeeCodes);
+            if (entity.getBranchId() == null) {
+                log.warn(
+                        "Employee id={} migrated without branch (no assignment and no company branch fallback)",
+                        source.getId());
+            }
             toSave.add(entity);
         }
 

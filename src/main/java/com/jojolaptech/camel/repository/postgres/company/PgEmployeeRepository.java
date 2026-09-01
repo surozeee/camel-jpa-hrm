@@ -24,4 +24,7 @@ public interface PgEmployeeRepository extends JpaRepository<EmployeeEntity, UUID
 
     @Query("select lower(e.email) from EmployeeEntity e where lower(e.email) in :emails")
     Set<String> findExistingEmailsLowerCase(@Param("emails") Collection<String> emails);
+
+    @Query("select e.employeeCode from EmployeeEntity e")
+    Set<String> findAllEmployeeCodes();
 }

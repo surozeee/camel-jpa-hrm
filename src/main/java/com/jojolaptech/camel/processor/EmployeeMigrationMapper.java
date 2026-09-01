@@ -10,12 +10,13 @@ import com.jojolaptech.camel.model.postgres.company.DepartmentEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeEntity;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 final class EmployeeMigrationMapper {
 
@@ -28,12 +29,15 @@ final class EmployeeMigrationMapper {
             EmployeeBranchDepartment branchDepartment,
             EmployeeBranch employeeBranch,
             Map<Long, BranchEntity> branchByMysqlId,
+            Map<Long, List<BranchEntity>> branchesByCompanyMysqlId,
             Map<String, DepartmentEntity> departmentByKey,
             Map<Long, SecUser> secUserByEmployeeId,
-            java.util.Set<String> reservedEmails) {
-        BranchEntity branch = resolveBranch(branchDepartment, employeeBranch, branchByMysqlId);
+            Set<String> reservedEmails,
+            Set<String> reservedEmployeeCodes) {
+        BranchEntity branch = resolveBranch(
+                branchDepartment, employeeBranch, companyEmployee, branchByMysqlId, branchesByCompanyMysqlId);
         DepartmentEntity department = resolveDepartment(branchDepartment, branch, departmentByKey);
-        String employeeCode = resolveEmployeeCode(source.getId(), companyEmployee);
+        String employeeCode = resolveEmployeeCode(source.getId(), companyEmployee, reservedEmployeeCodes);
         String email = resolveEmail(source.getId(), employeeCode, secUserByEmployeeId.get(source.getId()), reservedEmails);
 
         return EmployeeEntity.builder()
@@ -52,7 +56,7 @@ final class EmployeeMigrationMapper {
                 .terminationDate(companyEmployee != null ? toLocalDate(companyEmployee.getTerminationDate()) : null)
                 .branchId(branch != null ? branch.getId() : null)
                 .departmentId(department != null ? department.getId() : null)
-                .notes(trimToNull(source.getSummary()))
+                .notes(buildNotes(source, branch, department))
                 .build();
     }
 
@@ -91,14 +95,32 @@ final class EmployeeMigrationMapper {
     private static BranchEntity resolveBranch(
             EmployeeBranchDepartment branchDepartment,
             EmployeeBranch employeeBranch,
-            Map<Long, BranchEntity> branchByMysqlId) {
+            CompanyEmployee companyEmployee,
+            Map<Long, BranchEntity> branchByMysqlId,
+            Map<Long, List<BranchEntity>> branchesByCompanyMysqlId) {
         if (branchDepartment != null && branchDepartment.getBranch() != null) {
-            return branchByMysqlId.get(branchDepartment.getBranch().getId());
+            BranchEntity branch = branchByMysqlId.get(branchDepartment.getBranch().getId());
+            if (branch != null) {
+                return branch;
+            }
         }
         if (employeeBranch != null && employeeBranch.getBranch() != null) {
-            return branchByMysqlId.get(employeeBranch.getBranch().getId());
+            BranchEntity branch = branchByMysqlId.get(employeeBranch.getBranch().getId());
+            if (branch != null) {
+                return branch;
+            }
         }
-        return null;
+        return fallbackCompanyBranch(companyEmployee, branchesByCompanyMysqlId);
+    }
+
+    private static BranchEntity fallbackCompanyBranch(
+            CompanyEmployee companyEmployee, Map<Long, List<BranchEntity>> branchesByCompanyMysqlId) {
+        if (companyEmployee == null || companyEmployee.getCompany() == null) {
+            return null;
+        }
+        List<BranchEntity> branches =
+                branchesByCompanyMysqlId.getOrDefault(companyEmployee.getCompany().getId(), List.of());
+        return branches.isEmpty() ? null : branches.getFirst();
     }
 
     private static DepartmentEntity resolveDepartment(
@@ -114,21 +136,29 @@ final class EmployeeMigrationMapper {
                 branchDepartment.getDepartment().getId(), branch.getMysqlId()));
     }
 
-    private static String resolveEmployeeCode(Long employeeId, CompanyEmployee companyEmployee) {
+    private static String resolveEmployeeCode(
+            Long employeeId, CompanyEmployee companyEmployee, Set<String> reservedEmployeeCodes) {
+        String base;
         if (companyEmployee != null && companyEmployee.getOrganizationId() != null) {
             String orgId = companyEmployee.getOrganizationId().trim();
-            if (!orgId.isEmpty()) {
-                return orgId;
-            }
+            base = orgId.isEmpty() ? "EMP-" + employeeId : orgId;
+        } else {
+            base = "EMP-" + employeeId;
         }
-        return "EMP-" + employeeId;
+        String candidate = base;
+        int suffix = 1;
+        while (!reservedEmployeeCodes.add(candidate)) {
+            candidate = base + "-" + suffix;
+            suffix++;
+        }
+        return candidate;
     }
 
     private static String resolveEmail(
             Long employeeId,
             String employeeCode,
             SecUser secUser,
-            java.util.Set<String> reservedEmails) {
+            Set<String> reservedEmails) {
         if (secUser != null && secUser.getUsername() != null) {
             String username = secUser.getUsername().trim().toLowerCase(Locale.ROOT);
             if (username.contains("@") && reservedEmails.add(username)) {
@@ -163,6 +193,36 @@ final class EmployeeMigrationMapper {
             return toLocalDate(employeeBranch.getStartDate());
         }
         return null;
+    }
+
+    private static String buildNotes(Employee source, BranchEntity branch, DepartmentEntity department) {
+        List<String> parts = new ArrayList<>();
+        appendNote(parts, trimToNull(source.getSummary()));
+        appendNote(parts, source.getGender() != null ? "gender=" + source.getGender().trim() : null);
+        appendNote(parts, source.getStatus() != null ? "status=" + source.getStatus().trim() : null);
+        appendNote(parts, trimToNull(source.getPhoto()) != null ? "photo=" + source.getPhoto().trim() : null);
+        appendNote(parts, trimToNull(source.getNepaliName()) != null ? "nepaliName=" + source.getNepaliName().trim() : null);
+        appendNote(parts, trimToNull(source.getCitizenNumber()) != null ? "citizenNumber=" + source.getCitizenNumber().trim() : null);
+        appendNote(parts, trimToNull(source.getPassportNo()) != null ? "passportNo=" + source.getPassportNo().trim() : null);
+        appendNote(parts, trimToNull(source.getJobType()) != null ? "jobType=" + source.getJobType().trim() : null);
+        appendNote(parts, source.getTitle() != null ? "title=" + source.getTitle().name() : null);
+        appendNote(parts, source.getMaritialStatus() != null ? "maritalStatus=" + source.getMaritialStatus().name() : null);
+        if (branch == null) {
+            appendNote(parts, "branchAssignment=fallback-or-unassigned");
+        }
+        if (department == null && branch != null) {
+            appendNote(parts, "departmentAssignment=unassigned");
+        }
+        if (parts.isEmpty()) {
+            return "Migrated from legacy employee id=" + source.getId();
+        }
+        return String.join("; ", parts);
+    }
+
+    private static void appendNote(List<String> parts, String value) {
+        if (value != null && !value.isBlank()) {
+            parts.add(value);
+        }
     }
 
     private static String defaultName(String value, String fallback) {
