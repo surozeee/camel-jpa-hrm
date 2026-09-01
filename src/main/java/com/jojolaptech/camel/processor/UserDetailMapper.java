@@ -2,6 +2,9 @@ package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.Employee;
 import com.jojolaptech.camel.model.mysql.enums.EmployeeTitle;
+import com.jojolaptech.camel.model.postgres.enums.ChannelEnum;
+import com.jojolaptech.camel.model.postgres.enums.CountryEnum;
+import com.jojolaptech.camel.model.postgres.enums.LanguageEnum;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
 import com.jojolaptech.camel.model.postgres.user.UserDetailEntity;
 import com.jojolaptech.camel.model.postgres.user.UserEntity;
@@ -12,6 +15,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class UserDetailMapper {
+
+    private static final LanguageEnum DEFAULT_LANGUAGE = LanguageEnum.EN;
+    private static final CountryEnum DEFAULT_COUNTRY = CountryEnum.NP;
+    private static final ChannelEnum DEFAULT_NOTIFY = ChannelEnum.EMAIL;
 
     private UserDetailMapper() {}
 
@@ -27,20 +34,28 @@ final class UserDetailMapper {
                 .middleName(middleName)
                 .lastName(lastName)
                 .name(buildDisplayName(firstName, middleName, lastName))
-                .phoneNumber(trimToNull(employee.getPhone()))
+                .phoneNumber(firstNonBlank(trimToNull(employee.getPhone()), trimToNull(user.getMobileNumber())))
                 .photoUrl(trimToNull(employee.getPhoto()))
+                .language(resolveLanguage(employee))
+                .country(DEFAULT_COUNTRY)
+                .notifyTo(DEFAULT_NOTIFY)
                 .enable2FA(false)
                 .build();
         detail.setStatus(StatusEnum.ACTIVE);
         return detail;
     }
 
-    static UserDetailEntity fromEmail(String email, UserEntity user) {
-        String localPart = extractLocalPart(email);
+    static UserDetailEntity fromUser(UserEntity user) {
+        ParsedName parsed = parseNameFromEmail(user.getEmailAddress());
         UserDetailEntity detail = UserDetailEntity.builder()
                 .user(user)
-                .firstName(localPart)
-                .name(localPart)
+                .firstName(parsed.firstName())
+                .lastName(parsed.lastName())
+                .name(parsed.displayName())
+                .phoneNumber(trimToNull(user.getMobileNumber()))
+                .language(DEFAULT_LANGUAGE)
+                .country(DEFAULT_COUNTRY)
+                .notifyTo(DEFAULT_NOTIFY)
                 .enable2FA(false)
                 .build();
         detail.setStatus(StatusEnum.ACTIVE);
@@ -77,6 +92,34 @@ final class UserDetailMapper {
         };
     }
 
+    private static LanguageEnum resolveLanguage(Employee employee) {
+        if (containsNepaliHint(employee.getMotherTongue()) || trimToNull(employee.getNepaliName()) != null) {
+            return LanguageEnum.NE;
+        }
+        return DEFAULT_LANGUAGE;
+    }
+
+    private static boolean containsNepaliHint(String value) {
+        if (value == null || value.isBlank()) {
+            return false;
+        }
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
+        return normalized.contains("nepali") || normalized.contains("nepal");
+    }
+
+    private record ParsedName(String firstName, String lastName, String displayName) {}
+
+    private static ParsedName parseNameFromEmail(String email) {
+        String localPart = extractLocalPart(email);
+        String[] parts = localPart.split("[\\s._-]+");
+        if (parts.length >= 2) {
+            String first = capitalize(parts[0]);
+            String last = capitalize(parts[parts.length - 1]);
+            return new ParsedName(first, last, first + " " + last);
+        }
+        return new ParsedName(localPart, null, localPart);
+    }
+
     private static String extractLocalPart(String email) {
         if (email == null || email.isBlank()) {
             return "User";
@@ -85,6 +128,20 @@ final class UserDetailMapper {
         String localPart = at > 0 ? email.substring(0, at) : email;
         localPart = localPart.replace('.', ' ').replace('_', ' ').trim();
         return localPart.isBlank() ? "User" : localPart;
+    }
+
+    private static String capitalize(String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+        if (value.length() == 1) {
+            return value.toUpperCase(Locale.ROOT);
+        }
+        return value.substring(0, 1).toUpperCase(Locale.ROOT) + value.substring(1).toLowerCase(Locale.ROOT);
+    }
+
+    private static String firstNonBlank(String first, String second) {
+        return first != null ? first : second;
     }
 
     private static String trimToNull(String value) {

@@ -3,6 +3,8 @@ package com.jojolaptech.camel.processor;
 import com.jojolaptech.camel.model.mysql.Branch;
 import com.jojolaptech.camel.model.mysql.Company;
 import com.jojolaptech.camel.model.mysql.Department;
+import com.jojolaptech.camel.model.postgres.company.OrganizationEntity;
+import com.jojolaptech.camel.model.postgres.company.OrganizationTypeEntity;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -11,6 +13,22 @@ import java.util.stream.Stream;
 final class OrgMigrationMapper {
 
     private OrgMigrationMapper() {}
+
+    static String organizationCode(long companyMysqlId) {
+        return "ORG-" + companyMysqlId;
+    }
+
+    static OrganizationEntity toOrganization(Company source, OrganizationTypeEntity organizationType) {
+        String name = trimToNull(source.getName());
+        return OrganizationEntity.builder()
+                .name(name != null ? name : "Organization-" + source.getId())
+                .code(organizationCode(source.getId()))
+                .phone(trimToNull(source.getPhone()))
+                .website(trimToNull(source.getUrl()))
+                .description("Migrated from legacy company id=" + source.getId())
+                .organizationType(organizationType)
+                .build();
+    }
 
     static String departmentKey(Long departmentMysqlId, Long branchMysqlId) {
         return departmentMysqlId + ":" + branchMysqlId;

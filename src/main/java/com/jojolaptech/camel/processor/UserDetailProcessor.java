@@ -67,7 +67,7 @@ public class UserDetailProcessor implements Processor {
             Employee employee = employeeByUserId.get(source.getId());
             UserDetailEntity detail = employee != null
                     ? UserDetailMapper.fromEmployee(employee, user)
-                    : UserDetailMapper.fromEmail(user.getEmailAddress(), user);
+                    : UserDetailMapper.fromUser(user);
             toSave.add(detail);
         }
 
