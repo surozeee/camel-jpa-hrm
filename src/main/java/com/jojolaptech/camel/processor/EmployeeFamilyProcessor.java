@@ -1,0 +1,78 @@
+package com.jojolaptech.camel.processor;
+
+import com.jojolaptech.camel.model.mysql.Family;
+import com.jojolaptech.camel.model.postgres.company.EmployeeEntity;
+import com.jojolaptech.camel.model.postgres.company.EmployeeFamilyDetailEntity;
+import com.jojolaptech.camel.repository.postgres.company.PgEmployeeFamilyDetailRepository;
+import com.jojolaptech.camel.repository.postgres.company.PgEmployeeRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class EmployeeFamilyProcessor implements Processor {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeFamilyProcessor.class);
+
+    private final PgEmployeeRepository employeeRepository;
+    private final PgEmployeeFamilyDetailRepository employeeFamilyDetailRepository;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void process(Exchange exchange) {
+        List<Family> batch = exchange.getMessage().getBody(List.class);
+        if (batch == null || batch.isEmpty()) {
+            exchange.setProperty("batchImported", 0);
+            return;
+        }
+
+        Set<Long> mysqlIds = batch.stream().map(Family::getId).collect(Collectors.toSet());
+        Set<Long> existingIds = employeeFamilyDetailRepository.findMysqlIdsByMysqlIdIn(mysqlIds);
+
+        Set<Long> employeeMysqlIds = batch.stream()
+                .filter(row -> row.getEmployee() != null)
+                .map(row -> row.getEmployee().getId())
+                .collect(Collectors.toSet());
+        Map<Long, EmployeeEntity> employeeByMysqlId = employeeRepository.findByMysqlIdIn(employeeMysqlIds).stream()
+                .collect(Collectors.toMap(EmployeeEntity::getMysqlId, row -> row, (left, right) -> left));
+
+        List<EmployeeFamilyDetailEntity> toSave = new ArrayList<>();
+        for (Family source : batch) {
+            if (existingIds.contains(source.getId())) {
+                continue;
+            }
+            if (source.getEmployee() == null) {
+                log.warn("Skipping family id={}, missing employee", source.getId());
+                continue;
+            }
+            EmployeeEntity employee = employeeByMysqlId.get(source.getEmployee().getId());
+            if (employee == null) {
+                log.warn("Skipping family id={}, employee not migrated", source.getId());
+                continue;
+            }
+
+            EmployeeFamilyDetailEntity family =
+                    EmployeeProfileMigrationMapper.fromFamily(source, employee.getId());
+            if (family == null) {
+                log.warn("Skipping family id={}, missing name", source.getId());
+                continue;
+            }
+            toSave.add(family);
+            existingIds.add(source.getId());
+        }
+
+        if (!toSave.isEmpty()) {
+            employeeFamilyDetailRepository.saveAll(toSave);
+        }
+        exchange.setProperty("batchImported", toSave.size());
+    }
+}

@@ -19,7 +19,11 @@ import com.jojolaptech.camel.processor.CompanyProcessor;
 
 import com.jojolaptech.camel.processor.OrganizationProcessor;
 
+import com.jojolaptech.camel.processor.EmployeeAddressProcessor;
+import com.jojolaptech.camel.processor.EmployeeEducationProcessor;
+import com.jojolaptech.camel.processor.EmployeeFamilyProcessor;
 import com.jojolaptech.camel.processor.EmployeeLeaveAccumulationProcessor;
+import com.jojolaptech.camel.processor.EmployeeMasterAddressProcessor;
 import com.jojolaptech.camel.processor.EmployeeProcessor;
 
 import com.jojolaptech.camel.processor.DepartmentParentLinkProcessor;
@@ -58,7 +62,10 @@ import com.jojolaptech.camel.repository.mysql.CompanyFiscalYearClosingParameterR
 
 import com.jojolaptech.camel.repository.mysql.CompanyRepository;
 
+import com.jojolaptech.camel.repository.mysql.EmployeeAddressRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeEducationRepository;
 import com.jojolaptech.camel.repository.mysql.EmployeeRepository;
+import com.jojolaptech.camel.repository.mysql.FamilyRepository;
 import com.jojolaptech.camel.repository.mysql.LeaveAccumulationRepository;
 import com.jojolaptech.camel.repository.mysql.OvertimeAccLeaveParamsRepository;
 import com.jojolaptech.camel.repository.mysql.DepartmentRepository;
@@ -158,6 +165,14 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final EmployeeProcessor employeeProcessor;
 
+    private final EmployeeAddressProcessor employeeAddressProcessor;
+
+    private final EmployeeMasterAddressProcessor employeeMasterAddressProcessor;
+
+    private final EmployeeEducationProcessor employeeEducationProcessor;
+
+    private final EmployeeFamilyProcessor employeeFamilyProcessor;
+
     private final EmployeeLeaveAccumulationProcessor employeeLeaveAccumulationProcessor;
 
     private final UserProcessor userProcessor;
@@ -197,6 +212,12 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final OvertimeAccLeaveParamsRepository overtimeAccLeaveParamsRepository;
 
     private final EmployeeRepository employeeRepository;
+
+    private final EmployeeAddressRepository employeeAddressRepository;
+
+    private final EmployeeEducationRepository employeeEducationRepository;
+
+    private final FamilyRepository familyRepository;
 
     private final LeaveAccumulationRepository leaveAccumulationRepository;
 
@@ -384,6 +405,30 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
+                .to("direct:employee-address-migration")
+
+                .log("Step 22a completed: employee-address-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-master-address-migration")
+
+                .log("Step 22b completed: employee-master-address-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-education-migration")
+
+                .log("Step 22c completed: employee-education-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-family-migration")
+
+                .log("Step 22d completed: employee-family-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
                 .to("direct:employee-leave-accumulation-migration")
 
                 .log("Step 23 completed: employee-leave-accumulation-migration")
@@ -477,6 +522,15 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int employeeCount = exchange.getProperty("employeeCount", 0, Integer.class);
 
+                    int employeeAddressCount = exchange.getProperty("employeeAddressCount", 0, Integer.class);
+
+                    int employeeMasterAddressCount =
+                            exchange.getProperty("employeeMasterAddressCount", 0, Integer.class);
+
+                    int employeeEducationCount = exchange.getProperty("employeeEducationCount", 0, Integer.class);
+
+                    int employeeFamilyCount = exchange.getProperty("employeeFamilyCount", 0, Integer.class);
+
                     int employeeLeaveAccumulationCount =
                             exchange.getProperty("employeeLeaveAccumulationCount", 0, Integer.class);
 
@@ -547,6 +601,14 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     log.info("22. employee -> employee:                  {}", employeeCount);
 
+                    log.info("22a. employeeAddress -> address:           {}", employeeAddressCount);
+
+                    log.info("22b. employee master -> address:          {}", employeeMasterAddressCount);
+
+                    log.info("22c. employeeEducation -> education:      {}", employeeEducationCount);
+
+                    log.info("22d. family -> employee_family_detail:   {}", employeeFamilyCount);
+
                     log.info("23. leaveAccumulation -> leave_accumulation: {}", employeeLeaveAccumulationCount);
 
                     log.info("24. user (secUser -> users):               {}", userCount);
@@ -565,8 +627,9 @@ public class ImportRouteBuilder extends RouteBuilder {
                                     + attShiftPatternCount + branchHolidayCount + leaveAccumulationRuleCount
                                     + overtimeAccLeaveParamsCount + fyClosingParameterCount + attParamsCount
                                     + departmentCount + departmentOrphanCount + departmentParentLinkCount
-                                    + employeeCount + employeeLeaveAccumulationCount + userCount + userDetailCount
-                                    + userPortalLinkCount);
+                                    + employeeCount + employeeAddressCount + employeeMasterAddressCount
+                                    + employeeEducationCount + employeeFamilyCount + employeeLeaveAccumulationCount
+                                    + userCount + userDetailCount + userPortalLinkCount);
 
                     log.info("==========================================");
 
@@ -1705,6 +1768,199 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end()
 
                 .process(exchange -> finishCount(exchange, "employee-migration", "employeeCount"));
+
+
+
+        from("direct:employee-address-migration")
+
+                .routeId("employee-address-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = employeeAddressRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No employeeAddress rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeAddressProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "employee-address-migration", "employeeAddressCount"));
+
+
+
+        from("direct:employee-master-address-migration")
+
+                .routeId("employee-master-address-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = employeeRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No employee master address rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeMasterAddressProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange ->
+                        finishCount(exchange, "employee-master-address-migration", "employeeMasterAddressCount"));
+
+
+
+        from("direct:employee-education-migration")
+
+                .routeId("employee-education-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = employeeEducationRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No employeeEducation rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeEducationProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "employee-education-migration", "employeeEducationCount"));
+
+
+
+        from("direct:employee-family-migration")
+
+                .routeId("employee-family-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = familyRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No family rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeFamilyProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "employee-family-migration", "employeeFamilyCount"));
 
 
 
