@@ -1,81 +1,63 @@
-# Camel JPA importer (MySQL 5 -> Postgres)
+# Camel JPA HRM importer (MySQL legacy → PostgreSQL ERP)
 
-Spring Boot + Apache Camel JPA route that pulls rows from a MySQL source table and writes them into a Postgres target table while marking the source row as exported.
+Spring Boot + Apache Camel pipeline that migrates legacy HRM master data from MySQL into the PostgreSQL ERP schema. The `master-import` timer route runs all 30 migration steps once on startup.
 
 ## Prerequisites
-- Java 25 (or newer toolchain)
-- Gradle 8+ (or use the Gradle wrapper if added)
-- MySQL 5.x (or compatible) with a `customers` table
-- PostgreSQL with a `customers_import` table
+- Java 25 (or compatible toolchain)
+- Gradle 8+
+- MySQL legacy HRM database (source)
+- PostgreSQL ERP database (target) with schema created by ERP services
 
 ## Configure
 
-### Using Environment Variables (.env file)
+### Staging / dev (`.env`)
 
-1. Copy `.env.example` to `.env`:
+1. Copy `.env.example` to `.env` and point at staging databases:
    ```bash
    cp .env.example .env
    ```
 
-2. Edit `.env` and update with your actual database credentials:
-   ```env
-   MYSQL_URL=jdbc:mysql://localhost:3305/tender?...
-   MYSQL_USERNAME=root
-   MYSQL_PASSWORD=your_actual_password
-   POSTGRES_URL=jdbc:postgresql://localhost:5432/tender1?...
-   POSTGRES_USERNAME=postgres
-   POSTGRES_PASSWORD=your_actual_password
-   ```
+2. Set `MYSQL_URL`, `POSTGRES_URL`, and credentials for the staging pair.
 
 3. Run with the `dev` profile:
    ```bash
-   gradle bootRun --args='--spring.profiles.active=dev'
+   gradlew bootRun --args='--spring.profiles.active=dev'
    ```
 
-The application will automatically load the `.env` file and use those values. The `.env` file is git-ignored for security.
+The app loads `.env` on startup (`CamelJpaTnApplication`).
 
-### Using application.yml directly
+### Local defaults
 
-Alternatively, update `src/main/resources/application.yml` (or `application-dev.yml`) for your DB hosts, users, and passwords. The important properties are:
-- `spring.datasource.mysql.*` (source)
-- `spring.datasource.postgres.*` (target)
+Edit `src/main/resources/application.yml` for local MySQL/PostgreSQL hosts.
 
-Both Hibernate contexts default to `none` for DDL; create tables yourself:
-```sql
--- MySQL
-create table customers (
-  id bigint auto_increment primary key,
-  name varchar(255) not null,
-  email varchar(255) not null unique,
-  created_at timestamp not null,
-  exported boolean not null default 0
-);
+## Run migration on staging (P0)
 
--- Postgres
-create table customers_import (
-  id bigserial primary key,
-  source_id bigint not null,
-  name varchar(255) not null,
-  email varchar(255) not null unique,
-  created_at timestamp not null
-);
+1. **Prepare target DB** — empty ERP schema or truncated migration tables on staging PostgreSQL.
+2. **Start importer** — `gradlew bootRun --args='--spring.profiles.active=dev'`.
+3. **Watch logs** — each step logs `Total records imported`; final block lists all 30 steps.
+4. **Row-count QA** — runs automatically after step 26. Search logs for `Migration row-count QA report`.
+   - Compares MySQL source counts vs PostgreSQL `mysql_id` rows.
+   - Compares pipeline imported counts vs PostgreSQL totals.
+   - Set `migration.qa.fail-on-mismatch=true` to abort on mismatch (default: log only).
+5. **Manual spot-check** — `scripts/staging-row-count-qa.sql` has paired MySQL/PG queries.
+
+### QA configuration
+
+```yaml
+migration:
+  qa:
+    enabled: true          # set false to skip post-migration QA
+    fail-on-mismatch: false # set true on CI/staging gates
 ```
 
-## Run
+Exchange properties after QA: `migrationQaPassed`, `migrationQaFailureCount`.
 
-### Development mode (with .env file)
-```bash
-gradle bootRun --args='--spring.profiles.active=dev'
-```
+## Pipeline overview
 
-### Default mode
-```bash
-gradle bootRun
-```
+Timer `master-import` → steps 1–26 (+ 22a–22d profile sub-entities) → row-count QA → summary log.
 
-The Camel route `mysql-to-postgres-import` polls MySQL every 5s using the named query `SourceCustomer.fetchUnexported`. Each row is mapped in `CustomerProcessor` and persisted to Postgres; the source row is flagged `exported=true` so it is skipped on the next poll.
+See `ImportRouteBuilder.java` for the full route list.
 
 ## Adjustments
-- Tweak poll size and delay via `maximumResults` and `delay` in `ImportRouteBuilder`.
-- Replace the simple processor with your own transformations or validations.
-- To delete rows after import, change the JPA consumer URI `consumeDelete=true` in the route.
+- Page size: `PAGE_SIZE` in `ImportRouteBuilder` (default 100).
+- Step throttle: `MIGRATION_THROTTLE_MS` between steps.

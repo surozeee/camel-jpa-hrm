@@ -33,6 +33,8 @@ public class MasterDataSeedService {
     private final PgEmploymentTypeRepository employmentTypeRepository;
     private final PgBankTypeRepository bankTypeRepository;
     private final FiscalYearTypeCatalogService fiscalYearTypeCatalogService;
+    private final CompanyTypeCatalogService companyTypeCatalogService;
+    private final OrganizationTypeCatalogService organizationTypeCatalogService;
 
     @Transactional(transactionManager = "postgresTransactionManager")
     public int seedAll() {
@@ -45,6 +47,8 @@ public class MasterDataSeedService {
         count += seedBankTypes();
         fiscalYearTypeCatalogService.defaultFiscalYearType();
         count++;
+        count += companyTypeCatalogService.ensureCatalog();
+        count += organizationTypeCatalogService.ensureCatalog();
         log.info("Master platform seed completed, {} records ensured", count);
         return count;
     }

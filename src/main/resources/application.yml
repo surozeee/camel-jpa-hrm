@@ -60,3 +60,8 @@ camel:
     jpa:
       transaction-manager: "#mysqlTransactionManager"
 
+migration:
+  qa:
+    enabled: true
+    fail-on-mismatch: false
+

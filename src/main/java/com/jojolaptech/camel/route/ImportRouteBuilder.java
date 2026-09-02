@@ -50,6 +50,8 @@ import com.jojolaptech.camel.processor.UserDetailProcessor;
 import com.jojolaptech.camel.processor.UserPortalLinkProcessor;
 import com.jojolaptech.camel.processor.UserProcessor;
 
+import com.jojolaptech.camel.qa.MigrationRowCountQaProcessor;
+
 import com.jojolaptech.camel.repository.mysql.AttHolidayDateRepository;
 import com.jojolaptech.camel.repository.mysql.AttShiftRepository;
 import com.jojolaptech.camel.repository.mysql.AttTimeTableRepository;
@@ -180,6 +182,8 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final UserDetailProcessor userDetailProcessor;
 
     private final UserPortalLinkProcessor userPortalLinkProcessor;
+
+    private final MigrationRowCountQaProcessor migrationRowCountQaProcessor;
 
     private final RequestmapRepository requestmapRepository;
 
@@ -451,6 +455,10 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .log("Step 26 completed: user-portal-link-migration")
 
+                .process(migrationRowCountQaProcessor)
+
+                .log("Row-count QA completed (see migration row-count QA report in logs)")
+
                 .process(exchange -> {
 
                     long endTime = System.currentTimeMillis();
@@ -616,6 +624,15 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("25. user detail (employee -> profile):   {}", userDetailCount);
 
                     log.info("26. user portal links:                     {}", userPortalLinkCount);
+
+                    Boolean migrationQaPassed = exchange.getProperty("migrationQaPassed", Boolean.class);
+                    Integer migrationQaFailureCount =
+                            exchange.getProperty("migrationQaFailureCount", 0, Integer.class);
+                    if (migrationQaPassed != null) {
+                        log.info("QA. row-count validation:                  {} ({} failures)",
+                                migrationQaPassed ? "PASSED" : "FAILED",
+                                migrationQaFailureCount);
+                    }
 
                     log.info("--------------------------------------------");
 
