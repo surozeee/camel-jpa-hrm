@@ -52,13 +52,6 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.EQUAL,
                     null),
             new MigrationRowCountCheck(
-                    "3b",
-                    "organization (1 per company)",
-                    "SELECT COUNT(*) FROM company",
-                    "SELECT COUNT(*) FROM organization",
-                    MigrationComparisonMode.EQUAL,
-                    "Synthetic org rows; should match company count"),
-            new MigrationRowCountCheck(
                     "4",
                     "company address",
                     "SELECT COUNT(*) FROM company WHERE NULLIF(TRIM(address), '') IS NOT NULL OR NULLIF(TRIM(fax), '') IS NOT NULL",
@@ -979,7 +972,6 @@ public class MigrationRowCountQaService {
         PIPELINE_PG_COUNT_SQL.put("privilegeCount", "SELECT COUNT(*) FROM permission WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("roleCount", "SELECT COUNT(*) FROM role WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("companyCount", "SELECT COUNT(*) FROM company WHERE mysql_id IS NOT NULL");
-        PIPELINE_PG_COUNT_SQL.put("organizationCount", "SELECT COUNT(*) FROM organization");
         PIPELINE_PG_COUNT_SQL.put("companyAddressCount", "SELECT COUNT(*) FROM hrm_company_address WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("branchCount", "SELECT COUNT(*) FROM branch WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("payrollRuleCount", "SELECT COUNT(*) FROM payroll_rule");

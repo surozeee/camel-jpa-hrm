@@ -26,8 +26,6 @@ import com.jojolaptech.camel.processor.CompanyAddressProcessor;
 
 import com.jojolaptech.camel.processor.CompanyProcessor;
 
-import com.jojolaptech.camel.processor.OrganizationProcessor;
-
 import com.jojolaptech.camel.processor.EmployeeAddressProcessor;
 import com.jojolaptech.camel.processor.EmployeeAwardProcessor;
 import com.jojolaptech.camel.processor.EmployeeDesignationLinkProcessor;
@@ -384,8 +382,6 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final RoleProcessor roleProcessor;
 
     private final CompanyProcessor companyProcessor;
-
-    private final OrganizationProcessor organizationProcessor;
 
     private final CompanyAddressProcessor companyAddressProcessor;
 
@@ -895,12 +891,6 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .to("direct:company-migration")
 
                 .log("Step 3 completed: company-migration")
-
-                .process(exchange -> throttleBetweenSteps())
-
-                .to("direct:organization-migration")
-
-                .log("Step 3b completed: organization-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
@@ -1669,7 +1659,6 @@ public class ImportRouteBuilder extends RouteBuilder {
                     int roleCount = exchange.getProperty("roleCount", 0, Integer.class);
 
                     int companyCount = exchange.getProperty("companyCount", 0, Integer.class);
-                    int organizationCount = exchange.getProperty("organizationCount", 0, Integer.class);
 
                     int companyAddressCount = exchange.getProperty("companyAddressCount", 0, Integer.class);
 
@@ -1960,7 +1949,6 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("2. role (secRole -> role):                 {}", roleCount);
 
                     log.info("3. company (company -> company):           {}", companyCount);
-                    log.info("3b. organization (company -> org link):   {}", organizationCount);
 
                     log.info("4. company address -> hrm_company_address: {}", companyAddressCount);
 
@@ -2194,7 +2182,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     log.info("GRAND TOTAL:                               {}",
 
-                            privilegeCount + roleCount + companyCount + organizationCount + companyAddressCount + branchCount
+                            privilegeCount + roleCount + companyCount + companyAddressCount + branchCount
                                     + branchAddressCount + fiscalYearCount + taxationCount + payrollRuleCount
                                     + salaryBreakdownCount + pmsSalaryBreakdownCount
                                     + gradeCount + gradePayStepCount + gradeComponentValueCount
@@ -2418,54 +2406,6 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end()
 
                 .process(exchange -> finishCount(exchange, "company-migration", "companyCount"));
-
-
-
-        from("direct:organization-migration")
-
-                .routeId("organization-migration")
-
-                .setProperty("page").constant(0)
-
-                .setProperty("hasNext").constant(true)
-
-                .setProperty("importCount").constant(0)
-
-                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
-
-                    .process(exchange -> {
-
-                        int page = exchange.getProperty("page", Integer.class);
-
-                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-
-                        var resultPage = companyRepository.findAll(pageable);
-
-                        exchange.getMessage().setBody(resultPage.getContent());
-
-                        exchange.setProperty("hasNext", resultPage.hasNext());
-
-                        exchange.setProperty("page", page + 1);
-
-                    })
-
-                    .choice()
-
-                        .when(simple("${body.size} == 0"))
-
-                            .log("No company rows for organization link in this page, continuing...")
-
-                        .otherwise()
-
-                            .process(organizationProcessor)
-
-                            .process(exchange -> addImported(exchange))
-
-                    .end()
-
-                .end()
-
-                .process(exchange -> finishCount(exchange, "organization-migration", "organizationCount"));
 
 
 

@@ -210,7 +210,15 @@ Metadata and taxonomy fits that map into existing ERP tables (no dedicated MySQL
 | 22zh | `jobCategory` | `hrm_skill_category` (**fan-out** one row per migrated company; mysql_id ≥ 20e12) |
 | 22zi | `jobCategories` | `hrm_skill_category` (company-scoped; mysql_id ≥ 21e12) |
 
-Out of scope (not migrated): `EmployeeBranch` / `BranchDepartment` (step 22), standalone `Insurance` entity (provider denormalized in 22s), SaaS module tree/scopes (`module` / `modulesList` / `payPlanModule` / `module_pricing_scope` — ERP seed; `applicationModule` → lookup 29c only), institution **passwords** (9n archives identity only), `userRating`, extra recruiters beyond first, PreEmployment/Joining templates (no MySQL ATS source — company config seed), `alertSetting` (global templates).
+Out of scope (**confirmed — do not migrate**):
+- ERP `organization` / org link on company (hrm-three has no Organization domain; step 3b removed — `company.organization_id` left null)
+- Tokens / PMS auth: `accessToken`, `secUserDeleteRequest`, `verification`, `pmsUser` (re-auth in ERP; `userLicense` already in 24c)
+- Alert templates: `alertSetting` (reconfigure in ERP)
+- Insurance / geo / codes: `insurance`, `insuranceCompany`, `nepaliYear`, `monthDayMapping`, `code` (`employeeInsurance` + bank master already migrate)
+- SaaS module tree: `module`, `modulesList`, `payPlanModule` (+ ERP `module_pricing_scope` — Master seed; `applicationModule` → lookup 29c only)
+- Ratings / tags: `userRating`, `tags`
+- Report / email templates: `reportFooter`, `companyEmailSetting`, `privilageEmployeeEmailSetting`
+- Also: institution **passwords** (9n archives identity only), extra recruiters beyond first, PreEmployment/Joining templates (company config seed), MinIO binaries (ops step)
 
 ### Recruitment / ATS (professional fit)
 
@@ -242,7 +250,7 @@ Company announcements and related broadcasts migrate into `hrm_company_notice` (
 | 28f | `notification` | `hrm_company_notice` (mysql_id ≥ 32e12) |
 | 28g | `notificationViewed` | `hrm_employee_notice_read` (links to 28f notice; `viewedBy` = user.mysql_id) |
 
-Still out of scope: `alertSetting` (global HTML templates ≠ attendance alerts / notices), `hrm_employee_contact_message` (no faithful MySQL “Contact Us” source), attachment binaries (URL in `action_url` only).
+Still out of scope (confirmed): `alertSetting`, `hrm_employee_contact_message` (no faithful MySQL “Contact Us” source), attachment binaries (URL in `action_url` only).
 
 ### Leave applications & balances
 
