@@ -17,6 +17,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class DivisionEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(nullable = false, length = 64)
     private String code;
 

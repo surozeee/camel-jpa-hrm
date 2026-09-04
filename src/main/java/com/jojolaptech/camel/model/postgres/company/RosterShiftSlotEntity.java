@@ -22,6 +22,9 @@ import java.util.UUID;
                         columnNames = {"branch_id", "shift_slot"}))
 public class RosterShiftSlotEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(name = "branch_id", nullable = false)
     private UUID branchId;
 
@@ -38,6 +41,7 @@ public class RosterShiftSlotEntity extends BaseAuditEntity {
     @Column(name = "end_time")
     private LocalTime endTime;
 
+    @Builder.Default
     @Column(name = "enabled")
-    private Boolean enabled;
+    private Boolean enabled = true;
 }

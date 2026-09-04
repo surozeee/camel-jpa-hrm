@@ -34,6 +34,11 @@ final class OrgMigrationMapper {
         return departmentMysqlId + ":" + branchMysqlId;
     }
 
+    /** Stable synthetic mysql_id for Division/Team derived from department×branch. */
+    static long orgMasterMysqlId(Long departmentMysqlId, Long mysqlBranchId) {
+        return departmentMysqlId * 1_000_000L + mysqlBranchId;
+    }
+
     static String trimToNull(String value) {
         if (value == null) {
             return null;

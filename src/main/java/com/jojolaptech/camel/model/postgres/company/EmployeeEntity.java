@@ -55,4 +55,26 @@ public class EmployeeEntity extends BaseAuditEntity {
     private UUID departmentId;
 
     private UUID branchId;
+
+    @Column(name = "division_id")
+    private UUID divisionId;
+
+    @Column(name = "team_id")
+    private UUID teamId;
+
+    @Column(name = "cost_center_id")
+    private UUID costCenterId;
+
+    @Column(name = "branch_shift_id")
+    private UUID branchShiftId;
+
+    @Column(name = "grade_id")
+    private UUID gradeId;
+
+    @Column(name = "designation_id")
+    private UUID designationId;
+
+    @Column(name = "is_department_head")
+    @Builder.Default
+    private Boolean isDepartmentHead = false;
 }

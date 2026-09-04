@@ -16,6 +16,8 @@ public interface PgUserRepository extends JpaRepository<UserEntity, UUID> {
 
     boolean existsByMysqlId(Long mysqlId);
 
+    Optional<UserEntity> findByMysqlId(Long mysqlId);
+
     Optional<UserEntity> findByEmailAddressIgnoreCase(String emailAddress);
 
     @Query("select u.mysqlId from UserEntity u where u.mysqlId in :mysqlIds")

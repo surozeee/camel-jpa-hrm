@@ -29,4 +29,11 @@ public interface OvertimeAccLeaveParamsRepository extends JpaRepository<Overtime
             WHERE p.paramDate IN :paramDates
             """)
     List<OvertimeAccLeaveParams> findByParamDateIn(@Param("paramDates") Collection<Date> paramDates);
+
+    @Query("""
+            SELECT p FROM OvertimeAccLeaveParams p
+            JOIN FETCH p.company c
+            WHERE c.id IN :companyMysqlIds
+            """)
+    List<OvertimeAccLeaveParams> findByCompanyMysqlIdIn(@Param("companyMysqlIds") Collection<Long> companyMysqlIds);
 }

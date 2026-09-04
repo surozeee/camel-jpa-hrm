@@ -2,9 +2,18 @@ package com.jojolaptech.camel.route;
 
 
 
+import com.jojolaptech.camel.processor.AttDeviceMacProcessor;
 import com.jojolaptech.camel.processor.AttParamsProcessor;
 import com.jojolaptech.camel.processor.AttShiftPatternProcessor;
 import com.jojolaptech.camel.processor.AttTimeTableShiftProcessor;
+import com.jojolaptech.camel.processor.AttendanceForgotProcessor;
+import com.jojolaptech.camel.processor.AttendanceLogProcessor;
+import com.jojolaptech.camel.processor.AttendanceRemarkProcessor;
+import com.jojolaptech.camel.processor.AttendanceTransactionProcessor;
+import com.jojolaptech.camel.processor.DeviceLogsProcessor;
+import com.jojolaptech.camel.processor.OldAttendanceTransactionProcessor;
+import com.jojolaptech.camel.processor.TempDeviceLogsProcessor;
+import com.jojolaptech.camel.processor.WorkShiftProcessor;
 
 import com.jojolaptech.camel.processor.BranchHolidayProcessor;
 import com.jojolaptech.camel.processor.BranchAddressProcessor;
@@ -20,11 +29,56 @@ import com.jojolaptech.camel.processor.CompanyProcessor;
 import com.jojolaptech.camel.processor.OrganizationProcessor;
 
 import com.jojolaptech.camel.processor.EmployeeAddressProcessor;
+import com.jojolaptech.camel.processor.EmployeeAwardProcessor;
+import com.jojolaptech.camel.processor.EmployeeDesignationLinkProcessor;
+import com.jojolaptech.camel.processor.EmployeeDesignationProcessor;
 import com.jojolaptech.camel.processor.EmployeeEducationProcessor;
+import com.jojolaptech.camel.processor.EmployeeEmergencyContactProcessor;
+import com.jojolaptech.camel.processor.EmployeeExperienceProcessor;
 import com.jojolaptech.camel.processor.EmployeeFamilyProcessor;
+import com.jojolaptech.camel.processor.EmployeeHealthProcessor;
+import com.jojolaptech.camel.processor.EmployeeInsuranceProcessor;
+import com.jojolaptech.camel.processor.EmployeeJobDescriptionProcessor;
+import com.jojolaptech.camel.processor.EmployeeLanguageProcessor;
 import com.jojolaptech.camel.processor.EmployeeLeaveAccumulationProcessor;
 import com.jojolaptech.camel.processor.EmployeeMasterAddressProcessor;
 import com.jojolaptech.camel.processor.EmployeeProcessor;
+import com.jojolaptech.camel.processor.EmployeePublicationProcessor;
+import com.jojolaptech.camel.processor.EmployeeSeminarProcessor;
+import com.jojolaptech.camel.processor.EmployeeSkillProcessor;
+import com.jojolaptech.camel.processor.EmployeeTerminationProcessor;
+import com.jojolaptech.camel.processor.EmployeeTrainingProcessor;
+import com.jojolaptech.camel.processor.EmploymentSuspensionProcessor;
+import com.jojolaptech.camel.processor.BranchDepartmentHeadProcessor;
+import com.jojolaptech.camel.processor.DivisionSeedProcessor;
+import com.jojolaptech.camel.processor.CostCenterSeedProcessor;
+import com.jojolaptech.camel.processor.TeamSeedProcessor;
+import com.jojolaptech.camel.processor.OrgMasterHeadLinkProcessor;
+import com.jojolaptech.camel.processor.EmployeeOrgFkBackfillProcessor;
+import com.jojolaptech.camel.processor.EmployeeJobLevelHistoryProcessor;
+import com.jojolaptech.camel.processor.JobStatusHistoryProcessor;
+import com.jojolaptech.camel.processor.JobPositionProcessor;
+import com.jojolaptech.camel.processor.CompanyEmployeeContractProcessor;
+import com.jojolaptech.camel.processor.EmployeeJobHistoryProcessor;
+import com.jojolaptech.camel.processor.DocumentProcessor;
+import com.jojolaptech.camel.processor.EmployeeProjectProcessor;
+import com.jojolaptech.camel.processor.JobCategoryProcessor;
+import com.jojolaptech.camel.processor.JobCategoriesProcessor;
+import com.jojolaptech.camel.processor.SkillMasterProcessor;
+import com.jojolaptech.camel.processor.CostTypePackageProcessor;
+import com.jojolaptech.camel.processor.PayPlanPackageProcessor;
+import com.jojolaptech.camel.processor.ModulePricingPackageProcessor;
+import com.jojolaptech.camel.processor.CompanyValiditySubscriptionProcessor;
+import com.jojolaptech.camel.processor.SubscriptionPaymentHistoryProcessor;
+import com.jojolaptech.camel.processor.VacancyProcessor;
+import com.jojolaptech.camel.processor.VacancyNewspaperProcessor;
+import com.jojolaptech.camel.processor.InterviewStageProcessor;
+import com.jojolaptech.camel.processor.ScreeningQuestionProcessor;
+import com.jojolaptech.camel.processor.ApplicantProcessor;
+import com.jojolaptech.camel.processor.ScreeningAnswerProcessor;
+import com.jojolaptech.camel.processor.ApplicantsTransactionProcessor;
+import com.jojolaptech.camel.processor.RecruitersProcessor;
+import com.jojolaptech.camel.processor.EvaluationProcessor;
 
 import com.jojolaptech.camel.processor.DepartmentParentLinkProcessor;
 import com.jojolaptech.camel.processor.DepartmentProcessor;
@@ -34,10 +88,52 @@ import com.jojolaptech.camel.processor.FiscalYearClosingParameterProcessor;
 import com.jojolaptech.camel.processor.FiscalYearProcessor;
 
 import com.jojolaptech.camel.processor.LeaveAccumulationRuleProcessor;
+import com.jojolaptech.camel.processor.LeaveAdjustmentProcessor;
+import com.jojolaptech.camel.processor.LeaveApplicationProcessor;
+import com.jojolaptech.camel.processor.LeaveBalanceProcessor;
+import com.jojolaptech.camel.processor.LeaveCancellationProcessor;
+import com.jojolaptech.camel.processor.CalculatedAutoLeaveCreditProcessor;
+import com.jojolaptech.camel.processor.CalculatedOtLeaveAccrualProcessor;
 import com.jojolaptech.camel.processor.LeaveTypeProcessor;
 
 import com.jojolaptech.camel.processor.OvertimeAccLeaveParamsProcessor;
 import com.jojolaptech.camel.processor.PayrollRuleProcessor;
+
+import com.jojolaptech.camel.processor.BranchSalaryBreakdownProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeSalaryProcessor;
+
+import com.jojolaptech.camel.processor.PayrollOpeningBalanceProcessor;
+
+import com.jojolaptech.camel.processor.MonthWiseSalaryProcessor;
+
+import com.jojolaptech.camel.processor.PayrollTransactionHistoryProcessor;
+
+import com.jojolaptech.camel.processor.GradeProcessor;
+
+import com.jojolaptech.camel.processor.GradePayStepProcessor;
+
+import com.jojolaptech.camel.processor.GradeComponentValueProcessor;
+
+import com.jojolaptech.camel.processor.HeadingTemplateSeedProcessor;
+
+import com.jojolaptech.camel.processor.LegacyBankProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeGradeLinkProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeBankDetailProcessor;
+
+import com.jojolaptech.camel.processor.MassSalaryAdjustmentProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeLoanProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeLoanPaymentProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeDeviceEnrollProcessor;
+
+import com.jojolaptech.camel.processor.EmployeeTempShiftProcessor;
+
+import com.jojolaptech.camel.processor.EmployeePermanentShiftProcessor;
 
 import com.jojolaptech.camel.processor.PrivilegeProcessor;
 
@@ -52,9 +148,20 @@ import com.jojolaptech.camel.processor.UserProcessor;
 
 import com.jojolaptech.camel.qa.MigrationRowCountQaProcessor;
 
+import com.jojolaptech.camel.repository.mysql.AttDeviceMACRepository;
+import com.jojolaptech.camel.repository.mysql.AttEmpShiftRepository;
+import com.jojolaptech.camel.repository.mysql.AttEmpTempShiftRepository;
 import com.jojolaptech.camel.repository.mysql.AttHolidayDateRepository;
+import com.jojolaptech.camel.repository.mysql.AttLogsRepository;
 import com.jojolaptech.camel.repository.mysql.AttShiftRepository;
 import com.jojolaptech.camel.repository.mysql.AttTimeTableRepository;
+import com.jojolaptech.camel.repository.mysql.AttendanceForgotRepository;
+import com.jojolaptech.camel.repository.mysql.AttendanceRemarkRepository;
+import com.jojolaptech.camel.repository.mysql.AttendanceTransactionRepository;
+import com.jojolaptech.camel.repository.mysql.DeviceLogsRepository;
+import com.jojolaptech.camel.repository.mysql.OldAttendanceTransactionRepository;
+import com.jojolaptech.camel.repository.mysql.TempDeviceLogsRepository;
+import com.jojolaptech.camel.repository.mysql.WorkShiftRepository;
 import com.jojolaptech.camel.repository.mysql.AutoLeaveAccParamsRepository;
 import com.jojolaptech.camel.repository.mysql.BranchDepartmentRepository;
 
@@ -65,18 +172,97 @@ import com.jojolaptech.camel.repository.mysql.CompanyFiscalYearClosingParameterR
 import com.jojolaptech.camel.repository.mysql.CompanyRepository;
 
 import com.jojolaptech.camel.repository.mysql.EmployeeAddressRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeAwardRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeContactRepository;
 import com.jojolaptech.camel.repository.mysql.EmployeeEducationRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeExperienceRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeHealthRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeInsuranceRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeJobRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeLanguageRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeePublicationRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeSeminarRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeSkillRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeTerminationRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeTrainingRepository;
+import com.jojolaptech.camel.repository.mysql.EmploymentSuspensionRepository;
+import com.jojolaptech.camel.repository.mysql.JobDescriptionRepository;
+import com.jojolaptech.camel.repository.mysql.JobTitleRepository;
+import com.jojolaptech.camel.repository.mysql.BranchDepartmentHeadRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeJobLevelRepository;
+import com.jojolaptech.camel.repository.mysql.JobStatusRepository;
+import com.jojolaptech.camel.repository.mysql.JobPositionRepository;
+import com.jojolaptech.camel.repository.mysql.CompanyEmployeeContractRepository;
+import com.jojolaptech.camel.repository.mysql.DocumentRepository;
+import com.jojolaptech.camel.repository.mysql.EmployeeProjectRepository;
+import com.jojolaptech.camel.repository.mysql.JobCategoryRepository;
+import com.jojolaptech.camel.repository.mysql.JobCategoriesRepository;
 import com.jojolaptech.camel.repository.mysql.EmployeeRepository;
 import com.jojolaptech.camel.repository.mysql.FamilyRepository;
 import com.jojolaptech.camel.repository.mysql.LeaveAccumulationRepository;
+import com.jojolaptech.camel.repository.mysql.LeaveAdjustmentRepository;
+import com.jojolaptech.camel.repository.mysql.LeaveApplicationRepository;
+import com.jojolaptech.camel.repository.mysql.LeaveBalanceRepository;
+import com.jojolaptech.camel.repository.mysql.LeaveCancellationRepository;
+import com.jojolaptech.camel.repository.mysql.CalculatedAutoLeaveAccumulationRepository;
+import com.jojolaptech.camel.repository.mysql.CalculatedOTLeaveBalanceRepository;
 import com.jojolaptech.camel.repository.mysql.OvertimeAccLeaveParamsRepository;
 import com.jojolaptech.camel.repository.mysql.DepartmentRepository;
+import com.jojolaptech.camel.repository.postgres.company.PgEmployeeRepository;
 
 import com.jojolaptech.camel.repository.mysql.FiscalYearRepository;
 
 import com.jojolaptech.camel.repository.mysql.LeavesRepository;
 
 import com.jojolaptech.camel.repository.mysql.PayrollCalculationSettingRepository;
+
+import com.jojolaptech.camel.repository.mysql.CompanyPayrollHeadingRepository;
+
+import com.jojolaptech.camel.repository.mysql.PayrollHeadingRepository;
+
+import com.jojolaptech.camel.repository.mysql.EmployeePayrollHeadingRepository;
+
+import com.jojolaptech.camel.repository.mysql.OpeningPayrollBalanceRepository;
+
+import com.jojolaptech.camel.repository.mysql.EmployeePayrollPaymentRepository;
+
+import com.jojolaptech.camel.repository.mysql.PayrollTransactionRepository;
+
+import com.jojolaptech.camel.repository.mysql.PayrollMonthRepository;
+
+import com.jojolaptech.camel.repository.mysql.JobLevelRepository;
+
+import com.jojolaptech.camel.repository.mysql.JobLevelGradeValueRepository;
+
+import com.jojolaptech.camel.repository.mysql.JobLevelPayrollRepository;
+
+import com.jojolaptech.camel.repository.mysql.EmployeeGradeRepository;
+
+import com.jojolaptech.camel.repository.mysql.MassIncrementRepository;
+
+import com.jojolaptech.camel.repository.mysql.EmployeePayrollPaymentSettingRepository;
+
+import com.jojolaptech.camel.repository.mysql.EmployeeLoanRepository;
+
+import com.jojolaptech.camel.repository.mysql.EmployeeLoanPaymentRepository;
+
+import com.jojolaptech.camel.repository.mysql.TemplatePayrollHeadingRepository;
+
+import com.jojolaptech.camel.repository.mysql.BankRepository;
+import com.jojolaptech.camel.repository.mysql.CostTypeRepository;
+import com.jojolaptech.camel.repository.mysql.PayPlanRepository;
+import com.jojolaptech.camel.repository.mysql.ModulePricingRepository;
+import com.jojolaptech.camel.repository.mysql.CompanyValidityRepository;
+import com.jojolaptech.camel.repository.mysql.SubscriptionPaymentRepository;
+import com.jojolaptech.camel.repository.mysql.VacancyRepository;
+import com.jojolaptech.camel.repository.mysql.VacancyNewspaperRepository;
+import com.jojolaptech.camel.repository.mysql.StagesRepository;
+import com.jojolaptech.camel.repository.mysql.ScreeningQuestionRepository;
+import com.jojolaptech.camel.repository.mysql.ScreeningAnswerRepository;
+import com.jojolaptech.camel.repository.mysql.ApplicantRepository;
+import com.jojolaptech.camel.repository.mysql.ApplicantsTransactionRepository;
+import com.jojolaptech.camel.repository.mysql.RecruitersRepository;
+import com.jojolaptech.camel.repository.mysql.EvaluationRepository;
 
 import com.jojolaptech.camel.repository.mysql.RequestmapRepository;
 
@@ -144,6 +330,56 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final PayrollRuleProcessor payrollRuleProcessor;
 
+    private final BranchSalaryBreakdownProcessor branchSalaryBreakdownProcessor;
+
+    private final EmployeeSalaryProcessor employeeSalaryProcessor;
+
+    private final PayrollOpeningBalanceProcessor payrollOpeningBalanceProcessor;
+
+    private final MonthWiseSalaryProcessor monthWiseSalaryProcessor;
+
+    private final PayrollTransactionHistoryProcessor payrollTransactionHistoryProcessor;
+
+    private final GradeProcessor gradeProcessor;
+
+    private final GradePayStepProcessor gradePayStepProcessor;
+
+    private final GradeComponentValueProcessor gradeComponentValueProcessor;
+
+    private final HeadingTemplateSeedProcessor headingTemplateSeedProcessor;
+
+    private final LegacyBankProcessor legacyBankProcessor;
+
+    private final CostTypePackageProcessor costTypePackageProcessor;
+
+    private final PayPlanPackageProcessor payPlanPackageProcessor;
+
+    private final ModulePricingPackageProcessor modulePricingPackageProcessor;
+
+    private final CompanyValiditySubscriptionProcessor companyValiditySubscriptionProcessor;
+
+    private final SubscriptionPaymentHistoryProcessor subscriptionPaymentHistoryProcessor;
+
+    private final VacancyProcessor vacancyProcessor;
+    private final VacancyNewspaperProcessor vacancyNewspaperProcessor;
+    private final InterviewStageProcessor interviewStageProcessor;
+    private final ScreeningQuestionProcessor screeningQuestionProcessor;
+    private final ApplicantProcessor applicantProcessor;
+    private final ScreeningAnswerProcessor screeningAnswerProcessor;
+    private final ApplicantsTransactionProcessor applicantsTransactionProcessor;
+    private final RecruitersProcessor recruitersProcessor;
+    private final EvaluationProcessor evaluationProcessor;
+
+    private final EmployeeGradeLinkProcessor employeeGradeLinkProcessor;
+
+    private final EmployeeBankDetailProcessor employeeBankDetailProcessor;
+
+    private final MassSalaryAdjustmentProcessor massSalaryAdjustmentProcessor;
+
+    private final EmployeeLoanProcessor employeeLoanProcessor;
+
+    private final EmployeeLoanPaymentProcessor employeeLoanPaymentProcessor;
+
     private final LeaveTypeProcessor leaveTypeProcessor;
 
     private final BranchLeaveTypeProcessor branchLeaveTypeProcessor;
@@ -162,6 +398,62 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final AttParamsProcessor attParamsProcessor;
 
+    private final AttDeviceMacProcessor attDeviceMacProcessor;
+
+    private final EmployeeDeviceEnrollProcessor employeeDeviceEnrollProcessor;
+
+    private final EmployeeTempShiftProcessor employeeTempShiftProcessor;
+
+    private final EmployeePermanentShiftProcessor employeePermanentShiftProcessor;
+
+    private final EmployeeExperienceProcessor employeeExperienceProcessor;
+    private final EmployeeAwardProcessor employeeAwardProcessor;
+    private final EmployeeLanguageProcessor employeeLanguageProcessor;
+    private final EmployeeSeminarProcessor employeeSeminarProcessor;
+    private final EmployeePublicationProcessor employeePublicationProcessor;
+    private final EmployeeHealthProcessor employeeHealthProcessor;
+    private final EmployeeTrainingProcessor employeeTrainingProcessor;
+    private final EmployeeJobDescriptionProcessor employeeJobDescriptionProcessor;
+    private final EmploymentSuspensionProcessor employmentSuspensionProcessor;
+    private final EmployeeInsuranceProcessor employeeInsuranceProcessor;
+    private final SkillMasterProcessor skillMasterProcessor;
+    private final EmployeeSkillProcessor employeeSkillProcessor;
+    private final EmployeeDesignationProcessor employeeDesignationProcessor;
+    private final EmployeeDesignationLinkProcessor employeeDesignationLinkProcessor;
+    private final EmployeeEmergencyContactProcessor employeeEmergencyContactProcessor;
+    private final EmployeeTerminationProcessor employeeTerminationProcessor;
+    private final BranchDepartmentHeadProcessor branchDepartmentHeadProcessor;
+    private final DivisionSeedProcessor divisionSeedProcessor;
+    private final CostCenterSeedProcessor costCenterSeedProcessor;
+    private final TeamSeedProcessor teamSeedProcessor;
+    private final OrgMasterHeadLinkProcessor orgMasterHeadLinkProcessor;
+    private final EmployeeOrgFkBackfillProcessor employeeOrgFkBackfillProcessor;
+    private final EmployeeJobLevelHistoryProcessor employeeJobLevelHistoryProcessor;
+    private final JobStatusHistoryProcessor jobStatusHistoryProcessor;
+    private final JobPositionProcessor jobPositionProcessor;
+    private final CompanyEmployeeContractProcessor companyEmployeeContractProcessor;
+    private final EmployeeJobHistoryProcessor employeeJobHistoryProcessor;
+    private final DocumentProcessor documentProcessor;
+    private final EmployeeProjectProcessor employeeProjectProcessor;
+    private final JobCategoryProcessor jobCategoryProcessor;
+    private final JobCategoriesProcessor jobCategoriesProcessor;
+
+    private final AttendanceLogProcessor attendanceLogProcessor;
+
+    private final AttendanceTransactionProcessor attendanceTransactionProcessor;
+
+    private final AttendanceForgotProcessor attendanceForgotProcessor;
+
+    private final AttendanceRemarkProcessor attendanceRemarkProcessor;
+
+    private final DeviceLogsProcessor deviceLogsProcessor;
+
+    private final TempDeviceLogsProcessor tempDeviceLogsProcessor;
+
+    private final OldAttendanceTransactionProcessor oldAttendanceTransactionProcessor;
+
+    private final WorkShiftProcessor workShiftProcessor;
+
     private final DepartmentProcessor departmentProcessor;
     private final DepartmentParentLinkProcessor departmentParentLinkProcessor;
 
@@ -176,6 +468,18 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final EmployeeFamilyProcessor employeeFamilyProcessor;
 
     private final EmployeeLeaveAccumulationProcessor employeeLeaveAccumulationProcessor;
+
+    private final LeaveBalanceProcessor leaveBalanceProcessor;
+
+    private final LeaveAdjustmentProcessor leaveAdjustmentProcessor;
+
+    private final LeaveApplicationProcessor leaveApplicationProcessor;
+
+    private final LeaveCancellationProcessor leaveCancellationProcessor;
+
+    private final CalculatedAutoLeaveCreditProcessor calculatedAutoLeaveCreditProcessor;
+
+    private final CalculatedOtLeaveAccrualProcessor calculatedOtLeaveAccrualProcessor;
 
     private final UserProcessor userProcessor;
 
@@ -201,6 +505,60 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final PayrollCalculationSettingRepository payrollCalculationSettingRepository;
 
+    private final CompanyPayrollHeadingRepository companyPayrollHeadingRepository;
+
+    private final PayrollHeadingRepository payrollHeadingRepository;
+
+    private final EmployeePayrollHeadingRepository employeePayrollHeadingRepository;
+
+    private final OpeningPayrollBalanceRepository openingPayrollBalanceRepository;
+
+    private final EmployeePayrollPaymentRepository employeePayrollPaymentRepository;
+
+    private final PayrollTransactionRepository payrollTransactionRepository;
+
+    private final PayrollMonthRepository payrollMonthRepository;
+
+    private final JobLevelRepository jobLevelRepository;
+
+    private final JobLevelGradeValueRepository jobLevelGradeValueRepository;
+
+    private final JobLevelPayrollRepository jobLevelPayrollRepository;
+
+    private final EmployeeGradeRepository employeeGradeRepository;
+
+    private final MassIncrementRepository massIncrementRepository;
+
+    private final EmployeePayrollPaymentSettingRepository employeePayrollPaymentSettingRepository;
+
+    private final EmployeeLoanRepository employeeLoanRepository;
+
+    private final EmployeeLoanPaymentRepository employeeLoanPaymentRepository;
+
+    private final TemplatePayrollHeadingRepository templatePayrollHeadingRepository;
+
+    private final BankRepository bankRepository;
+
+    private final CostTypeRepository costTypeRepository;
+
+    private final PayPlanRepository payPlanRepository;
+
+    private final ModulePricingRepository modulePricingRepository;
+
+    private final CompanyValidityRepository companyValidityRepository;
+
+    private final SubscriptionPaymentRepository subscriptionPaymentRepository;
+
+    private final VacancyRepository vacancyRepository;
+    private final VacancyNewspaperRepository vacancyNewspaperRepository;
+    private final StagesRepository stagesRepository;
+    private final ScreeningQuestionRepository screeningQuestionRepository;
+    private final ScreeningAnswerRepository screeningAnswerRepository;
+    private final ApplicantRepository applicantRepository;
+    private final ApplicantsTransactionRepository applicantsTransactionRepository;
+    private final RecruitersRepository recruitersRepository;
+    private final EvaluationRepository evaluationRepository;
+
     private final CompanyFiscalYearClosingParameterRepository companyFiscalYearClosingParameterRepository;
 
     private final LeavesRepository leavesRepository;
@@ -208,6 +566,28 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final AttTimeTableRepository attTimeTableRepository;
 
     private final AttShiftRepository attShiftRepository;
+
+    private final AttDeviceMACRepository attDeviceMACRepository;
+
+    private final AttEmpTempShiftRepository attEmpTempShiftRepository;
+
+    private final AttEmpShiftRepository attEmpShiftRepository;
+
+    private final AttLogsRepository attLogsRepository;
+
+    private final AttendanceTransactionRepository attendanceTransactionRepository;
+
+    private final AttendanceForgotRepository attendanceForgotRepository;
+
+    private final AttendanceRemarkRepository attendanceRemarkRepository;
+
+    private final DeviceLogsRepository deviceLogsRepository;
+
+    private final TempDeviceLogsRepository tempDeviceLogsRepository;
+
+    private final OldAttendanceTransactionRepository oldAttendanceTransactionRepository;
+
+    private final WorkShiftRepository workShiftRepository;
 
     private final AttHolidayDateRepository attHolidayDateRepository;
 
@@ -223,7 +603,45 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final FamilyRepository familyRepository;
 
+    private final EmployeeExperienceRepository employeeExperienceRepository;
+    private final EmployeeAwardRepository employeeAwardRepository;
+    private final EmployeeLanguageRepository employeeLanguageRepository;
+    private final EmployeeSeminarRepository employeeSeminarRepository;
+    private final EmployeePublicationRepository employeePublicationRepository;
+    private final EmployeeHealthRepository employeeHealthRepository;
+    private final EmployeeTrainingRepository employeeTrainingRepository;
+    private final JobDescriptionRepository jobDescriptionRepository;
+    private final EmploymentSuspensionRepository employmentSuspensionRepository;
+    private final EmployeeInsuranceRepository employeeInsuranceRepository;
+    private final EmployeeSkillRepository employeeSkillRepository;
+    private final JobTitleRepository jobTitleRepository;
+    private final EmployeeJobRepository employeeJobRepository;
+    private final EmployeeContactRepository employeeContactRepository;
+    private final EmployeeTerminationRepository employeeTerminationRepository;
+    private final BranchDepartmentHeadRepository branchDepartmentHeadRepository;
+    private final PgEmployeeRepository pgEmployeeRepository;
+    private final EmployeeJobLevelRepository employeeJobLevelRepository;
+    private final JobStatusRepository jobStatusRepository;
+    private final JobPositionRepository jobPositionRepository;
+    private final CompanyEmployeeContractRepository companyEmployeeContractRepository;
+    private final DocumentRepository documentRepository;
+    private final EmployeeProjectRepository employeeProjectRepository;
+    private final JobCategoryRepository jobCategoryRepository;
+    private final JobCategoriesRepository jobCategoriesRepository;
+
     private final LeaveAccumulationRepository leaveAccumulationRepository;
+
+    private final LeaveBalanceRepository leaveBalanceRepository;
+
+    private final LeaveAdjustmentRepository leaveAdjustmentRepository;
+
+    private final LeaveApplicationRepository leaveApplicationRepository;
+
+    private final LeaveCancellationRepository leaveCancellationRepository;
+
+    private final CalculatedAutoLeaveAccumulationRepository calculatedAutoLeaveAccumulationRepository;
+
+    private final CalculatedOTLeaveBalanceRepository calculatedOTLeaveBalanceRepository;
 
     private final DepartmentRepository departmentRepository;
 
@@ -331,6 +749,66 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
+                .to("direct:salary-breakdown-migration")
+
+                .log("Step 9a completed: salary-breakdown-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:pms-salary-breakdown-migration")
+
+                .log("Step 9b completed: pms-salary-breakdown-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:grade-migration")
+
+                .log("Step 9c completed: grade-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:grade-pay-step-migration")
+
+                .log("Step 9d completed: grade-pay-step-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:grade-component-migration")
+
+                .log("Step 9e completed: grade-component-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:heading-template-seed-migration")
+
+                .log("Step 9f completed: heading-template-seed-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:legacy-bank-migration")
+
+                .log("Step 9g completed: legacy-bank-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:cost-type-package-migration")
+
+                .log("Step 9h completed: cost-type-package-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:pay-plan-package-migration")
+
+                .log("Step 9i completed: pay-plan-package-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:module-pricing-package-migration")
+
+                .log("Step 9j completed: module-pricing-package-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
                 .to("direct:leave-type-migration")
 
                 .log("Step 10 completed: leave-type-migration")
@@ -385,6 +863,12 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
+                .to("direct:device-mac-migration")
+
+                .log("Step 18a completed: device-mac-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
                 .to("direct:department-migration")
 
                 .log("Step 19 completed: department-migration")
@@ -401,6 +885,18 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .log("Step 21 completed: department-parent-link")
 
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:division-seed-migration")
+                .log("Step 21a completed: division-seed-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:cost-center-seed-migration")
+                .log("Step 21b completed: cost-center-seed-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:team-seed-migration")
+                .log("Step 21c completed: team-seed-migration")
                 .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:employee-migration")
@@ -433,9 +929,289 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
+                .to("direct:employee-grade-link-migration")
+
+                .log("Step 22e completed: employee-grade-link-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-bank-detail-migration")
+
+                .log("Step 22f completed: employee-bank-detail-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-device-enroll-migration")
+
+                .log("Step 22g completed: employee-device-enroll-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:emp-temp-shift-migration")
+
+                .log("Step 22h completed: emp-temp-shift-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:emp-permanent-shift-migration")
+
+                .log("Step 22i completed: emp-permanent-shift-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-experience-migration")
+                .log("Step 22j completed: employee-experience-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-award-migration")
+                .log("Step 22k completed: employee-award-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-language-migration")
+                .log("Step 22l completed: employee-language-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-seminar-migration")
+                .log("Step 22m completed: employee-seminar-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-publication-migration")
+                .log("Step 22n completed: employee-publication-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-health-migration")
+                .log("Step 22o completed: employee-health-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-training-migration")
+                .log("Step 22p completed: employee-training-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-job-description-migration")
+                .log("Step 22q completed: employee-job-description-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employment-suspension-migration")
+                .log("Step 22r completed: employment-suspension-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-insurance-migration")
+                .log("Step 22s completed: employee-insurance-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:skill-master-migration")
+                .log("Step 22t completed: skill-master-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-skill-migration")
+                .log("Step 22u completed: employee-skill-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-designation-migration")
+                .log("Step 22v completed: employee-designation-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-designation-link-migration")
+                .log("Step 22w completed: employee-designation-link-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-emergency-contact-migration")
+                .log("Step 22x completed: employee-emergency-contact-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-termination-migration")
+                .log("Step 22y completed: employee-termination-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:branch-department-head-migration")
+                .log("Step 22z completed: branch-department-head-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:org-master-head-link-migration")
+                .log("Step 22zj completed: org-master-head-link-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-org-fk-backfill-migration")
+                .log("Step 22zk completed: employee-org-fk-backfill-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-job-level-history-migration")
+                .log("Step 22za completed: employee-job-level-history-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:job-status-history-migration")
+                .log("Step 22zb completed: job-status-history-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:job-position-migration")
+                .log("Step 22zc completed: job-position-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:company-employee-contract-migration")
+                .log("Step 22zd completed: company-employee-contract-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-job-history-migration")
+                .log("Step 22ze completed: employee-job-history-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-document-migration")
+                .log("Step 22zf completed: employee-document-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-project-migration")
+                .log("Step 22zg completed: employee-project-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:job-category-migration")
+                .log("Step 22zh completed: job-category-migration")
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:job-categories-migration")
+                .log("Step 22zi completed: job-categories-migration")
+                .process(exchange -> throttleBetweenSteps())
+
                 .to("direct:employee-leave-accumulation-migration")
 
                 .log("Step 23 completed: employee-leave-accumulation-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:leave-balance-migration")
+
+                .log("Step 23l completed: leave-balance-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:leave-adjustment-migration")
+
+                .log("Step 23m completed: leave-adjustment-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:leave-application-migration")
+
+                .log("Step 23n completed: leave-application-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:leave-cancellation-migration")
+
+                .log("Step 23o completed: leave-cancellation-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:calculated-auto-leave-credit-migration")
+
+                .log("Step 23p completed: calculated-auto-leave-credit-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:calculated-ot-leave-accrual-migration")
+
+                .log("Step 23q completed: calculated-ot-leave-accrual-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-salary-migration")
+
+                .log("Step 23a completed: employee-salary-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:payroll-opening-balance-migration")
+
+                .log("Step 23b completed: payroll-opening-balance-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:month-wise-salary-migration")
+
+                .log("Step 23c completed: month-wise-salary-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:payroll-transaction-history-migration")
+
+                .log("Step 23d completed: payroll-transaction-history-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:mass-salary-adjustment-migration")
+
+                .log("Step 23e completed: mass-salary-adjustment-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-loan-migration")
+
+                .log("Step 23f completed: employee-loan-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:employee-loan-payment-migration")
+
+                .log("Step 23g completed: employee-loan-payment-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:attendance-log-migration")
+
+                .log("Step 23h completed: attendance-log-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:attendance-transaction-migration")
+
+                .log("Step 23i completed: attendance-transaction-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:attendance-forgot-migration")
+
+                .log("Step 23j completed: attendance-forgot-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:attendance-remark-migration")
+
+                .log("Step 23k completed: attendance-remark-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:device-logs-migration")
+
+                .log("Step 23r completed: device-logs-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:temp-device-logs-migration")
+
+                .log("Step 23s completed: temp-device-logs-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:old-attendance-transaction-migration")
+
+                .log("Step 23t completed: old-attendance-transaction-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:work-shift-migration")
+
+                .log("Step 23u completed: work-shift-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:company-validity-subscription-migration")
+
+                .log("Step 24a completed: company-validity-subscription-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:subscription-payment-history-migration")
+
+                .log("Step 24b completed: subscription-payment-history-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
@@ -454,6 +1230,60 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .to("direct:user-portal-link-migration")
 
                 .log("Step 26 completed: user-portal-link-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:vacancy-migration")
+
+                .log("Step 27a completed: vacancy-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:vacancy-newspaper-migration")
+
+                .log("Step 27b completed: vacancy-newspaper-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:interview-stage-migration")
+
+                .log("Step 27c completed: interview-stage-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:screening-question-migration")
+
+                .log("Step 27d completed: screening-question-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:applicant-migration")
+
+                .log("Step 27e completed: applicant-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:screening-answer-migration")
+
+                .log("Step 27f completed: screening-answer-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:applicants-transaction-migration")
+
+                .log("Step 27g completed: applicants-transaction-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:recruiters-migration")
+
+                .log("Step 27h completed: recruiters-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:evaluation-migration")
+
+                .log("Step 27i completed: evaluation-migration")
 
                 .process(migrationRowCountQaProcessor)
 
@@ -502,6 +1332,27 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int payrollRuleCount = exchange.getProperty("payrollRuleCount", 0, Integer.class);
 
+                    int salaryBreakdownCount = exchange.getProperty("salaryBreakdownCount", 0, Integer.class);
+
+                    int pmsSalaryBreakdownCount = exchange.getProperty("pmsSalaryBreakdownCount", 0, Integer.class);
+
+                    int gradeCount = exchange.getProperty("gradeCount", 0, Integer.class);
+
+                    int gradePayStepCount = exchange.getProperty("gradePayStepCount", 0, Integer.class);
+
+                    int gradeComponentValueCount = exchange.getProperty("gradeComponentValueCount", 0, Integer.class);
+
+                    int headingTemplateSeedCount = exchange.getProperty("headingTemplateSeedCount", 0, Integer.class);
+
+                    int legacyBankCount = exchange.getProperty("legacyBankCount", 0, Integer.class);
+
+                    int costTypePackageCount = exchange.getProperty("costTypePackageCount", 0, Integer.class);
+
+                    int payPlanPackageCount = exchange.getProperty("payPlanPackageCount", 0, Integer.class);
+
+                    int modulePricingPackageCount =
+                            exchange.getProperty("modulePricingPackageCount", 0, Integer.class);
+
                     int leaveTypeCount = exchange.getProperty("leaveTypeCount", 0, Integer.class);
 
                     int branchLeaveTypeCount = exchange.getProperty("branchLeaveTypeCount", 0, Integer.class);
@@ -522,11 +1373,17 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int attParamsCount = exchange.getProperty("attParamsCount", 0, Integer.class);
 
+                    int deviceMacCount = exchange.getProperty("deviceMacCount", 0, Integer.class);
+
                     int departmentCount = exchange.getProperty("departmentCount", 0, Integer.class);
 
                     int departmentOrphanCount = exchange.getProperty("departmentOrphanCount", 0, Integer.class);
 
                     int departmentParentLinkCount = exchange.getProperty("departmentParentLinkCount", 0, Integer.class);
+
+                    int divisionCount = exchange.getProperty("divisionCount", 0, Integer.class);
+                    int costCenterCount = exchange.getProperty("costCenterCount", 0, Integer.class);
+                    int teamCount = exchange.getProperty("teamCount", 0, Integer.class);
 
                     int employeeCount = exchange.getProperty("employeeCount", 0, Integer.class);
 
@@ -539,8 +1396,113 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int employeeFamilyCount = exchange.getProperty("employeeFamilyCount", 0, Integer.class);
 
+                    int employeeGradeLinkCount = exchange.getProperty("employeeGradeLinkCount", 0, Integer.class);
+
+                    int employeeBankDetailCount = exchange.getProperty("employeeBankDetailCount", 0, Integer.class);
+
+                    int employeeDeviceEnrollCount =
+                            exchange.getProperty("employeeDeviceEnrollCount", 0, Integer.class);
+
+                    int empTempShiftCount = exchange.getProperty("empTempShiftCount", 0, Integer.class);
+
+                    int empPermanentShiftCount = exchange.getProperty("empPermanentShiftCount", 0, Integer.class);
+
+                    int employeeExperienceCount = exchange.getProperty("employeeExperienceCount", 0, Integer.class);
+                    int employeeAwardCount = exchange.getProperty("employeeAwardCount", 0, Integer.class);
+                    int employeeLanguageCount = exchange.getProperty("employeeLanguageCount", 0, Integer.class);
+                    int employeeSeminarCount = exchange.getProperty("employeeSeminarCount", 0, Integer.class);
+                    int employeePublicationCount = exchange.getProperty("employeePublicationCount", 0, Integer.class);
+                    int employeeHealthCount = exchange.getProperty("employeeHealthCount", 0, Integer.class);
+                    int employeeTrainingCount = exchange.getProperty("employeeTrainingCount", 0, Integer.class);
+                    int employeeJobDescriptionCount =
+                            exchange.getProperty("employeeJobDescriptionCount", 0, Integer.class);
+                    int employmentSuspensionCount =
+                            exchange.getProperty("employmentSuspensionCount", 0, Integer.class);
+                    int employeeInsuranceCount = exchange.getProperty("employeeInsuranceCount", 0, Integer.class);
+                    int skillMasterCount = exchange.getProperty("skillMasterCount", 0, Integer.class);
+                    int employeeSkillCount = exchange.getProperty("employeeSkillCount", 0, Integer.class);
+                    int employeeDesignationCount = exchange.getProperty("employeeDesignationCount", 0, Integer.class);
+                    int employeeDesignationLinkCount =
+                            exchange.getProperty("employeeDesignationLinkCount", 0, Integer.class);
+                    int employeeEmergencyContactCount =
+                            exchange.getProperty("employeeEmergencyContactCount", 0, Integer.class);
+                    int employeeTerminationCount = exchange.getProperty("employeeTerminationCount", 0, Integer.class);
+                    int branchDepartmentHeadCount =
+                            exchange.getProperty("branchDepartmentHeadCount", 0, Integer.class);
+                    int orgMasterHeadLinkCount = exchange.getProperty("orgMasterHeadLinkCount", 0, Integer.class);
+                    int employeeOrgFkBackfillCount =
+                            exchange.getProperty("employeeOrgFkBackfillCount", 0, Integer.class);
+                    int employeeJobLevelHistoryCount =
+                            exchange.getProperty("employeeJobLevelHistoryCount", 0, Integer.class);
+                    int jobStatusHistoryCount = exchange.getProperty("jobStatusHistoryCount", 0, Integer.class);
+                    int jobPositionCount = exchange.getProperty("jobPositionCount", 0, Integer.class);
+                    int companyEmployeeContractCount =
+                            exchange.getProperty("companyEmployeeContractCount", 0, Integer.class);
+                    int employeeJobHistoryCount =
+                            exchange.getProperty("employeeJobHistoryCount", 0, Integer.class);
+                    int employeeDocumentCount = exchange.getProperty("employeeDocumentCount", 0, Integer.class);
+                    int employeeProjectCount = exchange.getProperty("employeeProjectCount", 0, Integer.class);
+                    int jobCategoryCount = exchange.getProperty("jobCategoryCount", 0, Integer.class);
+                    int jobCategoriesCount = exchange.getProperty("jobCategoriesCount", 0, Integer.class);
+
                     int employeeLeaveAccumulationCount =
                             exchange.getProperty("employeeLeaveAccumulationCount", 0, Integer.class);
+
+                    int leaveBalanceCount = exchange.getProperty("leaveBalanceCount", 0, Integer.class);
+
+                    int leaveAdjustmentCount = exchange.getProperty("leaveAdjustmentCount", 0, Integer.class);
+
+                    int leaveApplicationCount = exchange.getProperty("leaveApplicationCount", 0, Integer.class);
+
+                    int leaveCancellationCount = exchange.getProperty("leaveCancellationCount", 0, Integer.class);
+
+                    int calculatedAutoLeaveCreditCount =
+                            exchange.getProperty("calculatedAutoLeaveCreditCount", 0, Integer.class);
+
+                    int calculatedOtLeaveAccrualCount =
+                            exchange.getProperty("calculatedOtLeaveAccrualCount", 0, Integer.class);
+
+                    int employeeSalaryCount = exchange.getProperty("employeeSalaryCount", 0, Integer.class);
+
+                    int payrollOpeningBalanceCount =
+                            exchange.getProperty("payrollOpeningBalanceCount", 0, Integer.class);
+
+                    int monthWiseSalaryCount = exchange.getProperty("monthWiseSalaryCount", 0, Integer.class);
+
+                    int payrollTransactionHistoryCount =
+                            exchange.getProperty("payrollTransactionHistoryCount", 0, Integer.class);
+
+                    int massSalaryAdjustmentCount =
+                            exchange.getProperty("massSalaryAdjustmentCount", 0, Integer.class);
+
+                    int employeeLoanCount = exchange.getProperty("employeeLoanCount", 0, Integer.class);
+
+                    int employeeLoanPaymentCount =
+                            exchange.getProperty("employeeLoanPaymentCount", 0, Integer.class);
+
+                    int attendanceLogCount = exchange.getProperty("attendanceLogCount", 0, Integer.class);
+
+                    int attendanceTransactionCount =
+                            exchange.getProperty("attendanceTransactionCount", 0, Integer.class);
+
+                    int attendanceForgotCount = exchange.getProperty("attendanceForgotCount", 0, Integer.class);
+
+                    int attendanceRemarkCount = exchange.getProperty("attendanceRemarkCount", 0, Integer.class);
+
+                    int deviceLogsCount = exchange.getProperty("deviceLogsCount", 0, Integer.class);
+
+                    int tempDeviceLogsCount = exchange.getProperty("tempDeviceLogsCount", 0, Integer.class);
+
+                    int oldAttendanceTransactionCount =
+                            exchange.getProperty("oldAttendanceTransactionCount", 0, Integer.class);
+
+                    int workShiftCount = exchange.getProperty("workShiftCount", 0, Integer.class);
+
+                    int companyValiditySubscriptionCount =
+                            exchange.getProperty("companyValiditySubscriptionCount", 0, Integer.class);
+
+                    int subscriptionPaymentHistoryCount =
+                            exchange.getProperty("subscriptionPaymentHistoryCount", 0, Integer.class);
 
                     int userCount = exchange.getProperty("userCount", 0, Integer.class);
 
@@ -548,7 +1510,16 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     int userPortalLinkCount = exchange.getProperty("userPortalLinkCount", 0, Integer.class);
 
-
+                    int vacancyCount = exchange.getProperty("vacancyCount", 0, Integer.class);
+                    int vacancyNewspaperCount = exchange.getProperty("vacancyNewspaperCount", 0, Integer.class);
+                    int interviewStageCount = exchange.getProperty("interviewStageCount", 0, Integer.class);
+                    int screeningQuestionCount = exchange.getProperty("screeningQuestionCount", 0, Integer.class);
+                    int applicantCount = exchange.getProperty("applicantCount", 0, Integer.class);
+                    int screeningAnswerCount = exchange.getProperty("screeningAnswerCount", 0, Integer.class);
+                    int applicantsTransactionCount =
+                            exchange.getProperty("applicantsTransactionCount", 0, Integer.class);
+                    int recruitersCount = exchange.getProperty("recruitersCount", 0, Integer.class);
+                    int evaluationCount = exchange.getProperty("evaluationCount", 0, Integer.class);
 
                     log.info("==========================================");
 
@@ -583,6 +1554,26 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     log.info("9. payroll settings -> payroll_rule:      {}", payrollRuleCount);
 
+                    log.info("9a. companyPayrollHeading -> salary lines: {}", salaryBreakdownCount);
+
+                    log.info("9b. payrollHeading (PMS) -> salary lines:  {}", pmsSalaryBreakdownCount);
+
+                    log.info("9c. jobLevel -> hrm_grade:                 {}", gradeCount);
+
+                    log.info("9d. jobLevelGradeValue -> pay step:        {}", gradePayStepCount);
+
+                    log.info("9e. jobLevelPayroll -> grade component:    {}", gradeComponentValueCount);
+
+                    log.info("9f. template headings -> salary seed:      {}", headingTemplateSeedCount);
+
+                    log.info("9g. bank -> master bank:                   {}", legacyBankCount);
+
+                    log.info("9h. costType -> module_pricing_package:   {}", costTypePackageCount);
+
+                    log.info("9i. payPlan -> module_pricing_package:    {}", payPlanPackageCount);
+
+                    log.info("9j. modulePricing -> package (no scopes): {}", modulePricingPackageCount);
+
                     log.info("10. leaves -> hrm_leave_type:              {}", leaveTypeCount);
 
                     log.info("11. leaves -> hrm_branch_leave_type:       {}", branchLeaveTypeCount);
@@ -601,11 +1592,17 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     log.info("18. company defaults / attParams:          {}", attParamsCount);
 
+                    log.info("18a. attDeviceMAC -> hrm_device_mac:       {}", deviceMacCount);
+
                     log.info("19. department (branchDepartment -> dept):  {}", departmentCount);
 
                     log.info("20. department orphan (department -> dept): {}", departmentOrphanCount);
 
                     log.info("21. department parent links:               {}", departmentParentLinkCount);
+
+                    log.info("21a. root dept -> division seed:           {}", divisionCount);
+                    log.info("21b. branch -> cost center seed:           {}", costCenterCount);
+                    log.info("21c. department -> team seed:              {}", teamCount);
 
                     log.info("22. employee -> employee:                  {}", employeeCount);
 
@@ -617,13 +1614,108 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                     log.info("22d. family -> employee_family_detail:   {}", employeeFamilyCount);
 
+                    log.info("22e. employeeGrade -> employee.gradeId:  {}", employeeGradeLinkCount);
+
+                    log.info("22f. paymentSetting -> bank detail:      {}", employeeBankDetailCount);
+
+                    log.info("22g. employee enroll -> device enroll:   {}", employeeDeviceEnrollCount);
+
+                    log.info("22h. attEmpTempShift -> temp shift:      {}", empTempShiftCount);
+
+                    log.info("22i. attEmpShift -> employee.branchShift: {}", empPermanentShiftCount);
+
+                    log.info("22j. employeeExperience -> experience:   {}", employeeExperienceCount);
+                    log.info("22k. employeeAward -> award:             {}", employeeAwardCount);
+                    log.info("22l. employeeLanguage -> language:       {}", employeeLanguageCount);
+                    log.info("22m. employeeSeminar -> seminar:         {}", employeeSeminarCount);
+                    log.info("22n. employeePublication -> publication: {}", employeePublicationCount);
+                    log.info("22o. employeeHealth -> health:           {}", employeeHealthCount);
+                    log.info("22p. employeeTraining -> training:       {}", employeeTrainingCount);
+                    log.info("22q. jobDescription -> job description:  {}", employeeJobDescriptionCount);
+                    log.info("22r. employmentSuspension -> suspension: {}", employmentSuspensionCount);
+                    log.info("22s. employeeInsurance -> insurance:     {}", employeeInsuranceCount);
+                    log.info("22t. employeeSkill -> skill master:      {}", skillMasterCount);
+                    log.info("22u. employeeSkill -> employee skill:    {}", employeeSkillCount);
+                    log.info("22v. jobTitle -> designation:            {}", employeeDesignationCount);
+                    log.info("22w. employeeJob -> employee.designation: {}", employeeDesignationLinkCount);
+                    log.info("22x. employeeContact -> emergency detail: {}", employeeEmergencyContactCount);
+                    log.info("22y. employeeTermination -> term date:   {}", employeeTerminationCount);
+                    log.info("22z. branchDepartmentHead -> dept head:  {}", branchDepartmentHeadCount);
+                    log.info("22zj. heads -> division/team leaders:    {}", orgMasterHeadLinkCount);
+                    log.info("22zk. employee org FK backfill:          {}", employeeOrgFkBackfillCount);
+                    log.info("22za. employeeJobLevel -> grade history: {}", employeeJobLevelHistoryCount);
+                    log.info("22zb. jobStatus -> employment type hist: {}", jobStatusHistoryCount);
+                    log.info("22zc. jobPosition -> hire/contract:      {}", jobPositionCount);
+                    log.info("22zd. companyEmployeeContract -> contract: {}", companyEmployeeContractCount);
+                    log.info("22ze. employeeJob -> designation history: {}", employeeJobHistoryCount);
+                    log.info("22zf. document -> employee document:     {}", employeeDocumentCount);
+                    log.info("22zg. employeeProject -> experience:     {}", employeeProjectCount);
+                    log.info("22zh. jobCategory -> skill category:     {}", jobCategoryCount);
+                    log.info("22zi. jobCategories -> skill category:   {}", jobCategoriesCount);
+
                     log.info("23. leaveAccumulation -> leave_accumulation: {}", employeeLeaveAccumulationCount);
+
+                    log.info("23l. leaveBalance -> hrm_leave_balance:  {}", leaveBalanceCount);
+
+                    log.info("23m. leaveAdjustment -> opening adj:     {}", leaveAdjustmentCount);
+
+                    log.info("23n. leaveApplication -> hrm_leave:      {}", leaveApplicationCount);
+
+                    log.info("23o. leaveCancellation -> leave status:  {}", leaveCancellationCount);
+
+                    log.info("23p. autoLeaveAcc run -> leave_credit:   {}", calculatedAutoLeaveCreditCount);
+
+                    log.info("23q. OT leave balance -> ot accrual:     {}", calculatedOtLeaveAccrualCount);
+
+                    log.info("23a. employeePayrollHeading -> salary:    {}", employeeSalaryCount);
+
+                    log.info("23b. openingPayrollBalance -> opening:    {}", payrollOpeningBalanceCount);
+
+                    log.info("23c. employeePayrollPayment -> month-wise: {}", monthWiseSalaryCount);
+
+                    log.info("23d. payrollTransaction -> month-wise:   {}", payrollTransactionHistoryCount);
+
+                    log.info("23e. massIncrement -> mass salary adj:   {}", massSalaryAdjustmentCount);
+
+                    log.info("23f. employeeLoan -> loan request/acct:  {}", employeeLoanCount);
+
+                    log.info("23g. employeeLoanPayment -> loan payment: {}", employeeLoanPaymentCount);
+
+                    log.info("23h. attLogs -> attendance_log:          {}", attendanceLogCount);
+
+                    log.info("23i. attendanceTransaction -> attendance: {}", attendanceTransactionCount);
+
+                    log.info("23j. attendanceForgot -> time request:   {}", attendanceForgotCount);
+
+                    log.info("23k. attendanceRemark -> attendance.remarks: {}", attendanceRemarkCount);
+
+                    log.info("23r. deviceLogs -> attendance_log:       {}", deviceLogsCount);
+
+                    log.info("23s. tempDeviceLogs -> attendance_log:   {}", tempDeviceLogsCount);
+
+                    log.info("23t. oldAttendanceTransaction -> att:    {}", oldAttendanceTransactionCount);
+
+                    log.info("23u. workShift -> roster_shift_slot:     {}", workShiftCount);
+
+                    log.info("24a. companyValidity -> subscription:    {}", companyValiditySubscriptionCount);
+
+                    log.info("24b. subscriptionPayment -> pay history: {}", subscriptionPaymentHistoryCount);
 
                     log.info("24. user (secUser -> users):               {}", userCount);
 
                     log.info("25. user detail (employee -> profile):   {}", userDetailCount);
 
                     log.info("26. user portal links:                     {}", userPortalLinkCount);
+
+                    log.info("27a. vacancy -> recruitment vacancy:      {}", vacancyCount);
+                    log.info("27b. vacancyNewspaper -> publication:     {}", vacancyNewspaperCount);
+                    log.info("27c. stages -> interview stage:           {}", interviewStageCount);
+                    log.info("27d. screeningQuestion -> screening Q:    {}", screeningQuestionCount);
+                    log.info("27e. applicant -> candidate+application:  {}", applicantCount);
+                    log.info("27f. screeningAnswer -> screening answer: {}", screeningAnswerCount);
+                    log.info("27g. applicantsTransaction -> history:    {}", applicantsTransactionCount);
+                    log.info("27h. recruiters -> vacancy.recruiter:     {}", recruitersCount);
+                    log.info("27i. evaluation -> screening eval:        {}", evaluationCount);
 
                     Boolean migrationQaPassed = exchange.getProperty("migrationQaPassed", Boolean.class);
                     Integer migrationQaFailureCount =
@@ -640,13 +1732,49 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                             privilegeCount + roleCount + companyCount + organizationCount + companyAddressCount + branchCount
                                     + branchAddressCount + fiscalYearCount + taxationCount + payrollRuleCount
+                                    + salaryBreakdownCount + pmsSalaryBreakdownCount
+                                    + gradeCount + gradePayStepCount + gradeComponentValueCount
+                                    + headingTemplateSeedCount + legacyBankCount
+                                    + costTypePackageCount + payPlanPackageCount + modulePricingPackageCount
                                     + leaveTypeCount + branchLeaveTypeCount + attTimeTableShiftCount
                                     + attShiftPatternCount + branchHolidayCount + leaveAccumulationRuleCount
                                     + overtimeAccLeaveParamsCount + fyClosingParameterCount + attParamsCount
+                                    + deviceMacCount
                                     + departmentCount + departmentOrphanCount + departmentParentLinkCount
+                                    + divisionCount + costCenterCount + teamCount
                                     + employeeCount + employeeAddressCount + employeeMasterAddressCount
-                                    + employeeEducationCount + employeeFamilyCount + employeeLeaveAccumulationCount
-                                    + userCount + userDetailCount + userPortalLinkCount);
+                                    + employeeEducationCount + employeeFamilyCount
+                                    + employeeGradeLinkCount + employeeBankDetailCount
+                                    + employeeDeviceEnrollCount + empTempShiftCount + empPermanentShiftCount
+                                    + employeeExperienceCount + employeeAwardCount + employeeLanguageCount
+                                    + employeeSeminarCount + employeePublicationCount + employeeHealthCount
+                                    + employeeTrainingCount + employeeJobDescriptionCount
+                                    + employmentSuspensionCount + employeeInsuranceCount
+                                    + skillMasterCount + employeeSkillCount + employeeDesignationCount
+                                    + employeeDesignationLinkCount + employeeEmergencyContactCount
+                                    + employeeTerminationCount
+                                    + branchDepartmentHeadCount + orgMasterHeadLinkCount
+                                    + employeeOrgFkBackfillCount + employeeJobLevelHistoryCount
+                                    + jobStatusHistoryCount + jobPositionCount
+                                    + companyEmployeeContractCount + employeeJobHistoryCount
+                                    + employeeDocumentCount + employeeProjectCount
+                                    + jobCategoryCount + jobCategoriesCount
+                                    + employeeLeaveAccumulationCount
+                                    + leaveBalanceCount + leaveAdjustmentCount
+                                    + leaveApplicationCount + leaveCancellationCount
+                                    + calculatedAutoLeaveCreditCount + calculatedOtLeaveAccrualCount
+                                    + employeeSalaryCount + payrollOpeningBalanceCount
+                                    + monthWiseSalaryCount + payrollTransactionHistoryCount
+                                    + massSalaryAdjustmentCount + employeeLoanCount + employeeLoanPaymentCount
+                                    + attendanceLogCount + attendanceTransactionCount
+                                    + attendanceForgotCount + attendanceRemarkCount
+                                    + deviceLogsCount + tempDeviceLogsCount
+                                    + oldAttendanceTransactionCount + workShiftCount
+                                    + companyValiditySubscriptionCount + subscriptionPaymentHistoryCount
+                                    + userCount + userDetailCount + userPortalLinkCount
+                                    + vacancyCount + vacancyNewspaperCount + interviewStageCount
+                                    + screeningQuestionCount + applicantCount + screeningAnswerCount
+                                    + applicantsTransactionCount + recruitersCount + evaluationCount);
 
                     log.info("==========================================");
 
@@ -1150,6 +2278,299 @@ public class ImportRouteBuilder extends RouteBuilder {
 
 
 
+        from("direct:salary-breakdown-migration")
+
+                .routeId("salary-breakdown-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .setProperty("payrollHeadingSource").constant("company")
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = companyPayrollHeadingRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No companyPayrollHeading rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(branchSalaryBreakdownProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "salary-breakdown-migration", "salaryBreakdownCount"));
+
+
+
+        from("direct:pms-salary-breakdown-migration")
+
+                .routeId("pms-salary-breakdown-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .setProperty("payrollHeadingSource").constant("pms")
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = payrollHeadingRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No payrollHeading rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(branchSalaryBreakdownProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "pms-salary-breakdown-migration", "pmsSalaryBreakdownCount"));
+
+
+
+        from("direct:grade-migration")
+                .routeId("grade-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobLevelRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobLevel rows in this page, continuing...")
+                        .otherwise()
+                            .process(gradeProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "grade-migration", "gradeCount"));
+
+        from("direct:grade-pay-step-migration")
+                .routeId("grade-pay-step-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobLevelGradeValueRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobLevelGradeValue rows in this page, continuing...")
+                        .otherwise()
+                            .process(gradePayStepProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "grade-pay-step-migration", "gradePayStepCount"));
+
+        from("direct:grade-component-migration")
+                .routeId("grade-component-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobLevelPayrollRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobLevelPayroll rows in this page, continuing...")
+                        .otherwise()
+                            .process(gradeComponentValueProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "grade-component-migration", "gradeComponentValueCount"));
+
+        from("direct:heading-template-seed-migration")
+                .routeId("heading-template-seed-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = templatePayrollHeadingRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No templatePayrollHeading rows in this page, continuing...")
+                        .otherwise()
+                            .process(headingTemplateSeedProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "heading-template-seed-migration", "headingTemplateSeedCount"));
+
+        from("direct:legacy-bank-migration")
+                .routeId("legacy-bank-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = bankRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No bank rows in this page, continuing...")
+                        .otherwise()
+                            .process(legacyBankProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "legacy-bank-migration", "legacyBankCount"));
+
+        from("direct:cost-type-package-migration")
+                .routeId("cost-type-package-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = costTypeRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No costType rows in this page, continuing...")
+                        .otherwise()
+                            .process(costTypePackageProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "cost-type-package-migration", "costTypePackageCount"));
+
+        from("direct:pay-plan-package-migration")
+                .routeId("pay-plan-package-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = payPlanRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No payPlan rows in this page, continuing...")
+                        .otherwise()
+                            .process(payPlanPackageProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "pay-plan-package-migration", "payPlanPackageCount"));
+
+        from("direct:module-pricing-package-migration")
+                .routeId("module-pricing-package-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = modulePricingRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No modulePricing rows in this page, continuing...")
+                        .otherwise()
+                            .process(modulePricingPackageProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "module-pricing-package-migration", "modulePricingPackageCount"));
+
         from("direct:leave-type-migration")
 
                 .routeId("leave-type-migration")
@@ -1582,7 +3003,29 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> finishCount(exchange, "att-params-migration", "attParamsCount"));
 
-
+        from("direct:device-mac-migration")
+                .routeId("device-mac-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attDeviceMACRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attDeviceMAC rows in this page, continuing...")
+                        .otherwise()
+                            .process(attDeviceMacProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "device-mac-migration", "deviceMacCount"));
 
         from("direct:department-migration")
 
@@ -1738,7 +3181,26 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> finishCount(exchange, "department-parent-link", "departmentParentLinkCount"));
 
+        from("direct:division-seed-migration")
+                .routeId("division-seed-migration")
+                .setProperty("importCount").constant(0)
+                .process(divisionSeedProcessor)
+                .process(exchange -> addImported(exchange))
+                .process(exchange -> finishCount(exchange, "division-seed-migration", "divisionCount"));
 
+        from("direct:cost-center-seed-migration")
+                .routeId("cost-center-seed-migration")
+                .setProperty("importCount").constant(0)
+                .process(costCenterSeedProcessor)
+                .process(exchange -> addImported(exchange))
+                .process(exchange -> finishCount(exchange, "cost-center-seed-migration", "costCenterCount"));
+
+        from("direct:team-seed-migration")
+                .routeId("team-seed-migration")
+                .setProperty("importCount").constant(0)
+                .process(teamSeedProcessor)
+                .process(exchange -> addImported(exchange))
+                .process(exchange -> finishCount(exchange, "team-seed-migration", "teamCount"));
 
         from("direct:employee-migration")
 
@@ -1979,7 +3441,807 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> finishCount(exchange, "employee-family-migration", "employeeFamilyCount"));
 
+        from("direct:employee-grade-link-migration")
+                .routeId("employee-grade-link-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeGradeRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeGrade rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeGradeLinkProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-grade-link-migration", "employeeGradeLinkCount"));
 
+        from("direct:employee-bank-detail-migration")
+                .routeId("employee-bank-detail-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeePayrollPaymentSettingRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeePayrollPaymentSetting rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeBankDetailProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-bank-detail-migration", "employeeBankDetailCount"));
+
+        from("direct:employee-device-enroll-migration")
+                .routeId("employee-device-enroll-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employee rows for device enroll in this page, continuing...")
+                        .otherwise()
+                            .process(employeeDeviceEnrollProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-device-enroll-migration", "employeeDeviceEnrollCount"));
+
+        from("direct:emp-temp-shift-migration")
+                .routeId("emp-temp-shift-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attEmpTempShiftRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attEmpTempShift rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeTempShiftProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "emp-temp-shift-migration", "empTempShiftCount"));
+
+        from("direct:emp-permanent-shift-migration")
+                .routeId("emp-permanent-shift-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attEmpShiftRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attEmpShift rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeePermanentShiftProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "emp-permanent-shift-migration", "empPermanentShiftCount"));
+
+        from("direct:employee-experience-migration")
+                .routeId("employee-experience-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeExperienceRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeExperience rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeExperienceProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-experience-migration", "employeeExperienceCount"));
+
+        from("direct:employee-award-migration")
+                .routeId("employee-award-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeAwardRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeAward rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeAwardProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-award-migration", "employeeAwardCount"));
+
+        from("direct:employee-language-migration")
+                .routeId("employee-language-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeLanguageRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeLanguage rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeLanguageProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-language-migration", "employeeLanguageCount"));
+
+        from("direct:employee-seminar-migration")
+                .routeId("employee-seminar-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeSeminarRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeSeminar rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeSeminarProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-seminar-migration", "employeeSeminarCount"));
+
+        from("direct:employee-publication-migration")
+                .routeId("employee-publication-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeePublicationRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeePublication rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeePublicationProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-publication-migration", "employeePublicationCount"));
+
+        from("direct:employee-health-migration")
+                .routeId("employee-health-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeHealthRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeHealth rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeHealthProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-health-migration", "employeeHealthCount"));
+
+        from("direct:employee-training-migration")
+                .routeId("employee-training-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeTrainingRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeTraining rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeTrainingProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-training-migration", "employeeTrainingCount"));
+
+        from("direct:employee-job-description-migration")
+                .routeId("employee-job-description-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobDescriptionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobDescription rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeJobDescriptionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "employee-job-description-migration", "employeeJobDescriptionCount"));
+
+        from("direct:employment-suspension-migration")
+                .routeId("employment-suspension-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employmentSuspensionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employmentSuspension rows in this page, continuing...")
+                        .otherwise()
+                            .process(employmentSuspensionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "employment-suspension-migration", "employmentSuspensionCount"));
+
+        from("direct:employee-insurance-migration")
+                .routeId("employee-insurance-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeInsuranceRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeInsurance rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeInsuranceProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-insurance-migration", "employeeInsuranceCount"));
+
+        from("direct:skill-master-migration")
+                .routeId("skill-master-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeSkillRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeSkill rows for skill master in this page, continuing...")
+                        .otherwise()
+                            .process(skillMasterProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "skill-master-migration", "skillMasterCount"));
+
+        from("direct:employee-skill-migration")
+                .routeId("employee-skill-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeSkillRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeSkill rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeSkillProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-skill-migration", "employeeSkillCount"));
+
+        from("direct:employee-designation-migration")
+                .routeId("employee-designation-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobTitleRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobTitle rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeDesignationProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-designation-migration", "employeeDesignationCount"));
+
+        from("direct:employee-designation-link-migration")
+                .routeId("employee-designation-link-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeJobRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No active employeeJob rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeDesignationLinkProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "employee-designation-link-migration", "employeeDesignationLinkCount"));
+
+        from("direct:employee-emergency-contact-migration")
+                .routeId("employee-emergency-contact-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeContactRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeContact rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeEmergencyContactProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "employee-emergency-contact-migration", "employeeEmergencyContactCount"));
+
+        from("direct:employee-termination-migration")
+                .routeId("employee-termination-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeTerminationRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeTermination rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeTerminationProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-termination-migration", "employeeTerminationCount"));
+
+        from("direct:branch-department-head-migration")
+                .routeId("branch-department-head-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = branchDepartmentHeadRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No branchDepartmentHead rows in this page, continuing...")
+                        .otherwise()
+                            .process(branchDepartmentHeadProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "branch-department-head-migration", "branchDepartmentHeadCount"));
+
+        from("direct:org-master-head-link-migration")
+                .routeId("org-master-head-link-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = branchDepartmentHeadRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No branchDepartmentHead rows for org-master head-link in this page, continuing...")
+                        .otherwise()
+                            .process(orgMasterHeadLinkProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "org-master-head-link-migration", "orgMasterHeadLinkCount"));
+
+        from("direct:employee-org-fk-backfill-migration")
+                .routeId("employee-org-fk-backfill-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = pgEmployeeRepository.findAll(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employee rows for org-FK backfill in this page, continuing...")
+                        .otherwise()
+                            .process(employeeOrgFkBackfillProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "employee-org-fk-backfill-migration", "employeeOrgFkBackfillCount"));
+
+        from("direct:employee-job-level-history-migration")
+                .routeId("employee-job-level-history-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeJobLevelRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeJobLevel rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeJobLevelHistoryProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(
+                        exchange, "employee-job-level-history-migration", "employeeJobLevelHistoryCount"));
+
+        from("direct:job-status-history-migration")
+                .routeId("job-status-history-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobStatusRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobStatus rows in this page, continuing...")
+                        .otherwise()
+                            .process(jobStatusHistoryProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "job-status-history-migration", "jobStatusHistoryCount"));
+
+        from("direct:job-position-migration")
+                .routeId("job-position-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobPositionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobPosition rows in this page, continuing...")
+                        .otherwise()
+                            .process(jobPositionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "job-position-migration", "jobPositionCount"));
+
+        from("direct:company-employee-contract-migration")
+                .routeId("company-employee-contract-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = companyEmployeeContractRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No companyEmployeeContract rows in this page, continuing...")
+                        .otherwise()
+                            .process(companyEmployeeContractProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(
+                        exchange, "company-employee-contract-migration", "companyEmployeeContractCount"));
+
+        from("direct:employee-job-history-migration")
+                .routeId("employee-job-history-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeJobRepository.findAllForHistory(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeJob history rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeJobHistoryProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "employee-job-history-migration", "employeeJobHistoryCount"));
+
+        from("direct:employee-document-migration")
+                .routeId("employee-document-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = documentRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No document rows in this page, continuing...")
+                        .otherwise()
+                            .process(documentProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-document-migration", "employeeDocumentCount"));
+
+        from("direct:employee-project-migration")
+                .routeId("employee-project-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeProjectRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeProject rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeProjectProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-project-migration", "employeeProjectCount"));
+
+        from("direct:job-category-migration")
+                .routeId("job-category-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobCategoryRepository.findAll(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobCategory rows in this page, continuing...")
+                        .otherwise()
+                            .process(jobCategoryProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "job-category-migration", "jobCategoryCount"));
+
+        from("direct:job-categories-migration")
+                .routeId("job-categories-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = jobCategoriesRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No jobCategories rows in this page, continuing...")
+                        .otherwise()
+                            .process(jobCategoriesProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "job-categories-migration", "jobCategoriesCount"));
 
         from("direct:employee-leave-accumulation-migration")
 
@@ -2028,7 +4290,659 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(exchange ->
                         finishCount(exchange, "employee-leave-accumulation-migration", "employeeLeaveAccumulationCount"));
 
+        from("direct:leave-balance-migration")
+                .routeId("leave-balance-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = leaveBalanceRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No leaveBalance rows in this page, continuing...")
+                        .otherwise()
+                            .process(leaveBalanceProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "leave-balance-migration", "leaveBalanceCount"));
 
+        from("direct:leave-adjustment-migration")
+                .routeId("leave-adjustment-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = leaveAdjustmentRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No leaveAdjustment rows in this page, continuing...")
+                        .otherwise()
+                            .process(leaveAdjustmentProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "leave-adjustment-migration", "leaveAdjustmentCount"));
+
+        from("direct:leave-application-migration")
+                .routeId("leave-application-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = leaveApplicationRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No leaveApplication rows in this page, continuing...")
+                        .otherwise()
+                            .process(leaveApplicationProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "leave-application-migration", "leaveApplicationCount"));
+
+        from("direct:leave-cancellation-migration")
+                .routeId("leave-cancellation-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = leaveCancellationRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No leaveCancellation rows in this page, continuing...")
+                        .otherwise()
+                            .process(leaveCancellationProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "leave-cancellation-migration", "leaveCancellationCount"));
+
+        from("direct:calculated-auto-leave-credit-migration")
+                .routeId("calculated-auto-leave-credit-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = calculatedAutoLeaveAccumulationRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No calculatedAutoLeaveAccumulation rows in this page, continuing...")
+                        .otherwise()
+                            .process(calculatedAutoLeaveCreditProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "calculated-auto-leave-credit-migration", "calculatedAutoLeaveCreditCount"));
+
+        from("direct:calculated-ot-leave-accrual-migration")
+                .routeId("calculated-ot-leave-accrual-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = calculatedOTLeaveBalanceRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No calculatedOTLeaveBalance rows in this page, continuing...")
+                        .otherwise()
+                            .process(calculatedOtLeaveAccrualProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "calculated-ot-leave-accrual-migration", "calculatedOtLeaveAccrualCount"));
+
+        from("direct:employee-salary-migration")
+
+                .routeId("employee-salary-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = employeePayrollHeadingRepository.findMigratableOpen(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No open employeePayrollHeading rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(employeeSalaryProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "employee-salary-migration", "employeeSalaryCount"));
+
+
+
+        from("direct:payroll-opening-balance-migration")
+
+                .routeId("payroll-opening-balance-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = openingPayrollBalanceRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No openingPayrollBalance rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(payrollOpeningBalanceProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange ->
+                        finishCount(exchange, "payroll-opening-balance-migration", "payrollOpeningBalanceCount"));
+
+
+
+        from("direct:month-wise-salary-migration")
+
+                .routeId("month-wise-salary-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = employeePayrollPaymentRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No employeePayrollPayment rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(monthWiseSalaryProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange -> finishCount(exchange, "month-wise-salary-migration", "monthWiseSalaryCount"));
+
+
+
+        from("direct:payroll-transaction-history-migration")
+
+                .routeId("payroll-transaction-history-migration")
+
+                .setProperty("page").constant(0)
+
+                .setProperty("hasNext").constant(true)
+
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+
+                    .process(exchange -> {
+
+                        int page = exchange.getProperty("page", Integer.class);
+
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+
+                        var resultPage = payrollMonthRepository.findMigratable(pageable);
+
+                        exchange.getMessage().setBody(resultPage.getContent());
+
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+
+                        exchange.setProperty("page", page + 1);
+
+                    })
+
+                    .choice()
+
+                        .when(simple("${body.size} == 0"))
+
+                            .log("No payrollMonth rows in this page, continuing...")
+
+                        .otherwise()
+
+                            .process(payrollTransactionHistoryProcessor)
+
+                            .process(exchange -> addImported(exchange))
+
+                    .end()
+
+                .end()
+
+                .process(exchange ->
+                        finishCount(exchange, "payroll-transaction-history-migration", "payrollTransactionHistoryCount"));
+
+        from("direct:mass-salary-adjustment-migration")
+                .routeId("mass-salary-adjustment-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = massIncrementRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No massIncrement rows in this page, continuing...")
+                        .otherwise()
+                            .process(massSalaryAdjustmentProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "mass-salary-adjustment-migration", "massSalaryAdjustmentCount"));
+
+        from("direct:employee-loan-migration")
+                .routeId("employee-loan-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeLoanRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeLoan rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeLoanProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-loan-migration", "employeeLoanCount"));
+
+        from("direct:employee-loan-payment-migration")
+                .routeId("employee-loan-payment-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = employeeLoanPaymentRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No employeeLoanPayment rows in this page, continuing...")
+                        .otherwise()
+                            .process(employeeLoanPaymentProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "employee-loan-payment-migration", "employeeLoanPaymentCount"));
+
+        from("direct:attendance-log-migration")
+                .routeId("attendance-log-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attLogsRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attLogs rows in this page, continuing...")
+                        .otherwise()
+                            .process(attendanceLogProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "attendance-log-migration", "attendanceLogCount"));
+
+        from("direct:attendance-transaction-migration")
+                .routeId("attendance-transaction-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attendanceTransactionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attendanceTransaction rows in this page, continuing...")
+                        .otherwise()
+                            .process(attendanceTransactionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "attendance-transaction-migration", "attendanceTransactionCount"));
+
+        from("direct:attendance-forgot-migration")
+                .routeId("attendance-forgot-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attendanceForgotRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attendanceForgot rows in this page, continuing...")
+                        .otherwise()
+                            .process(attendanceForgotProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "attendance-forgot-migration", "attendanceForgotCount"));
+
+        from("direct:attendance-remark-migration")
+                .routeId("attendance-remark-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = attendanceRemarkRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No attendanceRemark rows in this page, continuing...")
+                        .otherwise()
+                            .process(attendanceRemarkProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "attendance-remark-migration", "attendanceRemarkCount"));
+
+        from("direct:device-logs-migration")
+                .routeId("device-logs-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = deviceLogsRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No deviceLogs rows in this page, continuing...")
+                        .otherwise()
+                            .process(deviceLogsProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "device-logs-migration", "deviceLogsCount"));
+
+        from("direct:temp-device-logs-migration")
+                .routeId("temp-device-logs-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = tempDeviceLogsRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No tempDeviceLogs rows in this page, continuing...")
+                        .otherwise()
+                            .process(tempDeviceLogsProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "temp-device-logs-migration", "tempDeviceLogsCount"));
+
+        from("direct:old-attendance-transaction-migration")
+                .routeId("old-attendance-transaction-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = oldAttendanceTransactionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No oldAttendanceTransaction rows in this page, continuing...")
+                        .otherwise()
+                            .process(oldAttendanceTransactionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(
+                        exchange, "old-attendance-transaction-migration", "oldAttendanceTransactionCount"));
+
+        from("direct:work-shift-migration")
+                .routeId("work-shift-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = workShiftRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No workShift rows in this page, continuing...")
+                        .otherwise()
+                            .process(workShiftProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "work-shift-migration", "workShiftCount"));
+
+        from("direct:company-validity-subscription-migration")
+                .routeId("company-validity-subscription-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = companyValidityRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No companyValidity rows in this page, continuing...")
+                        .otherwise()
+                            .process(companyValiditySubscriptionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(
+                        exchange, "company-validity-subscription-migration", "companyValiditySubscriptionCount"));
+
+        from("direct:subscription-payment-history-migration")
+                .routeId("subscription-payment-history-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = subscriptionPaymentRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No subscriptionPayment rows in this page, continuing...")
+                        .otherwise()
+                            .process(subscriptionPaymentHistoryProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(
+                        exchange, "subscription-payment-history-migration", "subscriptionPaymentHistoryCount"));
 
         from("direct:user-migration")
 
@@ -2179,6 +5093,223 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end()
 
                 .process(exchange -> finishCount(exchange, "user-portal-link-migration", "userPortalLinkCount"));
+
+        from("direct:vacancy-migration")
+                .routeId("vacancy-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = vacancyRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No vacancy rows in this page, continuing...")
+                        .otherwise()
+                            .process(vacancyProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "vacancy-migration", "vacancyCount"));
+
+        from("direct:vacancy-newspaper-migration")
+                .routeId("vacancy-newspaper-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = vacancyNewspaperRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No vacancyNewspaper rows in this page, continuing...")
+                        .otherwise()
+                            .process(vacancyNewspaperProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "vacancy-newspaper-migration", "vacancyNewspaperCount"));
+
+        from("direct:interview-stage-migration")
+                .routeId("interview-stage-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = stagesRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No stages rows in this page, continuing...")
+                        .otherwise()
+                            .process(interviewStageProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "interview-stage-migration", "interviewStageCount"));
+
+        from("direct:screening-question-migration")
+                .routeId("screening-question-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = screeningQuestionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No screeningQuestion rows in this page, continuing...")
+                        .otherwise()
+                            .process(screeningQuestionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "screening-question-migration", "screeningQuestionCount"));
+
+        from("direct:applicant-migration")
+                .routeId("applicant-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = applicantRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No applicant rows in this page, continuing...")
+                        .otherwise()
+                            .process(applicantProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "applicant-migration", "applicantCount"));
+
+        from("direct:screening-answer-migration")
+                .routeId("screening-answer-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = screeningAnswerRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No screeningAnswer rows in this page, continuing...")
+                        .otherwise()
+                            .process(screeningAnswerProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "screening-answer-migration", "screeningAnswerCount"));
+
+        from("direct:applicants-transaction-migration")
+                .routeId("applicants-transaction-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = applicantsTransactionRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No applicantsTransaction rows in this page, continuing...")
+                        .otherwise()
+                            .process(applicantsTransactionProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange ->
+                        finishCount(exchange, "applicants-transaction-migration", "applicantsTransactionCount"));
+
+        from("direct:recruiters-migration")
+                .routeId("recruiters-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = recruitersRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No recruiters rows in this page, continuing...")
+                        .otherwise()
+                            .process(recruitersProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "recruiters-migration", "recruitersCount"));
+
+        from("direct:evaluation-migration")
+                .routeId("evaluation-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = evaluationRepository.findMigratable(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No evaluation rows in this page, continuing...")
+                        .otherwise()
+                            .process(evaluationProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "evaluation-migration", "evaluationCount"));
 
     }
 

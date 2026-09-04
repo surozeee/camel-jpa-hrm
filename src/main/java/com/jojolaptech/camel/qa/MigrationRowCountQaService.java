@@ -87,6 +87,80 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "nepali_tax has no mysql_id column"),
             new MigrationRowCountCheck(
+                    "9",
+                    "payrollCalculationSetting → payroll_rule",
+                    "SELECT COUNT(DISTINCT company_id) FROM payrollCalculationSetting",
+                    "SELECT COUNT(*) FROM payroll_rule",
+                    MigrationComparisonMode.INFO,
+                    "Rules are FY-scoped; company settings overlay params"),
+            new MigrationRowCountCheck(
+                    "9a",
+                    "companyPayrollHeading → hrm_branch_salary_breakdown",
+                    "SELECT COUNT(*) FROM companyPayrollHeading WHERE status = 1 AND payrollHeading_id IS NOT NULL",
+                    "SELECT COUNT(*) FROM hrm_branch_salary_breakdown WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 8_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips PARENT / inactive / unmigrated company"),
+            new MigrationRowCountCheck(
+                    "9b",
+                    "payrollHeading (PMS) → hrm_branch_salary_breakdown",
+                    "SELECT COUNT(*) FROM payrollHeading",
+                    "SELECT COUNT(*) FROM hrm_branch_salary_breakdown WHERE mysql_id >= " + 8_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Offset mysql_id for PMS headings"),
+            new MigrationRowCountCheck(
+                    "9c",
+                    "jobLevel → hrm_grade",
+                    "SELECT COUNT(*) FROM jobLevel WHERE status = 1",
+                    "SELECT COUNT(*) FROM hrm_grade WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips unmigrated company"),
+            new MigrationRowCountCheck(
+                    "9d",
+                    "jobLevelGradeValue → hrm_grade_pay_step",
+                    "SELECT COUNT(*) FROM jobLevelGradeValue WHERE status = 1",
+                    "SELECT COUNT(*) FROM hrm_grade_pay_step WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated grade"),
+            new MigrationRowCountCheck(
+                    "9e",
+                    "jobLevelPayroll → hrm_grade_component_value",
+                    "SELECT COUNT(*) FROM jobLevelPayroll WHERE status = 1",
+                    "SELECT COUNT(*) FROM hrm_grade_component_value WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires grade + breakdown"),
+            new MigrationRowCountCheck(
+                    "9g",
+                    "bank → bank (master)",
+                    "SELECT COUNT(*) FROM bank",
+                    "SELECT COUNT(*) FROM bank WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips blank/duplicate names"),
+            new MigrationRowCountCheck(
+                    "9h",
+                    "costType → module_pricing_package",
+                    "SELECT COUNT(*) FROM costType",
+                    "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 23_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "SaaS billing catalog; not hrm_cost_center"),
+            new MigrationRowCountCheck(
+                    "9i",
+                    "payPlan → module_pricing_package",
+                    "SELECT COUNT(*) FROM payPlan",
+                    "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 23_000_000_000_000L
+                            + " AND mysql_id < " + 24_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 23e12"),
+            new MigrationRowCountCheck(
+                    "9j",
+                    "modulePricing → module_pricing_package",
+                    "SELECT COUNT(*) FROM modulePricing",
+                    "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 26_000_000_000_000L
+                            + " AND mysql_id < " + 27_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Pricing tiers only; module scopes stay ERP-seeded (no module_pricing_scope)"),
+            new MigrationRowCountCheck(
                     "10",
                     "leaves → hrm_leave_type",
                     "SELECT COUNT(*) FROM leaves",
@@ -146,12 +220,411 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Skips rows without name"),
             new MigrationRowCountCheck(
+                    "22e",
+                    "employeeGrade → employee.grade_id",
+                    "SELECT COUNT(*) FROM employeeGrade WHERE status = 1 AND endDate IS NULL",
+                    "SELECT COUNT(*) FROM employee WHERE grade_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Open grades only; requires migrated employee/grade"),
+            new MigrationRowCountCheck(
+                    "22f",
+                    "employeePayrollPaymentSetting → bank detail",
+                    "SELECT COUNT(*) FROM employeePayrollPaymentSetting WHERE bank_id IS NOT NULL AND NULLIF(TRIM(institutionIdentity), '') IS NOT NULL",
+                    "SELECT COUNT(*) FROM hrm_employee_bank_detail WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee + master bank"),
+            new MigrationRowCountCheck(
+                    "22j",
+                    "employeeExperience → hrm_experience",
+                    "SELECT COUNT(*) FROM employeeExperience",
+                    "SELECT COUNT(*) FROM hrm_experience WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips rows missing start/joinDate"),
+            new MigrationRowCountCheck(
+                    "22k",
+                    "employeeAward → hrm_employee_award",
+                    "SELECT COUNT(*) FROM employeeAward",
+                    "SELECT COUNT(*) FROM hrm_employee_award WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing award/awardedBy"),
+            new MigrationRowCountCheck(
+                    "22l",
+                    "employeeLanguage → hrm_employee_language",
+                    "SELECT COUNT(*) FROM employeeLanguage",
+                    "SELECT COUNT(*) FROM hrm_employee_language WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing language name"),
+            new MigrationRowCountCheck(
+                    "22m",
+                    "employeeSeminar → hrm_employee_seminar",
+                    "SELECT COUNT(*) FROM employeeSeminar",
+                    "SELECT COUNT(*) FROM hrm_employee_seminar WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing seminar name"),
+            new MigrationRowCountCheck(
+                    "22n",
+                    "employeePublication → hrm_employee_publication",
+                    "SELECT COUNT(*) FROM employeePublication",
+                    "SELECT COUNT(*) FROM hrm_employee_publication WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing publication name"),
+            new MigrationRowCountCheck(
+                    "22o",
+                    "employeeHealth → hrm_employee_health",
+                    "SELECT COUNT(*) FROM employeeHealth",
+                    "SELECT COUNT(*) FROM hrm_employee_health WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee"),
+            new MigrationRowCountCheck(
+                    "22p",
+                    "employeeTraining → hrm_training",
+                    "SELECT COUNT(*) FROM employeeTraining",
+                    "SELECT COUNT(*) FROM hrm_training WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing name/startDate"),
+            new MigrationRowCountCheck(
+                    "22q",
+                    "jobDescription → hrm_employee_job_description",
+                    "SELECT COUNT(*) FROM jobDescription",
+                    "SELECT COUNT(*) FROM hrm_employee_job_description WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing position"),
+            new MigrationRowCountCheck(
+                    "22r",
+                    "employmentSuspension → hrm_employment_suspension",
+                    "SELECT COUNT(*) FROM employmentSuspension",
+                    "SELECT COUNT(*) FROM hrm_employment_suspension WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing fromDate"),
+            new MigrationRowCountCheck(
+                    "22s",
+                    "employeeInsurance → hrm_employee_insurance",
+                    "SELECT COUNT(*) FROM employeeInsurance",
+                    "SELECT COUNT(*) FROM hrm_employee_insurance WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee + insuranceCompany"),
+            new MigrationRowCountCheck(
+                    "22t",
+                    "distinct employeeSkill → hrm_skill",
+                    "SELECT COUNT(DISTINCT CONCAT(ce.company_id, ':', TRIM(es.skill))) FROM employeeSkill es JOIN companyEmployee ce ON ce.employee_id = es.employee_id WHERE NULLIF(TRIM(es.skill), '') IS NOT NULL",
+                    "SELECT COUNT(*) FROM hrm_skill WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Upsert per company+name; PG ≤ distinct MySQL skills"),
+            new MigrationRowCountCheck(
+                    "22u",
+                    "employeeSkill → hrm_employee_skill",
+                    "SELECT COUNT(*) FROM employeeSkill",
+                    "SELECT COUNT(*) FROM hrm_employee_skill WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires skill master + migrated employee"),
+            new MigrationRowCountCheck(
+                    "22v",
+                    "jobTitle → hrm_employee_designation",
+                    "SELECT COUNT(*) FROM jobTitle",
+                    "SELECT COUNT(*) FROM hrm_employee_designation WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Primary branch only"),
+            new MigrationRowCountCheck(
+                    "22w",
+                    "active employeeJob → employee.designation_id",
+                    "SELECT COUNT(*) FROM employeeJob WHERE isactive = 'Y' OR enddate IS NULL",
+                    "SELECT COUNT(*) FROM employee WHERE designation_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated designation"),
+            new MigrationRowCountCheck(
+                    "22x",
+                    "employeeContact emergency → hrm_employee_detail",
+                    "SELECT COUNT(*) FROM employeeContact WHERE contactType = 'Emergency' OR NULLIF(TRIM(emergencyContactName), '') IS NOT NULL OR NULLIF(TRIM(emergencyContactPhone), '') IS NOT NULL OR NULLIF(TRIM(emergencyContactMobile), '') IS NOT NULL",
+                    "SELECT COUNT(*) FROM hrm_employee_detail WHERE emergency_contact_name IS NOT NULL OR emergency_contact_phone IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Upsert per employee; PG ≤ emergency contacts"),
+            new MigrationRowCountCheck(
+                    "22y",
+                    "employeeTermination → employee.termination_date",
+                    "SELECT COUNT(*) FROM employeeTermination WHERE endDate IS NOT NULL",
+                    "SELECT COUNT(*) FROM employee WHERE termination_date IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Only fills when employee.termination_date was null"),
+            new MigrationRowCountCheck(
+                    "22z",
+                    "active branchDepartmentHead → employee.is_department_head",
+                    "SELECT COUNT(*) FROM branchDepartmentHead WHERE endDate IS NULL",
+                    "SELECT COUNT(*) FROM employee WHERE is_department_head = true",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Only active heads; skips unmigrated employees"),
+            new MigrationRowCountCheck(
+                    "22za",
+                    "employeeJobLevel → employment history GRADE_CHANGE",
+                    "SELECT COUNT(*) FROM employeeJobLevel",
+                    "SELECT COUNT(*) FROM hrm_employee_employment_history WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 16_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id = source id (below 16e12 offsets)"),
+            new MigrationRowCountCheck(
+                    "22zb",
+                    "jobStatus → employment history EMPLOYMENT_TYPE_CHANGE",
+                    "SELECT COUNT(*) FROM jobStatus",
+                    "SELECT COUNT(*) FROM hrm_employee_employment_history WHERE mysql_id >= "
+                            + 16_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 17_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 16e12"),
+            new MigrationRowCountCheck(
+                    "22zc",
+                    "jobPosition → hire_date/contracts",
+                    "SELECT COUNT(*) FROM jobPosition",
+                    "SELECT COUNT(*) FROM hrm_employee_contract WHERE mysql_id >= "
+                            + 18_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 19_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Contracts use mysql_id offset 18e12; hire_date fill-only"),
+            new MigrationRowCountCheck(
+                    "22zd",
+                    "companyEmployeeContract → hrm_employee_contract",
+                    "SELECT COUNT(*) FROM companyEmployeeContract",
+                    "SELECT COUNT(*) FROM hrm_employee_contract WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 18_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id = source id (below 18e12 jobPosition offset)"),
+            new MigrationRowCountCheck(
+                    "22ze",
+                    "employeeJob → employment history DESIGNATION_CHANGE",
+                    "SELECT COUNT(*) FROM employeeJob",
+                    "SELECT COUNT(*) FROM hrm_employee_employment_history WHERE mysql_id >= "
+                            + 17_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 18_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "All rows incl closed; mysql_id offset 17e12"),
+            new MigrationRowCountCheck(
+                    "22zf",
+                    "document → hrm_employee_document (metadata)",
+                    "SELECT COUNT(*) FROM document",
+                    "SELECT COUNT(*) FROM hrm_employee_document WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Metadata only; skips unmigrated employees"),
+            new MigrationRowCountCheck(
+                    "22zg",
+                    "employeeProject → hrm_experience",
+                    "SELECT COUNT(*) FROM employeeProject",
+                    "SELECT COUNT(*) FROM hrm_experience WHERE mysql_id >= "
+                            + 22_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 23_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 22e12; skips blank name / missing employee"),
+            new MigrationRowCountCheck(
+                    "22zh",
+                    "jobCategory → hrm_skill_category (fan-out)",
+                    "SELECT COUNT(*) FROM jobCategory",
+                    "SELECT COUNT(*) FROM hrm_skill_category WHERE mysql_id >= "
+                            + 20_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 21_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_LEAST_MYSQL,
+                    "Fan-out: one row per category × migrated company; mysql_id offset 20e12"),
+            new MigrationRowCountCheck(
+                    "22zi",
+                    "jobCategories → hrm_skill_category",
+                    "SELECT COUNT(*) FROM jobCategories",
+                    "SELECT COUNT(*) FROM hrm_skill_category WHERE mysql_id >= "
+                            + 21_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 22_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 21e12; skips blank jobName / unmigrated company"),
+            new MigrationRowCountCheck(
                     "23",
                     "leaveAccumulation → leave_accumulation",
                     "SELECT COUNT(*) FROM leaveAccumulation",
                     "SELECT COUNT(*) FROM leave_accumulation WHERE mysql_id IS NOT NULL",
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Skips missing employee/leave/date"),
+            new MigrationRowCountCheck(
+                    "23l",
+                    "leaveBalance → hrm_leave_balance",
+                    "SELECT COUNT(*) FROM leaveBalance",
+                    "SELECT COUNT(*) FROM hrm_leave_balance WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Collapsed to latest per employee+leave type; PG ≤ MySQL"),
+            new MigrationRowCountCheck(
+                    "23m",
+                    "leaveAdjustment → hrm_leave_opening_adjustment (ADD/DEDUCT)",
+                    "SELECT COUNT(*) FROM leaveAdjustment",
+                    "SELECT COUNT(*) FROM hrm_leave_opening_adjustment WHERE action IN ('ADD','DEDUCT') AND mysql_id < "
+                            + 9_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "SET_OPENING audits use mysql_id offset ≥ 9e12"),
+            new MigrationRowCountCheck(
+                    "23n",
+                    "leaveApplication → hrm_leave",
+                    "SELECT COUNT(*) FROM leaveApplication",
+                    "SELECT COUNT(*) FROM hrm_leave WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee + leave type"),
+            new MigrationRowCountCheck(
+                    "23o",
+                    "leaveCancellation → hrm_leave.mysql_cancellation_id",
+                    "SELECT COUNT(*) FROM leaveCancellation",
+                    "SELECT COUNT(*) FROM hrm_leave WHERE mysql_cancellation_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Denied cancellations skipped; requires migrated leaveApplication"),
+            new MigrationRowCountCheck(
+                    "23p",
+                    "calculatedAutoLeaveAccumulation → hrm_leave_credit",
+                    "SELECT COUNT(*) FROM calculatedAutoLeaveAccumulation",
+                    "SELECT COUNT(*) FROM hrm_leave_credit WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 11_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Historical LEAVE_ACCUMULATION credits; skips missing employee/branch/leave"),
+            new MigrationRowCountCheck(
+                    "23q",
+                    "calculatedOTLeaveBalance → hrm_ot_leave_accrual_line",
+                    "SELECT COUNT(*) FROM calculatedOTLeaveBalance",
+                    "SELECT COUNT(*) FROM hrm_ot_leave_accrual_line WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "One line per OT balance; run grouped by company+till date"),
+            new MigrationRowCountCheck(
+                    "23a",
+                    "employeePayrollHeading → hrm_employee_salary_component",
+                    "SELECT COUNT(*) FROM employeePayrollHeading WHERE status = 1 AND endDate IS NULL",
+                    "SELECT COUNT(*) FROM hrm_employee_salary_component WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires open employeePayrollDate + migrated breakdown"),
+            new MigrationRowCountCheck(
+                    "23b",
+                    "openingPayrollBalance → opening lines",
+                    "SELECT COUNT(*) FROM openingPayrollBalance",
+                    "SELECT COUNT(*) FROM hrm_payroll_opening_balance_line WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing company/fy/employee"),
+            new MigrationRowCountCheck(
+                    "23c",
+                    "employeePayrollPayment → month-wise salary",
+                    "SELECT COUNT(*) FROM employeePayrollPayment WHERE status = 1",
+                    "SELECT COUNT(*) FROM hrm_branch_employee_month_wise_salary WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 7_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "One row per employee+payPeriod; skips unmigrated employee/branch"),
+            new MigrationRowCountCheck(
+                    "23d",
+                    "payrollTransaction → month-wise (PMS fill)",
+                    "SELECT COUNT(DISTINCT CONCAT(employee_id, ':', payrollMonth_id)) FROM payrollTransaction",
+                    "SELECT COUNT(*) FROM hrm_branch_employee_month_wise_salary WHERE mysql_id >= "
+                            + 7_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Only months without modern payment row"),
+            new MigrationRowCountCheck(
+                    "23e",
+                    "massIncrement → mass salary adjustment",
+                    "SELECT COUNT(*) FROM massIncrement",
+                    "SELECT COUNT(*) FROM hrm_mass_salary_adjustment WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires company/branch/grade/breakdown"),
+            new MigrationRowCountCheck(
+                    "23f",
+                    "employeeLoan → loan account",
+                    "SELECT COUNT(*) FROM employeeLoan",
+                    "SELECT COUNT(*) FROM hrm_loan_account WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee + branch company"),
+            new MigrationRowCountCheck(
+                    "23g",
+                    "employeeLoanPayment → loan payment",
+                    "SELECT COUNT(*) FROM employeeLoanPayment",
+                    "SELECT COUNT(*) FROM hrm_loan_payment WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated loan account"),
+            new MigrationRowCountCheck(
+                    "18a",
+                    "attDeviceMAC → hrm_device_mac",
+                    "SELECT COUNT(*) FROM attDeviceMAC",
+                    "SELECT COUNT(*) FROM hrm_device_mac WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips missing company/branch or duplicate mac"),
+            new MigrationRowCountCheck(
+                    "22h",
+                    "attEmpTempShift → temp shift",
+                    "SELECT COUNT(*) FROM attEmpTempShift",
+                    "SELECT COUNT(*) FROM hrm_employee_temp_shift WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee/company/shift"),
+            new MigrationRowCountCheck(
+                    "23h",
+                    "attLogs → attendance_log",
+                    "SELECT COUNT(*) FROM attLogs WHERE isDeleted IS NULL OR isDeleted = 'N'",
+                    "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 12_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips deleted / missing enroll employee; residual device logs use ≥12e12"),
+            new MigrationRowCountCheck(
+                    "23i",
+                    "attendanceTransaction → attendance",
+                    "SELECT COUNT(*) FROM attendanceTransaction",
+                    "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 14_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Log shells may lack mysql_id; old archive uses ≥14e12"),
+            new MigrationRowCountCheck(
+                    "23j",
+                    "attendanceForgot → time request",
+                    "SELECT COUNT(*) FROM attendanceForgot",
+                    "SELECT COUNT(*) FROM hrm_attendance_time_request WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated employee/company"),
+            new MigrationRowCountCheck(
+                    "23r",
+                    "deviceLogs → attendance_log (residual)",
+                    "SELECT COUNT(*) FROM deviceLogs",
+                    "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id >= " + 12_000_000_000_000L
+                            + " AND mysql_id < " + 13_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Deduped against AttLogs enroll+datetime; offset 12e12"),
+            new MigrationRowCountCheck(
+                    "23s",
+                    "tempDeviceLogs → attendance_log (residual)",
+                    "SELECT COUNT(*) FROM tempDeviceLogs",
+                    "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id >= " + 13_000_000_000_000L
+                            + " AND mysql_id < " + 14_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Deduped against AttLogs/deviceLogs; offset 13e12"),
+            new MigrationRowCountCheck(
+                    "23t",
+                    "oldAttendanceTransaction → attendance (fill-only)",
+                    "SELECT COUNT(*) FROM oldAttendanceTransaction",
+                    "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id >= " + 14_000_000_000_000L
+                            + " AND mysql_id < " + 15_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips when employee+date already exists; offset 14e12"),
+            new MigrationRowCountCheck(
+                    "23u",
+                    "workShift → hrm_roster_shift_slot",
+                    "SELECT COUNT(*) FROM workShift",
+                    "SELECT COUNT(*) FROM hrm_roster_shift_slot WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Fan-out to company branches; mysql_id only on primary branch"),
+            new MigrationRowCountCheck(
+                    "24a",
+                    "companyValidity → company_subscription + payment history",
+                    "SELECT COUNT(*) FROM companyValidity",
+                    "SELECT (SELECT COUNT(*) FROM company_subscription WHERE mysql_id IS NOT NULL)"
+                            + " + (SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id >= "
+                            + 24_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 25_000_000_000_000L
+                            + ")",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "One subscription per company (latest validTill); payments use mysql_id ≥ 24e12"),
+            new MigrationRowCountCheck(
+                    "24b",
+                    "subscriptionPayment → subscription_payment_history",
+                    "SELECT COUNT(*) FROM subscriptionPayment",
+                    "SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id IS NOT NULL AND mysql_id < "
+                            + 24_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Skips when company not migrated"),
             new MigrationRowCountCheck(
                     "24",
                     "secUser → users",
@@ -165,7 +638,63 @@ public class MigrationRowCountQaService {
                     "SELECT COUNT(*) FROM secUser",
                     "SELECT COUNT(*) FROM user_detail",
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
-                    "One detail per migrated user"));
+                    "One detail per migrated user"),
+            new MigrationRowCountCheck(
+                    "27a",
+                    "vacancy → hrm_recruitment_vacancy",
+                    "SELECT COUNT(*) FROM vacancy",
+                    "SELECT COUNT(*) FROM hrm_recruitment_vacancy WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated company + branch"),
+            new MigrationRowCountCheck(
+                    "27b",
+                    "vacancyNewspaper → vacancy_publication",
+                    "SELECT COUNT(*) FROM vacancyNewspaper",
+                    "SELECT COUNT(*) FROM hrm_recruitment_vacancy_publication WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated vacancy"),
+            new MigrationRowCountCheck(
+                    "27c",
+                    "stages → interview_stage",
+                    "SELECT COUNT(*) FROM stages",
+                    "SELECT COUNT(*) FROM hrm_recruitment_interview_stage WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    null),
+            new MigrationRowCountCheck(
+                    "27d",
+                    "screeningQuestion → screening_question",
+                    "SELECT COUNT(*) FROM screeningQuestion",
+                    "SELECT COUNT(*) FROM hrm_recruitment_vacancy_screening_question WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    null),
+            new MigrationRowCountCheck(
+                    "27e",
+                    "applicant → application (+ candidate ≥25e12)",
+                    "SELECT COUNT(*) FROM applicant",
+                    "SELECT COUNT(*) FROM hrm_recruitment_application WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Candidate mysql_id = 25e12 + employee; internal applicants only"),
+            new MigrationRowCountCheck(
+                    "27f",
+                    "screeningAnswer → screening_answer",
+                    "SELECT COUNT(*) FROM screeningAnswer",
+                    "SELECT COUNT(*) FROM hrm_recruitment_application_screening_answer WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    null),
+            new MigrationRowCountCheck(
+                    "27g",
+                    "applicantsTransaction → status_history",
+                    "SELECT COUNT(*) FROM applicantsTransaction",
+                    "SELECT COUNT(*) FROM hrm_recruitment_application_status_history WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    null),
+            new MigrationRowCountCheck(
+                    "27i",
+                    "evaluation → screening evaluation",
+                    "SELECT COUNT(*) FROM evaluation",
+                    "SELECT COUNT(*) FROM hrm_recruitment_screening WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated application"));
 
     private static final Map<String, String> PIPELINE_PG_COUNT_SQL = new LinkedHashMap<>();
 
@@ -176,12 +705,49 @@ public class MigrationRowCountQaService {
         PIPELINE_PG_COUNT_SQL.put("organizationCount", "SELECT COUNT(*) FROM organization");
         PIPELINE_PG_COUNT_SQL.put("companyAddressCount", "SELECT COUNT(*) FROM hrm_company_address WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("branchCount", "SELECT COUNT(*) FROM branch WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("payrollRuleCount", "SELECT COUNT(*) FROM payroll_rule");
+        PIPELINE_PG_COUNT_SQL.put(
+                "salaryBreakdownCount",
+                "SELECT COUNT(*) FROM hrm_branch_salary_breakdown WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 8_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "pmsSalaryBreakdownCount",
+                "SELECT COUNT(*) FROM hrm_branch_salary_breakdown WHERE mysql_id >= " + 8_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put("gradeCount", "SELECT COUNT(*) FROM hrm_grade WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "gradePayStepCount", "SELECT COUNT(*) FROM hrm_grade_pay_step WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "gradeComponentValueCount",
+                "SELECT COUNT(*) FROM hrm_grade_component_value WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("legacyBankCount", "SELECT COUNT(*) FROM bank WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "costTypePackageCount",
+                "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 23_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payPlanPackageCount",
+                "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 23_000_000_000_000L
+                        + " AND mysql_id < " + 24_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "modulePricingPackageCount",
+                "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 26_000_000_000_000L
+                        + " AND mysql_id < " + 27_000_000_000_000L);
         PIPELINE_PG_COUNT_SQL.put("leaveTypeCount", "SELECT COUNT(*) FROM hrm_leave_type WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("attTimeTableShiftCount", "SELECT COUNT(*) FROM hrm_branch_shift WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("branchHolidayCount", "SELECT COUNT(*) FROM hrm_branch_holiday WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("leaveAccumulationRuleCount",
                 "SELECT COUNT(*) FROM hrm_branch_leave_accumulation_rule WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("departmentCount", "SELECT COUNT(*) FROM department WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("divisionCount", "SELECT COUNT(*) FROM hrm_division WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("costCenterCount", "SELECT COUNT(*) FROM hrm_cost_center WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("teamCount", "SELECT COUNT(*) FROM hrm_team WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "orgMasterHeadLinkCount",
+                "SELECT COUNT(*) FROM hrm_team WHERE leader_employee_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "employeeOrgFkBackfillCount",
+                "SELECT COUNT(*) FROM employee WHERE mysql_id IS NOT NULL AND ("
+                        + "division_id IS NOT NULL OR team_id IS NOT NULL OR cost_center_id IS NOT NULL)");
         PIPELINE_PG_COUNT_SQL.put("employeeCount", "SELECT COUNT(*) FROM employee WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("employeeAddressCount",
                 "SELECT COUNT(*) FROM address WHERE employee_id IS NOT NULL AND mysql_id IS NOT NULL AND mysql_id < "
@@ -192,10 +758,113 @@ public class MigrationRowCountQaService {
                 "SELECT COUNT(*) FROM hrm_employee_education WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("employeeFamilyCount",
                 "SELECT COUNT(*) FROM employee_family_detail WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "employeeBankDetailCount",
+                "SELECT COUNT(*) FROM hrm_employee_bank_detail WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("employeeLeaveAccumulationCount",
                 "SELECT COUNT(*) FROM leave_accumulation WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("leaveBalanceCount",
+                "SELECT COUNT(*) FROM hrm_leave_balance WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("leaveAdjustmentCount",
+                "SELECT COUNT(*) FROM hrm_leave_opening_adjustment WHERE action IN ('ADD','DEDUCT') AND mysql_id < "
+                        + 9_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put("leaveApplicationCount",
+                "SELECT COUNT(*) FROM hrm_leave WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("leaveCancellationCount",
+                "SELECT COUNT(*) FROM hrm_leave WHERE mysql_cancellation_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "calculatedAutoLeaveCreditCount",
+                "SELECT COUNT(*) FROM hrm_leave_credit WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 11_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "calculatedOtLeaveAccrualCount",
+                "SELECT COUNT(*) FROM hrm_ot_leave_accrual_line WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("employeeSalaryCount",
+                "SELECT COUNT(*) FROM hrm_employee_salary_component WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("payrollOpeningBalanceCount",
+                "SELECT COUNT(*) FROM hrm_payroll_opening_balance_line WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("monthWiseSalaryCount",
+                "SELECT COUNT(*) FROM hrm_branch_employee_month_wise_salary WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 7_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put("payrollTransactionHistoryCount",
+                "SELECT COUNT(*) FROM hrm_branch_employee_month_wise_salary WHERE mysql_id >= "
+                        + 7_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "massSalaryAdjustmentCount",
+                "SELECT COUNT(*) FROM hrm_mass_salary_adjustment WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "employeeLoanCount", "SELECT COUNT(*) FROM hrm_loan_account WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "employeeLoanPaymentCount", "SELECT COUNT(*) FROM hrm_loan_payment WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("deviceMacCount", "SELECT COUNT(*) FROM hrm_device_mac WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "employeeDeviceEnrollCount",
+                "SELECT COUNT(*) FROM hrm_employee_device_enroll WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "empTempShiftCount", "SELECT COUNT(*) FROM hrm_employee_temp_shift WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "attendanceLogCount",
+                "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 12_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "attendanceTransactionCount",
+                "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 14_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "attendanceForgotCount",
+                "SELECT COUNT(*) FROM hrm_attendance_time_request WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "deviceLogsCount",
+                "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id >= " + 12_000_000_000_000L
+                        + " AND mysql_id < " + 13_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "tempDeviceLogsCount",
+                "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id >= " + 13_000_000_000_000L
+                        + " AND mysql_id < " + 14_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "oldAttendanceTransactionCount",
+                "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id >= " + 14_000_000_000_000L
+                        + " AND mysql_id < " + 15_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "workShiftCount", "SELECT COUNT(*) FROM hrm_roster_shift_slot WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "companyValiditySubscriptionCount",
+                "SELECT (SELECT COUNT(*) FROM company_subscription WHERE mysql_id IS NOT NULL)"
+                        + " + (SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id >= "
+                        + 24_000_000_000_000L
+                        + " AND mysql_id < "
+                        + 25_000_000_000_000L
+                        + ")");
+        PIPELINE_PG_COUNT_SQL.put(
+                "subscriptionPaymentHistoryCount",
+                "SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id IS NOT NULL AND mysql_id < "
+                        + 24_000_000_000_000L);
         PIPELINE_PG_COUNT_SQL.put("userCount", "SELECT COUNT(*) FROM users WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("userDetailCount", "SELECT COUNT(*) FROM user_detail");
+        PIPELINE_PG_COUNT_SQL.put(
+                "vacancyCount", "SELECT COUNT(*) FROM hrm_recruitment_vacancy WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "vacancyNewspaperCount",
+                "SELECT COUNT(*) FROM hrm_recruitment_vacancy_publication WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "interviewStageCount",
+                "SELECT COUNT(*) FROM hrm_recruitment_interview_stage WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "screeningQuestionCount",
+                "SELECT COUNT(*) FROM hrm_recruitment_vacancy_screening_question WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "applicantCount", "SELECT COUNT(*) FROM hrm_recruitment_application WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "screeningAnswerCount",
+                "SELECT COUNT(*) FROM hrm_recruitment_application_screening_answer WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "applicantsTransactionCount",
+                "SELECT COUNT(*) FROM hrm_recruitment_application_status_history WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "recruitersCount",
+                "SELECT COUNT(*) FROM hrm_recruitment_vacancy WHERE mysql_id IS NOT NULL AND recruiter_employee_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "evaluationCount", "SELECT COUNT(*) FROM hrm_recruitment_screening WHERE mysql_id IS NOT NULL");
     }
 
     public List<MigrationRowCountResult> runSourceChecks() {

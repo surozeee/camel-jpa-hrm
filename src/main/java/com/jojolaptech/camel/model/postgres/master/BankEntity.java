@@ -15,6 +15,9 @@ import java.util.List;
 @Builder
 public class BankEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(unique = true, nullable = false)
     private String name;
 

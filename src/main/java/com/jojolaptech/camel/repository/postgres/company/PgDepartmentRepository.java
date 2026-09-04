@@ -31,4 +31,10 @@ public interface PgDepartmentRepository extends JpaRepository<DepartmentEntity, 
     List<DepartmentEntity> findByMysqlIdInAndMysqlBranchIdIn(
             @Param("mysqlIds") Collection<Long> mysqlIds,
             @Param("mysqlBranchIds") Collection<Long> mysqlBranchIds);
+
+    List<DepartmentEntity> findByParentDepartmentIsNull();
+
+    List<DepartmentEntity> findByCompanyId(UUID companyId);
+
+    List<DepartmentEntity> findByBranchId(UUID branchId);
 }

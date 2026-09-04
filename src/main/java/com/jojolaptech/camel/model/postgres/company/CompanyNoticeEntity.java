@@ -31,6 +31,9 @@ import java.util.UUID;
 @Table(name = "hrm_company_notice")
 public class CompanyNoticeEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(name = "company_id", nullable = false)
     private UUID companyId;
 

@@ -23,4 +23,10 @@ public interface PgLeaveTypeRepository extends JpaRepository<LeaveTypeEntity, ja
 
     @Query("select lower(l.name) from LeaveTypeEntity l")
     Set<String> findExistingNamesLowerCase();
+
+    @Query("select l from LeaveTypeEntity l where l.compensationType = true order by l.mysqlId asc")
+    List<LeaveTypeEntity> findCompensationTypesOrderByMysqlIdAsc();
+
+    @Query("select l from LeaveTypeEntity l where l.mysqlId is not null order by l.mysqlId asc")
+    List<LeaveTypeEntity> findAllWithMysqlIdOrderByMysqlIdAsc();
 }

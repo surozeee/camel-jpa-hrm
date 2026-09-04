@@ -29,4 +29,11 @@ public interface PgBranchLeaveTypeRepository extends JpaRepository<BranchLeaveTy
 
     @Query("select b from BranchLeaveTypeEntity b where b.mysqlLeaveId in :leaveMysqlIds")
     List<BranchLeaveTypeEntity> findByMysqlLeaveIdIn(@Param("leaveMysqlIds") Collection<Long> leaveMysqlIds);
+
+    @Query("""
+            select b from BranchLeaveTypeEntity b
+            join fetch b.leaveType
+            where b.branchId in :branchIds
+            """)
+    List<BranchLeaveTypeEntity> findByBranchIdInWithLeaveType(@Param("branchIds") Collection<java.util.UUID> branchIds);
 }

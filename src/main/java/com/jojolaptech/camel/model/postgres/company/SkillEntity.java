@@ -4,18 +4,24 @@ import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.*;
-
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
-@Table(name = "hrm_skill")
+@Builder
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "hrm_skill")
 public class SkillEntity extends BaseAuditEntity {
+
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
 
     @Column(nullable = false, length = 64)
     private String code;
