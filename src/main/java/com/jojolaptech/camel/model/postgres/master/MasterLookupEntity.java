@@ -22,6 +22,9 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 public class MasterLookupEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     /**
      * Stored as VARCHAR (not a Postgres CHECK enum). Avoids startup failures when
      * {@link MasterLookupCategoryEnum} grows — Hibernate CHECK constraints are not auto-updated.

@@ -16,6 +16,9 @@ import java.util.UUID;
 @Table(name = "hrm_company_bank")
 public class CompanyBankEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(nullable = false)
     private UUID bankId;
 

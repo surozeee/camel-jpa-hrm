@@ -161,6 +161,117 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Pricing tiers only; module scopes stay ERP-seeded (no module_pricing_scope)"),
             new MigrationRowCountCheck(
+                    "9k",
+                    "payType → module_pricing_package",
+                    "SELECT COUNT(*) FROM payType",
+                    "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 34_000_000_000_000L
+                            + " AND mysql_id < " + 35_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 34e12; skips duplicate package_code"),
+            new MigrationRowCountCheck(
+                    "9l",
+                    "payrollInstitution → master_lookup",
+                    "SELECT COUNT(*) FROM payrollInstitution",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 44_000_000_000_000L
+                            + " AND mysql_id < " + 45_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "PAYROLL_INSTITUTION; mysql_id offset 44e12"),
+            new MigrationRowCountCheck(
+                    "9m",
+                    "companyPayroll → hrm_company_bank",
+                    "SELECT COUNT(*) FROM companyPayroll",
+                    "SELECT COUNT(*) FROM hrm_company_bank WHERE mysql_id >= " + 45_000_000_000_000L
+                            + " AND mysql_id < " + 46_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 45e12; requires migrated company + bank"),
+            new MigrationRowCountCheck(
+                    "9n",
+                    "companyPayrollInstitution → master_lookup",
+                    "SELECT COUNT(*) FROM companyPayrollInstitution",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 46_000_000_000_000L
+                            + " AND mysql_id < " + 47_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "COMPANY_PAYROLL_INSTITUTION; passwords not migrated; offset 46e12"),
+            new MigrationRowCountCheck(
+                    "9o",
+                    "parentPayrollHeading → master_lookup",
+                    "SELECT COUNT(*) FROM parentPayrollHeading",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 47_000_000_000_000L
+                            + " AND mysql_id < " + 48_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "PARENT_PAYROLL_HEADING; offset 47e12"),
+            new MigrationRowCountCheck(
+                    "9o2",
+                    "childPayrollHeading → master_lookup",
+                    "SELECT COUNT(*) FROM childPayrollHeading",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 55_000_000_000_000L
+                            + " AND mysql_id < " + 56_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "CHILD_PAYROLL_HEADING; offset 55e12"),
+            new MigrationRowCountCheck(
+                    "9p",
+                    "companyBranchPayrollHeading → breakdown.branch_id (enrich)",
+                    "SELECT COUNT(*) FROM companyBranchPayrollHeading WHERE status = true",
+                    "SELECT COUNT(*) FROM hrm_branch_salary_breakdown WHERE branch_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Enrich-only: sets branch_id on existing breakdowns; weak PG proxy"),
+            new MigrationRowCountCheck(
+                    "9q",
+                    "payrollLabel → master_lookup",
+                    "SELECT COUNT(*) FROM payrollLabel",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 48_000_000_000_000L
+                            + " AND mysql_id < " + 49_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "PAYROLL_LABEL; offset 48e12"),
+            new MigrationRowCountCheck(
+                    "9r",
+                    "payrollHeadingPriority → master_lookup",
+                    "SELECT COUNT(*) FROM payrollHeadingPriority",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 49_000_000_000_000L
+                            + " AND mysql_id < " + 50_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "PAYROLL_HEADING_PRIORITY; offset 49e12"),
+            new MigrationRowCountCheck(
+                    "9s",
+                    "payrollHeadingTemplate → master_lookup",
+                    "SELECT COUNT(*) FROM payrollHeadingTemplate",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 50_000_000_000_000L
+                            + " AND mysql_id < " + 51_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "PAYROLL_HEADING_TEMPLATE; offset 50e12"),
+            new MigrationRowCountCheck(
+                    "9t",
+                    "payrollHeadingDate → master_lookup",
+                    "SELECT COUNT(*) FROM payrollHeadingDate",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 51_000_000_000_000L
+                            + " AND mysql_id < " + 52_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_PAYROLL_HEADING_DATE; offset 51e12"),
+            new MigrationRowCountCheck(
+                    "9u",
+                    "payrollHeadingCalculation → master_lookup",
+                    "SELECT COUNT(*) FROM payrollHeadingCalculation",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 52_000_000_000_000L
+                            + " AND mysql_id < " + 53_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_PAYROLL_HEADING_CALC; offset 52e12"),
+            new MigrationRowCountCheck(
+                    "9v",
+                    "payPeriodSpecificHeading → master_lookup",
+                    "SELECT COUNT(*) FROM payPeriodSpecificHeading",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 53_000_000_000_000L
+                            + " AND mysql_id < " + 54_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_PAY_PERIOD_HEADING; offset 53e12"),
+            new MigrationRowCountCheck(
+                    "9w",
+                    "branchPayPeriod → master_lookup",
+                    "SELECT COUNT(*) FROM branchPayPeriod",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 54_000_000_000_000L
+                            + " AND mysql_id < " + 55_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_BRANCH_PAY_PERIOD; offset 54e12"),
+            new MigrationRowCountCheck(
                     "10",
                     "leaves → hrm_leave_type",
                     "SELECT COUNT(*) FROM leaves",
@@ -545,6 +656,37 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Skips missing company/branch or duplicate mac"),
             new MigrationRowCountCheck(
+                    "18b",
+                    "companySettingParams → master_lookup",
+                    "SELECT COUNT(*) FROM companySettingParams",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 40_000_000_000_000L
+                            + " AND mysql_id < " + 41_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "COMPANY_SETTING_PARAM; offset 40e12; known flags also enrich company"),
+            new MigrationRowCountCheck(
+                    "18c",
+                    "companyAdminParams → master_lookup",
+                    "SELECT COUNT(*) FROM companyAdminParams",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 41_000_000_000_000L
+                            + " AND mysql_id < " + 42_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "COMPANY_ADMIN_PARAM; offset 41e12"),
+            new MigrationRowCountCheck(
+                    "18d",
+                    "companyEmployeeParams → master_lookup",
+                    "SELECT COUNT(*) FROM companyEmployeeParams",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 42_000_000_000_000L
+                            + " AND mysql_id < " + 43_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "EMPLOYEE_SETTING_PARAM; offset 42e12"),
+            new MigrationRowCountCheck(
+                    "18e",
+                    "employeeSummary → employee.notes (enrich)",
+                    "SELECT COUNT(*) FROM employeeSummary",
+                    "SELECT COUNT(*) FROM employee WHERE notes LIKE '%[migrated-summary:%'",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Enrich-only notes append with [migrated-summary:{id}] marker"),
+            new MigrationRowCountCheck(
                     "22h",
                     "attEmpTempShift → temp shift",
                     "SELECT COUNT(*) FROM attEmpTempShift",
@@ -606,6 +748,47 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Fan-out to company branches; mysql_id only on primary branch"),
             new MigrationRowCountCheck(
+                    "23v",
+                    "editedOvertimeDetails → attendance (enrich)",
+                    "SELECT COUNT(*) FROM editedOvertimeDetails",
+                    "SELECT COUNT(*) FROM hrm_attendance WHERE overtime_manually_edited = true"
+                            + " AND remarks LIKE '%[migrated-edited-ot:%'",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Enrich-only; marker [migrated-edited-ot:{id}]"),
+            new MigrationRowCountCheck(
+                    "23w",
+                    "payrollSetting → master_lookup",
+                    "SELECT COUNT(*) FROM payrollSetting",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 56_000_000_000_000L
+                            + " AND mysql_id < " + 57_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_PAYROLL_SETTING; offset 56e12"),
+            new MigrationRowCountCheck(
+                    "23x",
+                    "payrollOvertime → master_lookup",
+                    "SELECT COUNT(*) FROM payrollOvertime",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 57_000_000_000_000L
+                            + " AND mysql_id < " + 58_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_PAYROLL_OVERTIME; offset 57e12"),
+            new MigrationRowCountCheck(
+                    "23y",
+                    "calculatedTypeValue → master_lookup",
+                    "SELECT COUNT(*) FROM calculatedTypeValue",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 58_000_000_000_000L
+                            + " AND mysql_id < " + 59_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_CALCULATED_TYPE_VALUE; offset 58e12"),
+            new MigrationRowCountCheck(
+                    "23z",
+                    "payByOnlineTransaction → payment history",
+                    "SELECT COUNT(*) FROM payByOnlineTransaction",
+                    "SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id >= "
+                            + 59_000_000_000_000L
+                            + " OR remarks LIKE '%[migrated-pbo:%'",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Insert at 59e12 or enrich existing validity payment with [migrated-pbo:{id}]"),
+            new MigrationRowCountCheck(
                     "24a",
                     "companyValidity → company_subscription + payment history",
                     "SELECT COUNT(*) FROM companyValidity",
@@ -625,6 +808,21 @@ public class MigrationRowCountQaService {
                             + 24_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Skips when company not migrated"),
+            new MigrationRowCountCheck(
+                    "24c",
+                    "userLicense → subscription enrich + payment history",
+                    "SELECT COUNT(*) FROM userLicense",
+                    "SELECT (SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id >= "
+                            + 35_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 36_000_000_000_000L
+                            + ") + (SELECT COUNT(*) FROM company_subscription WHERE mysql_id >= "
+                            + 39_000_000_000_000L
+                            + " AND mysql_id < "
+                            + 40_000_000_000_000L
+                            + ")",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Payments 35e12; new subs 39e12; may enrich existing validity subs without new row"),
             new MigrationRowCountCheck(
                     "24",
                     "secUser → users",
@@ -694,7 +892,86 @@ public class MigrationRowCountQaService {
                     "SELECT COUNT(*) FROM evaluation",
                     "SELECT COUNT(*) FROM hrm_recruitment_screening WHERE mysql_id IS NOT NULL",
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
-                    "Requires migrated application"));
+                    "Requires migrated application"),
+            new MigrationRowCountCheck(
+                    "28a",
+                    "notice → hrm_company_notice",
+                    "SELECT COUNT(*) FROM notice",
+                    "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 27_000_000_000_000L
+                            + " AND mysql_id < " + 28_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 27e12"),
+            new MigrationRowCountCheck(
+                    "28b",
+                    "message → hrm_company_notice",
+                    "SELECT COUNT(*) FROM message",
+                    "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 28_000_000_000_000L
+                            + " AND mysql_id < " + 29_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 28e12"),
+            new MigrationRowCountCheck(
+                    "28c",
+                    "companyMessageCompany → hrm_company_notice",
+                    "SELECT COUNT(*) FROM companyMessageCompany",
+                    "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 29_000_000_000_000L
+                            + " AND mysql_id < " + 30_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "One notice per company×message junction; offset 29e12"),
+            new MigrationRowCountCheck(
+                    "28d",
+                    "happening → hrm_company_notice",
+                    "SELECT COUNT(*) FROM happening",
+                    "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 30_000_000_000_000L
+                            + " AND mysql_id < " + 31_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 30e12"),
+            new MigrationRowCountCheck(
+                    "28e",
+                    "event → hrm_company_notice",
+                    "SELECT COUNT(*) FROM event",
+                    "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 31_000_000_000_000L
+                            + " AND mysql_id < " + 32_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 31e12"),
+            new MigrationRowCountCheck(
+                    "28f",
+                    "notification → hrm_company_notice",
+                    "SELECT COUNT(*) FROM notification",
+                    "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 32_000_000_000_000L
+                            + " AND mysql_id < " + 33_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "mysql_id offset 32e12"),
+            new MigrationRowCountCheck(
+                    "28g",
+                    "notificationViewed → hrm_employee_notice_read",
+                    "SELECT COUNT(*) FROM notificationViewed",
+                    "SELECT COUNT(*) FROM hrm_employee_notice_read WHERE mysql_id IS NOT NULL",
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "Requires migrated notification notice + user"),
+            new MigrationRowCountCheck(
+                    "29a",
+                    "marketingPersonDetail → master_lookup",
+                    "SELECT COUNT(*) FROM marketingPersonDetail",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 36_000_000_000_000L
+                            + " AND mysql_id < " + 37_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "MARKETING_PERSON; skips blank fullname"),
+            new MigrationRowCountCheck(
+                    "29b",
+                    "pricingEstimateEmailDetails → master_lookup",
+                    "SELECT COUNT(*) FROM pricingEstimateEmailDetails",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 37_000_000_000_000L
+                            + " AND mysql_id < " + 38_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "PRICING_ESTIMATE_LEAD; skips blank email"),
+            new MigrationRowCountCheck(
+                    "29c",
+                    "applicationModule → master_lookup (reference)",
+                    "SELECT COUNT(*) FROM applicationModule",
+                    "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 38_000_000_000_000L
+                            + " AND mysql_id < " + 39_000_000_000_000L,
+                    MigrationComparisonMode.PG_AT_MOST_MYSQL,
+                    "LEGACY_APP_MODULE reference only — ERP module tree stays seeded"));
 
     private static final Map<String, String> PIPELINE_PG_COUNT_SQL = new LinkedHashMap<>();
 
@@ -732,6 +1009,10 @@ public class MigrationRowCountQaService {
                 "modulePricingPackageCount",
                 "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 26_000_000_000_000L
                         + " AND mysql_id < " + 27_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payTypePackageCount",
+                "SELECT COUNT(*) FROM module_pricing_package WHERE mysql_id >= " + 34_000_000_000_000L
+                        + " AND mysql_id < " + 35_000_000_000_000L);
         PIPELINE_PG_COUNT_SQL.put("leaveTypeCount", "SELECT COUNT(*) FROM hrm_leave_type WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("attTimeTableShiftCount", "SELECT COUNT(*) FROM hrm_branch_shift WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("branchHolidayCount", "SELECT COUNT(*) FROM hrm_branch_holiday WHERE mysql_id IS NOT NULL");
@@ -839,6 +1120,17 @@ public class MigrationRowCountQaService {
                 "subscriptionPaymentHistoryCount",
                 "SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id IS NOT NULL AND mysql_id < "
                         + 24_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "userLicenseSubscriptionCount",
+                "SELECT (SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id >= "
+                        + 35_000_000_000_000L
+                        + " AND mysql_id < "
+                        + 36_000_000_000_000L
+                        + ") + (SELECT COUNT(*) FROM company_subscription WHERE mysql_id >= "
+                        + 39_000_000_000_000L
+                        + " AND mysql_id < "
+                        + 40_000_000_000_000L
+                        + ")");
         PIPELINE_PG_COUNT_SQL.put("userCount", "SELECT COUNT(*) FROM users WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("userDetailCount", "SELECT COUNT(*) FROM user_detail");
         PIPELINE_PG_COUNT_SQL.put(
@@ -865,6 +1157,127 @@ public class MigrationRowCountQaService {
                 "SELECT COUNT(*) FROM hrm_recruitment_vacancy WHERE mysql_id IS NOT NULL AND recruiter_employee_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put(
                 "evaluationCount", "SELECT COUNT(*) FROM hrm_recruitment_screening WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "noticeCount",
+                "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 27_000_000_000_000L
+                        + " AND mysql_id < " + 28_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "messageNoticeCount",
+                "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 28_000_000_000_000L
+                        + " AND mysql_id < " + 29_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "companyMessageNoticeCount",
+                "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 29_000_000_000_000L
+                        + " AND mysql_id < " + 30_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "happeningNoticeCount",
+                "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 30_000_000_000_000L
+                        + " AND mysql_id < " + 31_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "eventNoticeCount",
+                "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 31_000_000_000_000L
+                        + " AND mysql_id < " + 32_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "notificationNoticeCount",
+                "SELECT COUNT(*) FROM hrm_company_notice WHERE mysql_id >= " + 32_000_000_000_000L
+                        + " AND mysql_id < " + 33_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "notificationViewedCount",
+                "SELECT COUNT(*) FROM hrm_employee_notice_read WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put(
+                "marketingPersonDetailCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 36_000_000_000_000L
+                        + " AND mysql_id < " + 37_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "pricingEstimateEmailDetailsCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 37_000_000_000_000L
+                        + " AND mysql_id < " + 38_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "applicationModuleLookupCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 38_000_000_000_000L
+                        + " AND mysql_id < " + 39_000_000_000_000L);
+
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollInstitutionCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 44_000_000_000_000L
+                        + " AND mysql_id < " + 45_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "companyPayrollBankCount",
+                "SELECT COUNT(*) FROM hrm_company_bank WHERE mysql_id >= " + 45_000_000_000_000L
+                        + " AND mysql_id < " + 46_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "companyPayrollInstitutionCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 46_000_000_000_000L
+                        + " AND mysql_id < " + 47_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "parentPayrollHeadingCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 47_000_000_000_000L
+                        + " AND mysql_id < " + 48_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "childPayrollHeadingCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 55_000_000_000_000L
+                        + " AND mysql_id < " + 56_000_000_000_000L);
+        // companyBranchPayrollHeadingCount omitted — enrich-only (no stable PG insert count)
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollLabelCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 48_000_000_000_000L
+                        + " AND mysql_id < " + 49_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollHeadingPriorityCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 49_000_000_000_000L
+                        + " AND mysql_id < " + 50_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollHeadingTemplateCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 50_000_000_000_000L
+                        + " AND mysql_id < " + 51_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollHeadingDateCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 51_000_000_000_000L
+                        + " AND mysql_id < " + 52_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollHeadingCalculationCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 52_000_000_000_000L
+                        + " AND mysql_id < " + 53_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payPeriodSpecificHeadingCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 53_000_000_000_000L
+                        + " AND mysql_id < " + 54_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "branchPayPeriodCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 54_000_000_000_000L
+                        + " AND mysql_id < " + 55_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "companySettingParamsCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 40_000_000_000_000L
+                        + " AND mysql_id < " + 41_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "companyAdminParamsCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 41_000_000_000_000L
+                        + " AND mysql_id < " + 42_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "companyEmployeeParamsCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 42_000_000_000_000L
+                        + " AND mysql_id < " + 43_000_000_000_000L);
+        // employeeSummaryCount omitted — enrich-only notes marker
+        // editedOvertimeDetailsCount omitted — enrich-only attendance updates
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollSettingCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 56_000_000_000_000L
+                        + " AND mysql_id < " + 57_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payrollOvertimeCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 57_000_000_000_000L
+                        + " AND mysql_id < " + 58_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "calculatedTypeValueCount",
+                "SELECT COUNT(*) FROM master_lookup WHERE mysql_id >= " + 58_000_000_000_000L
+                        + " AND mysql_id < " + 59_000_000_000_000L);
+        PIPELINE_PG_COUNT_SQL.put(
+                "payByOnlineTransactionCount",
+                "SELECT COUNT(*) FROM subscription_payment_history WHERE mysql_id >= "
+                        + 59_000_000_000_000L
+                        + " OR remarks LIKE '%[migrated-pbo:%'");
+
     }
 
     public List<MigrationRowCountResult> runSourceChecks() {

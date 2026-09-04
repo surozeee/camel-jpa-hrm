@@ -11,13 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface PayrollHeadingTemplateRepository extends JpaRepository<PayrollHeadingTemplate, Long> {
 
     @Query(
-            value = """
-                    SELECT t FROM PayrollHeadingTemplate t
-                    WHERE t.status = true
-                    """,
-            countQuery = """
-                    SELECT count(t) FROM PayrollHeadingTemplate t
-                    WHERE t.status = true
-                    """)
+            value = "SELECT p FROM PayrollHeadingTemplate p",
+            countQuery = "SELECT count(p) FROM PayrollHeadingTemplate p")
     Page<PayrollHeadingTemplate> findMigratable(Pageable pageable);
 }

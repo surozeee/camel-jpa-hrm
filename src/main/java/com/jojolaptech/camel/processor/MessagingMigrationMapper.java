@@ -95,7 +95,7 @@ public final class MessagingMigrationMapper {
         if (body == null) {
             body = "(empty company message)";
         }
-        CompanyNoticeEntity.CompanyNoticeEntityBuilder builder = baseNotice(
+        CompanyNoticeEntity entity = baseNotice(
                 COMPANY_MESSAGE_MYSQL_ID_OFFSET + junction.getId(),
                 companyId,
                 titleFromBody("Company message", msg.getId(), body),
@@ -104,11 +104,12 @@ public final class MessagingMigrationMapper {
                 toLdt(msg.getEndDate()),
                 null,
                 List.of(),
-                null);
+                null)
+                .build();
         if (Boolean.FALSE.equals(msg.getIsEnable())) {
-            builder.status(StatusEnum.INACTIVE);
+            entity.setStatus(StatusEnum.INACTIVE);
         }
-        return builder.build();
+        return entity;
     }
 
     public static CompanyNoticeEntity fromHappening(

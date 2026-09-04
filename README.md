@@ -129,7 +129,7 @@ There are **no** MySQL `Team` / `Division` / `CostCenter` tables. These ERP org 
 | 22zj | Active `branchDepartmentHead` | `hrm_division.head_employee_id` + `hrm_team.leader_employee_id` |
 | 22zk | Migrated employees | `employee.division_id` / `team_id` / `cost_center_id` |
 
-Stable synthetic keys: Division/Team `mysql_id = department.mysqlId * 1_000_000 + department.mysqlBranchId`. Org `hrm_cost_center` is derived from branches (21b) — **not** from MySQL `CostType` (SaaS billing; see 9h–9i / 24a–24b).
+Stable synthetic keys: Division/Team `mysql_id = department.mysqlId * 1_000_000 + department.mysqlBranchId`. Org `hrm_cost_center` is derived from branches (21b) — **not** from MySQL `CostType` (SaaS billing; see 9h–9k / 24a–24c / 29a–29c).
 
 ### SaaS billing (professional fit)
 
@@ -140,12 +140,51 @@ MySQL `CostType` is subscription pricing (billing cycle + discount), not an org 
 | 9h | `costType` | `module_pricing_package` (`LEGACY-CT-{id}`; price 0; billing cycle from `subscription`) |
 | 9i | `payPlan` | `module_pricing_package` (priced packages; mysql_id ≥ 23e12) |
 | 9j | `modulePricing` | `module_pricing_package` (user-tier amounts; mysql_id ≥ 26e12; **no** `module_pricing_scope`) |
+| 9k | `payType` | `module_pricing_package` (subscription-basis catalog; mysql_id ≥ 34e12) |
 | 24a | `companyValidity` | `company_subscription` (latest `validTill` per company) + `subscription_payment_history` (mysql_id ≥ 24e12) |
 | 24b | `subscriptionPayment` | `subscription_payment_history` |
+| 24c | `userLicense` | enrich/create `company_subscription` (new rows mysql_id ≥ 39e12) + payment history (mysql_id ≥ 35e12) |
+| 29a | `marketingPersonDetail` | `master_lookup` (`MARKETING_PERSON`; mysql_id ≥ 36e12) |
+| 29b | `pricingEstimateEmailDetails` | `master_lookup` (`PRICING_ESTIMATE_LEAD`; mysql_id ≥ 37e12) |
+| 29c | `applicationModule` | `master_lookup` (`LEGACY_APP_MODULE`; mysql_id ≥ 38e12) — **reference only** |
 
-**Module scopes / tree from ERP:** `module`, `modulesList`, `applicationModule`, `payPlanModule`, and ERP `module_pricing_scope` are **not** migrated — provision via Master-Service seed. Legacy app-module name is kept as package `features` text only on 9j.
+**Module scopes / tree from ERP:** `module`, `modulesList`, `payPlanModule`, and ERP `module_pricing_scope` are **not** migrated — provision via Master-Service seed. `applicationModule` names are preserved as lookup reference (29c), not as live module tree.
 
-Still out of scope: marketing/pricing-estimate emails.
+### Company / employee params leftovers
+
+EAV param tables and employee summary notes map into `master_lookup` (archive) plus known company / payroll-rule field enrichments where recognized.
+
+| Step | Source (MySQL) | Target (PostgreSQL) |
+|------|----------------|---------------------|
+| 18b | `companySettingParams` | `master_lookup` (`COMPANY_SETTING_PARAM`; mysql_id ≥ 40e12) + known `company.enable_*` flags |
+| 18c | `companyAdminParams` | `master_lookup` (`COMPANY_ADMIN_PARAM`; mysql_id ≥ 41e12) |
+| 18d | `companyEmployeeParams` | `master_lookup` (`EMPLOYEE_SETTING_PARAM`; mysql_id ≥ 42e12) |
+| 18e | `employeeSummary` | enrich `employee.notes` with `[migrated-summary:{id}]` marker |
+
+### Payroll catalog leftovers
+
+Legacy payroll catalog, period/formula archives, company bank links, and OT edit residuals. **Institution passwords are not migrated.** Period/heading formulas and priority/template/date/calc rows are archived to `master_lookup` (not live ERP payroll engines).
+
+| Step | Source (MySQL) | Target (PostgreSQL) |
+|------|----------------|---------------------|
+| 9l | `payrollInstitution` | `master_lookup` (`PAYROLL_INSTITUTION`; mysql_id ≥ 44e12) |
+| 9m | `companyPayroll` | `hrm_company_bank` (mysql_id ≥ 45e12; SALARY account) |
+| 9n | `companyPayrollInstitution` | `master_lookup` (`COMPANY_PAYROLL_INSTITUTION`; mysql_id ≥ 46e12; **no password**) |
+| 9o | `parentPayrollHeading` | `master_lookup` (`PARENT_PAYROLL_HEADING`; mysql_id ≥ 47e12) |
+| 9o2 | `childPayrollHeading` | `master_lookup` (`CHILD_PAYROLL_HEADING`; mysql_id ≥ 55e12) |
+| 9p | `companyBranchPayrollHeading` (active) | enrich `hrm_branch_salary_breakdown.branch_id` when null |
+| 9q | `payrollLabel` | `master_lookup` (`PAYROLL_LABEL`; mysql_id ≥ 48e12) |
+| 9r | `payrollHeadingPriority` | `master_lookup` (`PAYROLL_HEADING_PRIORITY`; mysql_id ≥ 49e12) |
+| 9s | `payrollHeadingTemplate` | `master_lookup` (`PAYROLL_HEADING_TEMPLATE`; mysql_id ≥ 50e12) |
+| 9t | `payrollHeadingDate` | `master_lookup` (`LEGACY_PAYROLL_HEADING_DATE`; mysql_id ≥ 51e12) |
+| 9u | `payrollHeadingCalculation` | `master_lookup` (`LEGACY_PAYROLL_HEADING_CALC`; mysql_id ≥ 52e12) |
+| 9v | `payPeriodSpecificHeading` | `master_lookup` (`LEGACY_PAY_PERIOD_HEADING`; mysql_id ≥ 53e12) |
+| 9w | `branchPayPeriod` | `master_lookup` (`LEGACY_BRANCH_PAY_PERIOD`; mysql_id ≥ 54e12) |
+| 23v | `editedOvertimeDetails` | enrich `hrm_attendance` (`overtime_manually_edited`, override minutes, `[migrated-edited-ot:{id}]`) |
+| 23w | `payrollSetting` | `master_lookup` (`LEGACY_PAYROLL_SETTING`; mysql_id ≥ 56e12) |
+| 23x | `payrollOvertime` | `master_lookup` (`LEGACY_PAYROLL_OVERTIME`; mysql_id ≥ 57e12) |
+| 23y | `calculatedTypeValue` | `master_lookup` (`LEGACY_CALCULATED_TYPE_VALUE`; mysql_id ≥ 58e12) |
+| 23z | `payByOnlineTransaction` | enrich/create `subscription_payment_history` (new rows mysql_id ≥ 59e12) |
 
 ### Org structure leftovers
 
@@ -171,7 +210,7 @@ Metadata and taxonomy fits that map into existing ERP tables (no dedicated MySQL
 | 22zh | `jobCategory` | `hrm_skill_category` (**fan-out** one row per migrated company; mysql_id ≥ 20e12) |
 | 22zi | `jobCategories` | `hrm_skill_category` (company-scoped; mysql_id ≥ 21e12) |
 
-Out of scope (not migrated): `EmployeeBranch` / `BranchDepartment` (step 22), standalone `Insurance` entity (provider denormalized in 22s), SaaS module tree/scopes (`module` / `applicationModule` / `payPlanModule` / `module_pricing_scope` — ERP seed), `userRating`, extra recruiters beyond first, PreEmployment/Joining templates (no MySQL ATS source — company config seed).
+Out of scope (not migrated): `EmployeeBranch` / `BranchDepartment` (step 22), standalone `Insurance` entity (provider denormalized in 22s), SaaS module tree/scopes (`module` / `modulesList` / `payPlanModule` / `module_pricing_scope` — ERP seed; `applicationModule` → lookup 29c only), institution **passwords** (9n archives identity only), `userRating`, extra recruiters beyond first, PreEmployment/Joining templates (no MySQL ATS source — company config seed), `alertSetting` (global templates).
 
 ### Recruitment / ATS (professional fit)
 
@@ -188,6 +227,22 @@ Legacy ATS maps into ERP **`hrm_recruitment_*`** (not empty pre-employment check
 | 27g | `applicantsTransaction` | `hrm_recruitment_application_status_history` |
 | 27h | `recruiters` | patch `vacancy.recruiter_employee_id` (first wins) |
 | 27i | `evaluation` | `hrm_recruitment_screening` |
+
+### Messaging / notices / alerts (full)
+
+Company announcements and related broadcasts migrate into `hrm_company_notice` (offset bands). Viewed state maps to `hrm_employee_notice_read`.
+
+| Step | Source (MySQL) | Target (PostgreSQL) |
+|------|----------------|---------------------|
+| 28a | `notice` | `hrm_company_notice` (mysql_id ≥ 27e12) |
+| 28b | `message` | `hrm_company_notice` (mysql_id ≥ 28e12; audience = receiver employee) |
+| 28c | `companyMessage` × `companyMessageCompany` | `hrm_company_notice` (mysql_id ≥ 29e12; one per junction) |
+| 28d | `happening` | `hrm_company_notice` (mysql_id ≥ 30e12; date in body) |
+| 28e | `event` | `hrm_company_notice` (mysql_id ≥ 31e12; date in body) |
+| 28f | `notification` | `hrm_company_notice` (mysql_id ≥ 32e12) |
+| 28g | `notificationViewed` | `hrm_employee_notice_read` (links to 28f notice; `viewedBy` = user.mysql_id) |
+
+Still out of scope: `alertSetting` (global HTML templates ≠ attendance alerts / notices), `hrm_employee_contact_message` (no faithful MySQL “Contact Us” source), attachment binaries (URL in `action_url` only).
 
 ### Leave applications & balances
 

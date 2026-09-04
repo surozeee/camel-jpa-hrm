@@ -18,6 +18,9 @@ public interface PgAttendanceRepository extends JpaRepository<AttendanceEntity, 
     @Query("select a.mysqlId from AttendanceEntity a where a.mysqlId in :mysqlIds")
     Set<Long> findMysqlIdsByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
 
+    @Query("select a from AttendanceEntity a where a.mysqlId in :mysqlIds")
+    List<AttendanceEntity> findByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
+
     Optional<AttendanceEntity> findByMysqlId(Long mysqlId);
 
     @Query("""

@@ -24,4 +24,16 @@ public interface PgBankRepository extends JpaRepository<BankEntity, UUID> {
 
     @Query("select lower(b.name) from BankEntity b where lower(b.name) in :names")
     Set<String> findExistingNamesLowerCase(@Param("names") Collection<String> names);
+
+    @Query("select b from BankEntity b where lower(b.code) = lower(:code)")
+    Optional<BankEntity> findByCodeIgnoreCase(@Param("code") String code);
+
+    @Query("select b from BankEntity b where lower(b.code) in :codes")
+    List<BankEntity> findByCodeIgnoreCaseIn(@Param("codes") Collection<String> codes);
+
+    @Query("select b from BankEntity b where lower(b.name) = lower(:name)")
+    Optional<BankEntity> findByNameIgnoreCase(@Param("name") String name);
+
+    @Query("select b from BankEntity b where lower(b.name) in :names")
+    List<BankEntity> findByNameIgnoreCaseIn(@Param("names") Collection<String> names);
 }
