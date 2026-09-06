@@ -45,8 +45,7 @@ public class LeaveTypeProcessor implements Processor {
                 continue;
             }
             if (Boolean.FALSE.equals(source.getIsActive())) {
-                log.info("Skipping inactive leave id={}", source.getId());
-                continue;
+                log.info("Migrating inactive leave id={} as INACTIVE (needed for historical leave apps)", source.getId());
             }
             toSave.add(LeaveMigrationMapper.toLeaveType(source, namesInUse));
         }

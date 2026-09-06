@@ -76,9 +76,7 @@ final class EmployeeProfileMigrationMapper {
     private EmployeeProfileMigrationMapper() {}
 
     static AddressEntity fromEmployeeAddress(EmployeeAddress source, java.util.UUID employeeId) {
-        String street = firstNonBlank(
-                OrgMigrationMapper.trimToNull(source.getStreet()),
-                OrgMigrationMapper.trimToNull(source.getAddress()));
+        String street = OrgMigrationMapper.trimToNull(source.getStreet());
         if (street == null) {
             return null;
         }

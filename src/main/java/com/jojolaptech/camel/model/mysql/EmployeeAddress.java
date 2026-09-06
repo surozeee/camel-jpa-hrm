@@ -63,9 +63,6 @@ public class EmployeeAddress {
     @Column(name = "addressType", nullable = true)
     private AddressType addressType;
 
-    @Column(name = "address", nullable = false)
-    private String address = street;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
