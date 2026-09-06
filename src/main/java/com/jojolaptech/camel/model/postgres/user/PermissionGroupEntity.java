@@ -40,7 +40,7 @@ public class PermissionGroupEntity extends BaseAuditEntity {
     @Builder.Default
     private TrueFalseEnum hasSubChild = TrueFalseEnum.FALSE;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private PermissionGroupEntity parent;
 

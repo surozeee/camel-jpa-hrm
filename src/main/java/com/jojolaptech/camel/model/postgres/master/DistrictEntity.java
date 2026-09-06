@@ -20,7 +20,7 @@ public class DistrictEntity extends BaseAuditEntity {
 
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "state_id")
     private StateEntity state;
 

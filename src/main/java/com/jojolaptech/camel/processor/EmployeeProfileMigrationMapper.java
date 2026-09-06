@@ -24,7 +24,7 @@ import com.jojolaptech.camel.model.mysql.enums.LanguageLevel;
 import com.jojolaptech.camel.model.mysql.enums.PremiumFrequency;
 import com.jojolaptech.camel.model.mysql.enums.PublicationType;
 import com.jojolaptech.camel.model.mysql.enums.SeminarFundedBy;
-import com.jojolaptech.camel.model.postgres.company.EmployeeAddressEntity;
+import com.jojolaptech.camel.model.postgres.company.AddressEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeAwardEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeDesignationEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeDetailEntity;
@@ -75,14 +75,14 @@ final class EmployeeProfileMigrationMapper {
 
     private EmployeeProfileMigrationMapper() {}
 
-    static EmployeeAddressEntity fromEmployeeAddress(EmployeeAddress source, java.util.UUID employeeId) {
+    static AddressEntity fromEmployeeAddress(EmployeeAddress source, java.util.UUID employeeId) {
         String street = firstNonBlank(
                 OrgMigrationMapper.trimToNull(source.getStreet()),
                 OrgMigrationMapper.trimToNull(source.getAddress()));
         if (street == null) {
             return null;
         }
-        EmployeeAddressEntity address = EmployeeAddressEntity.builder()
+        AddressEntity address = AddressEntity.builder()
                 .mysqlId(source.getId())
                 .employeeId(employeeId)
                 .addressType(mapAddressType(source.getAddressType()))
@@ -97,8 +97,8 @@ final class EmployeeProfileMigrationMapper {
         return address;
     }
 
-    static List<EmployeeAddressEntity> fromEmployeeMaster(Employee source, java.util.UUID employeeId) {
-        List<EmployeeAddressEntity> addresses = new ArrayList<>();
+    static List<AddressEntity> fromEmployeeMaster(Employee source, java.util.UUID employeeId) {
+        List<AddressEntity> addresses = new ArrayList<>();
         addMasterAddress(addresses, source, employeeId, source.getPermanentAdd(), AddressTypeEnum.PERMANENT, 1L);
         addMasterAddress(addresses, source, employeeId, source.getTemperoryAdd(), AddressTypeEnum.TEMPORARY, 2L);
         return addresses;
@@ -474,7 +474,7 @@ final class EmployeeProfileMigrationMapper {
     }
 
     private static void addMasterAddress(
-            List<EmployeeAddressEntity> addresses,
+            List<AddressEntity> addresses,
             Employee source,
             java.util.UUID employeeId,
             String streetValue,
@@ -484,7 +484,7 @@ final class EmployeeProfileMigrationMapper {
         if (street == null) {
             return;
         }
-        EmployeeAddressEntity address = EmployeeAddressEntity.builder()
+        AddressEntity address = AddressEntity.builder()
                 .mysqlId(masterAddressMysqlId(source.getId(), suffix))
                 .employeeId(employeeId)
                 .addressType(addressType)

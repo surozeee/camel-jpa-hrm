@@ -1,9 +1,9 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.Employee;
-import com.jojolaptech.camel.model.postgres.company.EmployeeAddressEntity;
+import com.jojolaptech.camel.model.postgres.company.AddressEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeEntity;
-import com.jojolaptech.camel.repository.postgres.company.PgEmployeeAddressRepository;
+import com.jojolaptech.camel.repository.postgres.company.PgAddressRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgEmployeeRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class EmployeeMasterAddressProcessor implements Processor {
 
     private final PgEmployeeRepository employeeRepository;
-    private final PgEmployeeAddressRepository employeeAddressRepository;
+    private final PgAddressRepository addressRepository;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -37,20 +37,20 @@ public class EmployeeMasterAddressProcessor implements Processor {
                                 EmployeeProfileMigrationMapper.masterAddressMysqlId(employee.getId(), 2L))
                         .stream())
                 .collect(Collectors.toSet());
-        Set<Long> existingIds = employeeAddressRepository.findMysqlIdsByMysqlIdIn(mysqlIds);
+        Set<Long> existingIds = addressRepository.findMysqlIdsByMysqlIdIn(mysqlIds);
 
         Set<Long> employeeMysqlIds =
                 batch.stream().map(Employee::getId).collect(Collectors.toSet());
         Map<Long, EmployeeEntity> employeeByMysqlId = employeeRepository.findByMysqlIdIn(employeeMysqlIds).stream()
                 .collect(Collectors.toMap(EmployeeEntity::getMysqlId, row -> row, (left, right) -> left));
 
-        List<EmployeeAddressEntity> toSave = new ArrayList<>();
+        List<AddressEntity> toSave = new ArrayList<>();
         for (Employee source : batch) {
             EmployeeEntity employee = employeeByMysqlId.get(source.getId());
             if (employee == null) {
                 continue;
             }
-            for (EmployeeAddressEntity address :
+            for (AddressEntity address :
                     EmployeeProfileMigrationMapper.fromEmployeeMaster(source, employee.getId())) {
                 if (existingIds.contains(address.getMysqlId())) {
                     continue;
@@ -61,7 +61,7 @@ public class EmployeeMasterAddressProcessor implements Processor {
         }
 
         if (!toSave.isEmpty()) {
-            employeeAddressRepository.saveAll(toSave);
+            addressRepository.saveAll(toSave);
         }
         exchange.setProperty("batchImported", toSave.size());
     }

@@ -1,8 +1,9 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.Branch;
-import com.jojolaptech.camel.model.postgres.company.BranchAddressEntity;
+import com.jojolaptech.camel.model.postgres.company.AddressEntity;
 import com.jojolaptech.camel.model.postgres.company.BranchEntity;
+import com.jojolaptech.camel.repository.postgres.company.PgAddressRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgBranchRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class BranchAddressProcessor implements Processor {
     private static final Logger log = LoggerFactory.getLogger(BranchAddressProcessor.class);
 
     private final PgBranchRepository branchRepository;
+    private final PgAddressRepository addressRepository;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -54,11 +56,12 @@ public class BranchAddressProcessor implements Processor {
                 log.warn("Skipping branch address id={}, branch not migrated yet", source.getId());
                 continue;
             }
-            BranchAddressEntity address = AddressMigrationMapper.branchAddress(source);
+            AddressEntity address = AddressMigrationMapper.branchAddress(source);
             if (address == null) {
                 continue;
             }
-            branch.setBranchAddress(address);
+            AddressEntity saved = addressRepository.save(address);
+            branch.setBranchAddress(saved);
             toSave.add(branch);
         }
 

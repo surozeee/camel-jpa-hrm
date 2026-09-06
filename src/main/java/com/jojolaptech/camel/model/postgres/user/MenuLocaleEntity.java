@@ -17,7 +17,7 @@ public class MenuLocaleEntity extends BaseAuditEntity {
     private String name;
     @Enumerated(EnumType.STRING)
     private LanguageEnum language;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false)
     private MenuEntity menu;
 }

@@ -65,6 +65,13 @@ public class FiscalYearProcessor implements Processor {
         Map<Long, CompanyEntity> companiesByMysqlId = companyRepository.findByMysqlIdIn(companyMysqlIds).stream()
                 .collect(Collectors.toMap(CompanyEntity::getMysqlId, Function.identity()));
 
+        Set<String> existingCompanyMasterKeys = new HashSet<>();
+        if (!companiesByMysqlId.isEmpty()) {
+            for (Object[] pair : companyFiscalYearRepository.findCompanyMasterPairsByCompanyIdIn(
+                    companiesByMysqlId.values().stream().map(CompanyEntity::getId).collect(Collectors.toSet()))) {
+                existingCompanyMasterKeys.add(pair[0] + ":" + pair[1]);
+            }
+        }
         Map<String, FiscalYearEntity> masterByName = loadOrCreateMasterYears(batch, existingCompanyFyIds);
 
         List<CompanyFiscalYearEntity> companyFiscalYears = new ArrayList<>();
@@ -92,6 +99,15 @@ public class FiscalYearProcessor implements Processor {
             FiscalYearEntity master = masterByName.get(fyName);
             if (master == null || master.getId() == null) {
                 log.warn("Skipping fiscal year id={}, master fiscal year {} unavailable", source.getId(), fyName);
+                continue;
+            }
+
+            String companyMasterKey = company.getId() + ":" + master.getId();
+            if (!existingCompanyMasterKeys.add(companyMasterKey)) {
+                log.info(
+                        "Skipping fiscal year id={}, company already has master FY {}",
+                        source.getId(),
+                        fyName);
                 continue;
             }
 

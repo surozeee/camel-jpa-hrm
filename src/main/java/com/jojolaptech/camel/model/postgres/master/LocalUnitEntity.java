@@ -15,11 +15,11 @@ public class LocalUnitEntity extends BaseAuditEntity {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id")
     private DistrictEntity district;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "local_unit_type_id")
     private LocalUnitTypeEntity localUnitType;
 }

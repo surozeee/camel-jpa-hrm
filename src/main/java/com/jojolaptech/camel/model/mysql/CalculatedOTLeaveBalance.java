@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "calculatedOTLeaveBalance")
+@Table(name = "calculatedotleave_balance")
 @Getter
 @Setter
 public class CalculatedOTLeaveBalance {

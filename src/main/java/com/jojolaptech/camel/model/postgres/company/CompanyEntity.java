@@ -44,11 +44,11 @@ public class CompanyEntity extends BaseAuditEntity {
     @Column(name = "logo_url", length = 1024)
     private String logoUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private OrganizationEntity organization;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_type_id", nullable = false)
     private CompanyTypeEntity companyType;
 

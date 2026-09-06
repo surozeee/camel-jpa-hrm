@@ -7,7 +7,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +18,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Shared ERP {@code address} table used by branch.address_id and employee addresses.
+ * Must be a single entity — Hibernate rejects two @Entity mappings on the same table.
+ */
 @Builder
 @Getter
 @Setter
@@ -22,21 +29,25 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "address")
-public class EmployeeAddressEntity extends BaseAuditEntity {
+public class AddressEntity extends BaseAuditEntity {
 
-    @Column(name = "mysql_id", unique = true)
+    @Column(unique = true)
     private Long mysqlId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", nullable = false)
     private AddressTypeEnum addressType;
 
-    @Column(name = "street_address", nullable = false)
+    @Column(nullable = false)
     private String streetAddress;
 
     private String streetAddress2;
 
     private UUID city;
+
+    /** Naming strategy maps cityName → city_name (avoid @Column(name="city_name") dual-bind). */
+    private String cityName;
+
+    private UUID countryId;
 
     private UUID stateId;
 
@@ -44,13 +55,15 @@ public class EmployeeAddressEntity extends BaseAuditEntity {
 
     private UUID localUnitId;
 
+    /** Legacy display / free-text state name (branch addresses). */
+    private String state;
+
     @Column(length = 64)
     private String ward;
 
     private String postalCode;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CountryEnum country;
 
     private String latitude;
@@ -60,6 +73,8 @@ public class EmployeeAddressEntity extends BaseAuditEntity {
     @Column(columnDefinition = "TEXT")
     private String additionalInfo;
 
-    @Column(name = "employee_id", nullable = false)
     private UUID employeeId;
+
+    @OneToMany(mappedBy = "branchAddress", fetch = FetchType.LAZY)
+    private List<BranchEntity> branches;
 }

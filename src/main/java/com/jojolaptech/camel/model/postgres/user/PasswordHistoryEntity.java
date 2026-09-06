@@ -14,7 +14,7 @@ import lombok.*;
 public class PasswordHistoryEntity extends BaseAuditEntity {
 
     private String password;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 }

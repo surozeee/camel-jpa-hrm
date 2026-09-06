@@ -1,14 +1,15 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.EmployeeAddress;
-import com.jojolaptech.camel.model.postgres.company.EmployeeAddressEntity;
+import com.jojolaptech.camel.model.postgres.company.AddressEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeEntity;
-import com.jojolaptech.camel.repository.postgres.company.PgEmployeeAddressRepository;
+import com.jojolaptech.camel.repository.postgres.company.PgAddressRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgEmployeeRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
@@ -24,7 +25,7 @@ public class EmployeeAddressProcessor implements Processor {
     private static final Logger log = LoggerFactory.getLogger(EmployeeAddressProcessor.class);
 
     private final PgEmployeeRepository employeeRepository;
-    private final PgEmployeeAddressRepository employeeAddressRepository;
+    private final PgAddressRepository addressRepository;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -36,16 +37,16 @@ public class EmployeeAddressProcessor implements Processor {
         }
 
         Set<Long> mysqlIds = batch.stream().map(EmployeeAddress::getId).collect(Collectors.toSet());
-        Set<Long> existingIds = employeeAddressRepository.findMysqlIdsByMysqlIdIn(mysqlIds);
+        Set<Long> existingIds = addressRepository.findMysqlIdsByMysqlIdIn(mysqlIds);
 
         Set<Long> employeeMysqlIds = batch.stream()
-                .filter(row -> row.getEmployee() != null)
-                .map(row -> row.getEmployee().getId())
+                .filter(a -> a.getEmployee() != null)
+                .map(a -> a.getEmployee().getId())
                 .collect(Collectors.toSet());
-        Map<Long, EmployeeEntity> employeeByMysqlId = employeeRepository.findByMysqlIdIn(employeeMysqlIds).stream()
-                .collect(Collectors.toMap(EmployeeEntity::getMysqlId, row -> row, (left, right) -> left));
+        Map<Long, UUID> employeeIdByMysqlId = employeeRepository.findByMysqlIdIn(employeeMysqlIds).stream()
+                .collect(Collectors.toMap(EmployeeEntity::getMysqlId, EmployeeEntity::getId, (a, b) -> a));
 
-        List<EmployeeAddressEntity> toSave = new ArrayList<>();
+        List<AddressEntity> toSave = new ArrayList<>();
         for (EmployeeAddress source : batch) {
             if (existingIds.contains(source.getId())) {
                 continue;
@@ -54,16 +55,17 @@ public class EmployeeAddressProcessor implements Processor {
                 log.warn("Skipping employeeAddress id={}, missing employee", source.getId());
                 continue;
             }
-            EmployeeEntity employee = employeeByMysqlId.get(source.getEmployee().getId());
-            if (employee == null) {
-                log.warn("Skipping employeeAddress id={}, employee not migrated", source.getId());
+            UUID employeeId = employeeIdByMysqlId.get(source.getEmployee().getId());
+            if (employeeId == null) {
+                log.warn(
+                        "Skipping employeeAddress id={}, employee mysqlId={} not migrated",
+                        source.getId(),
+                        source.getEmployee().getId());
                 continue;
             }
-
-            EmployeeAddressEntity address =
-                    EmployeeProfileMigrationMapper.fromEmployeeAddress(source, employee.getId());
+            AddressEntity address = EmployeeProfileMigrationMapper.fromEmployeeAddress(source, employeeId);
             if (address == null) {
-                log.warn("Skipping employeeAddress id={}, no street/address text", source.getId());
+                log.warn("Skipping employeeAddress id={}, mapping failed", source.getId());
                 continue;
             }
             toSave.add(address);
@@ -71,7 +73,7 @@ public class EmployeeAddressProcessor implements Processor {
         }
 
         if (!toSave.isEmpty()) {
-            employeeAddressRepository.saveAll(toSave);
+            addressRepository.saveAll(toSave);
         }
         exchange.setProperty("batchImported", toSave.size());
     }

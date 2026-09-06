@@ -24,7 +24,7 @@ public class FiscalYearEntity extends BaseAuditEntity {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fiscal_year_type_id", nullable = false)
     private FiscalYearTypeEntity fiscalYearType;
 }

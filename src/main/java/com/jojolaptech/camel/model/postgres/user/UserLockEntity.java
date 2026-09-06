@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 public class UserLockEntity extends BaseAuditEntity {
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
     @Enumerated(EnumType.STRING)

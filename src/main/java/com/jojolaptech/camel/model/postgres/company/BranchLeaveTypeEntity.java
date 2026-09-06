@@ -47,7 +47,7 @@ public class BranchLeaveTypeEntity extends BaseAuditEntity {
     @Column(name = "branch_id", nullable = false)
     private UUID branchId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leave_type_id", nullable = false)
     private LeaveTypeEntity leaveType;
 

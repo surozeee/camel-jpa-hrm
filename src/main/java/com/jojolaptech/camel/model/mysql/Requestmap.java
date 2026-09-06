@@ -26,6 +26,6 @@ public class Requestmap {
     @Column(name = "url", nullable = false, unique = true)
     private String url;
 
-    @Column(name = "configAttribute", nullable = false)
+    @Column(name = "config_attribute", nullable = false)
     private String configAttribute;
 }

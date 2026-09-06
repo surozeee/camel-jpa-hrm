@@ -100,7 +100,7 @@ public class BranchLeaveAccumulationRuleEntity extends BaseAuditEntity {
     @Column(length = 500)
     private String remarks;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_leave_type_id", nullable = false)
     private BranchLeaveTypeEntity branchLeaveType;
 }

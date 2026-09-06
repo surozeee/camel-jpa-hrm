@@ -6,7 +6,7 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Entity
+@Entity(name = "CompanyBranchEntity")
 @Table(name = "branch")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,12 +36,12 @@ public class BranchEntity extends BaseAuditEntity {
 
     private UUID timezone;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
     private CompanyEntity company;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
-    private BranchAddressEntity branchAddress;
+    private AddressEntity branchAddress;
 }
 

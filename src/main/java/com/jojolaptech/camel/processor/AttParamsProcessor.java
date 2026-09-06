@@ -175,19 +175,19 @@ public class AttParamsProcessor implements Processor {
             imported += companiesToUpdate.size();
         }
         if (!closingPolicies.isEmpty()) {
-            closingPolicyRepository.saveAll(closingPolicies);
+            saveInChunks(closingPolicies, closingPolicyRepository::saveAll);
             imported += closingPolicies.size();
         }
         if (!leavePolicies.isEmpty()) {
-            leavePolicyRepository.saveAll(leavePolicies);
+            saveInChunks(leavePolicies, leavePolicyRepository::saveAll);
             imported += leavePolicies.size();
         }
         if (!rosterSettings.isEmpty()) {
-            rosterSettingsRepository.saveAll(rosterSettings);
+            saveInChunks(rosterSettings, rosterSettingsRepository::saveAll);
             imported += rosterSettings.size();
         }
         if (!branchShifts.isEmpty()) {
-            branchShiftRepository.saveAll(branchShifts);
+            saveInChunks(branchShifts, branchShiftRepository::saveAll);
             branchShiftRepository.flush();
             imported += branchShifts.size();
         }
@@ -196,7 +196,13 @@ public class AttParamsProcessor implements Processor {
                     .map(rule -> rule.shift().getId())
                     .filter(java.util.Objects::nonNull)
                     .collect(Collectors.toSet());
-            Set<UUID> existingRuleShiftIds = branchShiftRuleRepository.findExistingBranchShiftIds(shiftIds);
+            Set<UUID> existingRuleShiftIds = new HashSet<>();
+            List<UUID> shiftIdList = new ArrayList<>(shiftIds);
+            int chunkSize = 5_000;
+            for (int i = 0; i < shiftIdList.size(); i += chunkSize) {
+                List<UUID> chunk = shiftIdList.subList(i, Math.min(i + chunkSize, shiftIdList.size()));
+                existingRuleShiftIds.addAll(branchShiftRuleRepository.findExistingBranchShiftIds(chunk));
+            }
             List<BranchShiftRuleEntity> newRules = new ArrayList<>();
             for (PendingShiftRule pending : pendingShiftRules) {
                 BranchShiftEntity shift = pending.shift();
@@ -207,11 +213,18 @@ public class AttParamsProcessor implements Processor {
                 existingRuleShiftIds.add(shift.getId());
             }
             if (!newRules.isEmpty()) {
-                branchShiftRuleRepository.saveAll(newRules);
+                saveInChunks(newRules, branchShiftRuleRepository::saveAll);
                 imported += newRules.size();
             }
         }
         return imported;
+    }
+
+    private static <T> void saveInChunks(List<T> items, java.util.function.Consumer<List<T>> saver) {
+        int chunkSize = 500;
+        for (int i = 0; i < items.size(); i += chunkSize) {
+            saver.accept(items.subList(i, Math.min(i + chunkSize, items.size())));
+        }
     }
 
     private void applyCompanyFlags(CompanyEntity company, Company mysqlCompany, AttParamValues values) {

@@ -61,10 +61,10 @@ public class MySqlDataSourceConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto", "none");
         properties.put("hibernate.dialect", dialect);
-        // Keep Grails GORM names (e.g. secUser, parentBranch_id) as stored in MySQL.
+        // Staging/hrm MySQL uses snake_case tables/columns (company_employee, config_attribute).
         properties.put(
                 "hibernate.physical_naming_strategy",
-                "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl");
+                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
         // Performance optimizations for batch processing
         properties.put("hibernate.jdbc.batch_size", "50");
         properties.put("hibernate.jdbc.batch_versioned_data", "true");

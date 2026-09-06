@@ -34,7 +34,7 @@ public class PermissionEntity extends BaseAuditEntity {
     @Builder.Default
     private StatusEnum status = StatusEnum.ACTIVE;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permission_group_id")
     private PermissionGroupEntity permissionGroup;
 

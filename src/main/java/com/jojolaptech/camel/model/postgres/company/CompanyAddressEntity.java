@@ -16,10 +16,10 @@ import java.util.UUID;
 @Builder
 public class CompanyAddressEntity extends BaseAuditEntity {
 
-    @Column(name = "mysql_id", unique = true)
+    @Column(unique = true)
     private Long mysqlId;
 
-    @Column(name = "company_id", nullable = false)
+    @Column(nullable = false)
     private UUID companyId;
 
     @Column(nullable = false)
@@ -30,7 +30,6 @@ public class CompanyAddressEntity extends BaseAuditEntity {
     @Column(nullable = true)
     private UUID city;
 
-    @Column(name = "city_name")
     private String cityName;
 
     private UUID countryId;

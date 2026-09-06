@@ -27,7 +27,7 @@ public class CountryEntity extends BaseAuditEntity {
     private String iso3;
     @Column(length = 50)
     private String teleCode;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name = "base_currency_id")
     private CurrencyEntity baseCurrency;
     /** Country flag image URL only. */
@@ -37,7 +37,7 @@ public class CountryEntity extends BaseAuditEntity {
     @Column(length = 2048)
     private String image;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name = "region_id")
     private RegionEntity region;
 

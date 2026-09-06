@@ -29,7 +29,7 @@ public class PageLocaleEntity extends BaseAuditEntity {
     @Column(nullable = false, length = 5)
     private LanguageEnum language;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "page_id", nullable = false)
     private PageEntity page;
 }

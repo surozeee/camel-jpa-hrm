@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PgExperienceRepository extends JpaRepository<ExperienceEntity, UUID> {
 
-    @Query("select e.mysqlId from ExperienceEntity e where e.mysqlId in :mysqlIds")
+    @Query("select e.mysqlId from CompanyExperienceEntity e where e.mysqlId in :mysqlIds")
     Set<Long> findMysqlIdsByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
 }

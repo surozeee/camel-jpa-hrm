@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "attDeviceMAC")
+@Table(name = "att_devicemac")
 @Getter
 @Setter
 public class AttDeviceMAC {

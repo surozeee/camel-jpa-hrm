@@ -48,7 +48,7 @@ public class BankDetailEntity extends BaseAuditEntity {
     @Column(length = 500)
     private String remarks;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private EmployeeEntity employee;
 }

@@ -16,7 +16,7 @@ final class LeaveMigrationMapper {
         if (baseName == null) {
             baseName = "Leave-" + source.getId();
         }
-        String uniqueName = uniqueName(baseName, source.getCompany().getId(), namesInUse);
+        String uniqueName = uniqueName(baseName, source.getCompany().getId(), source.getId(), namesInUse);
         int maxDays = (int) Math.round(source.getMaxDay());
 
         return LeaveTypeEntity.builder()
@@ -38,13 +38,16 @@ final class LeaveMigrationMapper {
         return branchMysqlId + ":" + leaveMysqlId;
     }
 
-    private static String uniqueName(String baseName, Long companyMysqlId, Set<String> namesInUse) {
+    private static String uniqueName(String baseName, Long companyMysqlId, Long leaveMysqlId, Set<String> namesInUse) {
         String candidate = baseName;
-        String key = candidate.toLowerCase(Locale.ROOT);
-        if (namesInUse.add(key)) {
+        if (namesInUse.add(candidate.toLowerCase(Locale.ROOT))) {
             return candidate;
         }
         candidate = baseName + " (C" + companyMysqlId + ")";
+        if (namesInUse.add(candidate.toLowerCase(Locale.ROOT))) {
+            return candidate;
+        }
+        candidate = baseName + " (C" + companyMysqlId + "-" + leaveMysqlId + ")";
         namesInUse.add(candidate.toLowerCase(Locale.ROOT));
         return candidate;
     }

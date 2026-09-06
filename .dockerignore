@@ -1,0 +1,14 @@
+# Build context hygiene — prevent stale IDE output from affecting images
+bin/
+build/
+.gradle/
+.git/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+out/
+*.log
+.env
+.env.*

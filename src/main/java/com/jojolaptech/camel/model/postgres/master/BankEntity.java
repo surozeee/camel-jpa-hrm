@@ -35,11 +35,11 @@ public class BankEntity extends BaseAuditEntity {
 
     private String email;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name = "country_id")
     private CountryEntity country;
 
     @OneToMany(mappedBy = "bank", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    private List<BranchEntity> branches;
+    private List<BankBranchEntity> branches;
 }
 

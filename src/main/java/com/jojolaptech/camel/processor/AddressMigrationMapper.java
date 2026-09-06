@@ -2,7 +2,7 @@ package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.Branch;
 import com.jojolaptech.camel.model.mysql.Company;
-import com.jojolaptech.camel.model.postgres.company.BranchAddressEntity;
+import com.jojolaptech.camel.model.postgres.company.AddressEntity;
 import com.jojolaptech.camel.model.postgres.company.CompanyAddressEntity;
 import com.jojolaptech.camel.model.postgres.enums.CountryEnum;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
@@ -29,13 +29,13 @@ final class AddressMigrationMapper {
         return address;
     }
 
-    static BranchAddressEntity branchAddress(Branch source) {
+    static AddressEntity branchAddress(Branch source) {
         String streetAddress = OrgMigrationMapper.trimToNull(source.getAddress());
         String fax = OrgMigrationMapper.trimToNull(source.getFaxNo());
         if (streetAddress == null && fax == null) {
             return null;
         }
-        BranchAddressEntity address = BranchAddressEntity.builder()
+        AddressEntity address = AddressEntity.builder()
                 .streetAddress(streetAddress != null ? streetAddress : fax)
                 .country(CountryEnum.NP)
                 .additionalInfo(buildAdditionalInfo(streetAddress, fax))

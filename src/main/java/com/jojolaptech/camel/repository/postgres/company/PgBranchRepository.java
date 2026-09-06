@@ -14,11 +14,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PgBranchRepository extends JpaRepository<BranchEntity, UUID> {
 
-    @Query("select b.mysqlId from BranchEntity b where b.mysqlId in :mysqlIds")
+    @Query("select b.mysqlId from CompanyBranchEntity b where b.mysqlId in :mysqlIds")
     Set<Long> findMysqlIdsByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
 
     @Query("""
-            select b from BranchEntity b
+            select b from CompanyBranchEntity b
             left join fetch b.branchAddress
             left join fetch b.company
             where b.mysqlId in :mysqlIds
@@ -28,27 +28,27 @@ public interface PgBranchRepository extends JpaRepository<BranchEntity, UUID> {
     Optional<BranchEntity> findByMysqlId(Long mysqlId);
 
     @Query("""
-            select b from BranchEntity b join fetch b.company
+            select b from CompanyBranchEntity b join fetch b.company
             where b.id in :ids
             """)
     List<BranchEntity> findByIdInWithCompany(@Param("ids") Collection<UUID> ids);
 
     @Query("""
-            select b from BranchEntity b
+            select b from CompanyBranchEntity b
             where b.company.mysqlId = :companyMysqlId
             order by b.mysqlId asc
             """)
     List<BranchEntity> findByCompanyMysqlIdOrderByMysqlIdAsc(@Param("companyMysqlId") Long companyMysqlId);
 
     @Query("""
-            select b from BranchEntity b join fetch b.company c
+            select b from CompanyBranchEntity b join fetch b.company c
             where c.mysqlId in :companyMysqlIds
             order by b.mysqlId asc
             """)
     List<BranchEntity> findByCompanyMysqlIdIn(@Param("companyMysqlIds") Collection<Long> companyMysqlIds);
 
     @Query("""
-            select b from BranchEntity b join fetch b.company c
+            select b from CompanyBranchEntity b join fetch b.company c
             where c.id in :companyIds
             order by b.mysqlId asc
             """)

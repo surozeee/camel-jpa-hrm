@@ -31,4 +31,11 @@ public interface PgCompanyFiscalYearRepository extends JpaRepository<CompanyFisc
 
     @Query("select distinct c.masterFiscalYearId from CompanyFiscalYearEntity c")
     Set<UUID> findDistinctMasterFiscalYearIds();
+
+    @Query("""
+            select c.companyId, c.masterFiscalYearId
+            from CompanyFiscalYearEntity c
+            where c.companyId in :companyIds
+            """)
+    List<Object[]> findCompanyMasterPairsByCompanyIdIn(@Param("companyIds") Collection<UUID> companyIds);
 }

@@ -48,7 +48,7 @@ public class DepartmentEntity extends BaseAuditEntity {
     @Column(name = "division_id")
     private UUID divisionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_department_id")
     private DepartmentEntity parentDepartment;
 

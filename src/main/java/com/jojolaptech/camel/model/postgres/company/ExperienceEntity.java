@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Entity(name = "CompanyExperienceEntity")
 @Table(name = "hrm_experience")
 public class ExperienceEntity extends BaseAuditEntity {
 

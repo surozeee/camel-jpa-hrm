@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.repository.postgres.company;
 
-import com.jojolaptech.camel.model.postgres.company.EmployeeAddressEntity;
+import com.jojolaptech.camel.model.postgres.company.AddressEntity;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PgEmployeeAddressRepository extends JpaRepository<EmployeeAddressEntity, UUID> {
+public interface PgAddressRepository extends JpaRepository<AddressEntity, UUID> {
 
-    @Query("select a.mysqlId from EmployeeAddressEntity a where a.mysqlId in :mysqlIds")
+    @Query("select a.mysqlId from AddressEntity a where a.mysqlId in :mysqlIds")
     Set<Long> findMysqlIdsByMysqlIdIn(@Param("mysqlIds") Collection<Long> mysqlIds);
 }

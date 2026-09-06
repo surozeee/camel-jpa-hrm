@@ -27,5 +27,5 @@ public class ExperienceLocalEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "experience_id", nullable = false)
-    private ExperienceEntity masterExperience;
+    private MasterExperienceEntity masterExperience;
 }

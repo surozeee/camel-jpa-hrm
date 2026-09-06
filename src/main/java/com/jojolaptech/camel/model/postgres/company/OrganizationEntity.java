@@ -30,7 +30,7 @@ public class OrganizationEntity extends BaseAuditEntity {
 
     private String website;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_type_id", nullable = false)
     private OrganizationTypeEntity organizationType;
 
@@ -38,7 +38,7 @@ public class OrganizationEntity extends BaseAuditEntity {
     @Column(name = "organization_type_other_specify")
     private String organizationTypeOtherSpecify;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_address_id")
     private OrganizationAddressEntity organizationAddress;
 

@@ -15,7 +15,7 @@ public class CityEntity extends BaseAuditEntity {
 
     private String name;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @JoinColumn(name = "district_id")
     private DistrictEntity district;
 

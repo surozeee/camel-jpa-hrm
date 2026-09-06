@@ -17,7 +17,7 @@ public class StateEntity extends BaseAuditEntity {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private CountryEntity country;
 

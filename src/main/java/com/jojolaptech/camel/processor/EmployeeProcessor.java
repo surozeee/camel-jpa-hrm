@@ -54,7 +54,7 @@ public class EmployeeProcessor implements Processor {
 
         Set<Long> employeeIds = batch.stream().map(Employee::getId).collect(Collectors.toSet());
         Set<Long> existingIds = employeeRepository.findMysqlIdsByMysqlIdIn(employeeIds);
-        Set<String> reservedEmails = new HashSet<>(employeeRepository.findExistingEmailsLowerCase(List.of()));
+        Set<String> reservedEmails = new HashSet<>(employeeRepository.findAllEmailsLowerCase());
         Set<String> reservedEmployeeCodes = new HashSet<>(employeeRepository.findAllEmployeeCodes());
 
         Map<Long, List<CompanyEmployee>> companyEmployeesByEmployeeId =

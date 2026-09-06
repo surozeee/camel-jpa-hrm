@@ -46,11 +46,11 @@ final class EmployeeMigrationMapper {
                 .enrollId(companyEmployee != null && companyEmployee.getEnrollId() != null
                         ? String.valueOf(companyEmployee.getEnrollId())
                         : null)
-                .firstName(defaultName(source.getName(), "Employee"))
-                .middleName(trimToNull(source.getMiddleName()))
-                .lastName(defaultName(source.getLastname(), String.valueOf(source.getId())))
-                .email(email)
-                .phoneNumber(defaultPhone(source.getPhone()))
+                .firstName(truncate(defaultName(source.getName(), "Employee"), 255))
+                .middleName(truncate(trimToNull(source.getMiddleName()), 255))
+                .lastName(truncate(defaultName(source.getLastname(), String.valueOf(source.getId())), 255))
+                .email(truncate(email, 255))
+                .phoneNumber(truncate(defaultPhone(source.getPhone()), 255))
                 .dateOfBirth(toLocalDate(source.getBirthday()))
                 .hireDate(resolveHireDate(source, companyEmployee, branchDepartment, employeeBranch))
                 .terminationDate(companyEmployee != null ? toLocalDate(companyEmployee.getTerminationDate()) : null)
@@ -216,7 +216,14 @@ final class EmployeeMigrationMapper {
         if (parts.isEmpty()) {
             return "Migrated from legacy employee id=" + source.getId();
         }
-        return String.join("; ", parts);
+        return truncate(String.join("; ", parts), 500);
+    }
+
+    private static String truncate(String value, int maxLen) {
+        if (value == null || value.length() <= maxLen) {
+            return value;
+        }
+        return value.substring(0, maxLen);
     }
 
     private static void appendNote(List<String> parts, String value) {
@@ -246,7 +253,7 @@ final class EmployeeMigrationMapper {
         if (value == null) {
             return null;
         }
-        String trimmed = value.trim();
+        String trimmed = value.replace("\u0000", "").trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
 }

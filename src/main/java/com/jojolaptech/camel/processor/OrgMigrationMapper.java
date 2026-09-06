@@ -43,8 +43,9 @@ final class OrgMigrationMapper {
         if (value == null) {
             return null;
         }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
+        // Postgres rejects U+0000 in text; MySQL sometimes stores NULs in legacy rows.
+        String cleaned = value.replace("\u0000", "").trim();
+        return cleaned.isEmpty() ? null : cleaned;
     }
 
     static String companyDescription(Company source) {
@@ -89,7 +90,8 @@ final class OrgMigrationMapper {
     }
 
     static String normalizeName(String name) {
-        return name == null ? "" : name.trim().toLowerCase(Locale.ROOT);
+        String cleaned = trimToNull(name);
+        return cleaned == null ? "" : cleaned.toLowerCase(Locale.ROOT);
     }
 
     private static String joinParts(String... parts) {
