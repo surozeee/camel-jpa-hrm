@@ -1280,6 +1280,26 @@ public class MigrationRowCountQaService {
         return results;
     }
 
+    /** Run MySQL↔PG checks whose step id is mapped to the Camel route id. */
+    public List<MigrationRowCountResult> runChecksForRoute(String routeId) {
+        List<String> stepIds = MigrationRouteQaMapping.checkStepsForRoute(routeId);
+        if (stepIds.isEmpty()) {
+            return List.of();
+        }
+        List<MigrationRowCountResult> results = new ArrayList<>();
+        for (MigrationRowCountCheck check : CHECKS) {
+            if (stepIds.contains(check.step())) {
+                results.add(runCheck(check));
+            }
+        }
+        return results;
+    }
+
+    public void logStepReport(String routeId, List<MigrationRowCountResult> checks) {
+        log.info("--- Step verify: {} ({} check(s)) ---", routeId, checks.size());
+        logSourceTable(checks);
+    }
+
     public List<MigrationRowCountResult> runPipelineChecks(Exchange exchange) {
         List<MigrationRowCountResult> results = new ArrayList<>();
         for (Map.Entry<String, String> entry : PIPELINE_PG_COUNT_SQL.entrySet()) {

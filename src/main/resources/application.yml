@@ -61,6 +61,12 @@ camel:
       transaction-manager: "#mysqlTransactionManager"
 
 migration:
+  mode: chain
+  from-step:
+  only-step:
+  verify-after-each: true
+  fail-on-verify-mismatch: false
+  chain-enabled: true
   qa:
     enabled: true
     fail-on-mismatch: false

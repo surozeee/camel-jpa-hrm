@@ -77,6 +77,9 @@ public class EmployeeDeviceEnrollProcessor implements Processor {
         }
 
         List<EmployeeDeviceEnrollEntity> toSave = new ArrayList<>();
+        int skippedNoBranch = 0;
+        int skippedNoCompany = 0;
+        int skippedNoDevice = 0;
         for (Employee source : batch) {
             EmployeeEntity employee = employeeByMysqlId.get(source.getId());
             if (employee == null || employee.getMysqlId() == null) {
@@ -90,23 +93,17 @@ public class EmployeeDeviceEnrollProcessor implements Processor {
                 continue;
             }
             if (employee.getBranchId() == null) {
-                log.warn(
-                        "Skipping device enroll for employee mysqlId={}, no branch",
-                        employee.getMysqlId());
+                skippedNoBranch++;
                 continue;
             }
             BranchEntity branch = branchById.get(employee.getBranchId());
             if (branch == null || branch.getCompany() == null) {
-                log.warn(
-                        "Skipping device enroll for employee mysqlId={}, branch/company missing",
-                        employee.getMysqlId());
+                skippedNoCompany++;
                 continue;
             }
             DeviceMacEntity device = firstDeviceByCompany.get(branch.getCompany().getId());
             if (device == null) {
-                log.warn(
-                        "Skipping device enroll for employee mysqlId={}, no device mac for company",
-                        employee.getMysqlId());
+                skippedNoDevice++;
                 continue;
             }
 
@@ -117,6 +114,14 @@ public class EmployeeDeviceEnrollProcessor implements Processor {
                     .deviceMacId(device.getId())
                     .build());
             existingEnrollIds.add(employee.getMysqlId());
+        }
+
+        if (skippedNoBranch + skippedNoCompany + skippedNoDevice > 0) {
+            log.warn(
+                    "Device enroll skips in batch: noBranch={}, noCompany={}, noDeviceMac={}",
+                    skippedNoBranch,
+                    skippedNoCompany,
+                    skippedNoDevice);
         }
 
         if (!toSave.isEmpty()) {

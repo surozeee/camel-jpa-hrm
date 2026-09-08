@@ -848,9 +848,12 @@ public class ImportRouteBuilder extends RouteBuilder {
 
 
 
+        // Disabled when migration.mode=from|single (MigrationStepRunner drives steps instead).
         from("timer:master-import?repeatCount=1&delay=0")
 
                 .routeId("master-migration-route")
+
+                .autoStartup("{{migration.chain-enabled:true}}")
 
                 .process(exchange -> {
 
@@ -1208,11 +1211,10 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
-                .to("direct:emp-permanent-shift-migration")
-
-                .log("Step 22i completed: emp-permanent-shift-migration")
-
-                .process(exchange -> throttleBetweenSteps())
+                // Skipped for now: attEmpShift → employee.branch_shift_id (very large; slow page scan)
+                // .to("direct:emp-permanent-shift-migration")
+                // .log("Step 22i completed: emp-permanent-shift-migration")
+                // .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:employee-experience-migration")
                 .log("Step 22j completed: employee-experience-migration")
@@ -1410,17 +1412,13 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
-                .to("direct:attendance-log-migration")
-
-                .log("Step 23h completed: attendance-log-migration")
-
-                .process(exchange -> throttleBetweenSteps())
-
-                .to("direct:attendance-transaction-migration")
-
-                .log("Step 23i completed: attendance-transaction-migration")
-
-                .process(exchange -> throttleBetweenSteps())
+                // Skipped for now: attLogs + attendanceTransaction (large / noisy enroll gaps)
+                // .to("direct:attendance-log-migration")
+                // .log("Step 23h completed: attendance-log-migration")
+                // .process(exchange -> throttleBetweenSteps())
+                // .to("direct:attendance-transaction-migration")
+                // .log("Step 23i completed: attendance-transaction-migration")
+                // .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:attendance-forgot-migration")
 

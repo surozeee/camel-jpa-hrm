@@ -23,8 +23,32 @@ public class CamelJpaTnApplication {
             // .env file not found or error loading it - use default values from application.yml
             System.out.println("Note: .env file not found, using default configuration from application.yml");
         }
-        
+
+        // When running step-by-step, disable the master timer so only MigrationStepRunner executes.
+        String mode = firstNonBlank(
+                System.getenv("MIGRATION_MODE"),
+                System.getProperty("MIGRATION_MODE"),
+                System.getProperty("migration.mode"),
+                "chain");
+        if ("from".equalsIgnoreCase(mode) || "single".equalsIgnoreCase(mode)) {
+            System.setProperty("MIGRATION_CHAIN_ENABLED", "false");
+            System.setProperty("migration.chain-enabled", "false");
+            System.out.println("Migration mode=" + mode + " → master chain disabled; step runner active");
+        }
+
         SpringApplication.run(CamelJpaTnApplication.class, args);
+    }
+
+    private static String firstNonBlank(String... values) {
+        if (values == null) {
+            return "";
+        }
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value.trim();
+            }
+        }
+        return "";
     }
 }
 

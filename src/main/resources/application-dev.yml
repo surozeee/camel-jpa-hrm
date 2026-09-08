@@ -61,6 +61,16 @@ camel:
       transaction-manager: "#mysqlTransactionManager"
 
 migration:
+  # chain = full master timer (default)
+  # from   = run from migration.from-step through end, verify each
+  # single = run only migration.only-step, then verify
+  mode: ${MIGRATION_MODE:chain}
+  from-step: ${MIGRATION_FROM_STEP:}
+  only-step: ${MIGRATION_ONLY_STEP:}
+  verify-after-each: ${MIGRATION_VERIFY_AFTER_EACH:true}
+  fail-on-verify-mismatch: ${MIGRATION_FAIL_ON_VERIFY:false}
+  # Bound for Camel autoStartup on master-migration-route
+  chain-enabled: ${MIGRATION_CHAIN_ENABLED:true}
   qa:
     enabled: true
     fail-on-mismatch: false
