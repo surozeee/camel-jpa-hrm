@@ -7,6 +7,7 @@ import com.jojolaptech.camel.model.postgres.company.OrganizationEntity;
 import com.jojolaptech.camel.model.postgres.company.OrganizationTypeEntity;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -92,6 +93,32 @@ final class OrgMigrationMapper {
     static String normalizeName(String name) {
         String cleaned = trimToNull(name);
         return cleaned == null ? "" : cleaned.toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * ERP company.name is unique. Legacy MySQL can have duplicates (or NUL-padded twins).
+     * Prefer the cleaned base name; on collision append {@code 1}, then {@code 2}, …
+     */
+    static String uniqueCompanyName(String rawName, Long mysqlId, Set<String> namesInUse) {
+        String base = trimToNull(rawName);
+        if (base == null) {
+            base = "Company-" + mysqlId;
+        }
+        String candidate = base;
+        if (namesInUse.add(candidate.toLowerCase(Locale.ROOT))) {
+            return candidate;
+        }
+        int suffix = 1;
+        while (true) {
+            candidate = base + suffix;
+            if (namesInUse.add(candidate.toLowerCase(Locale.ROOT))) {
+                return candidate;
+            }
+            suffix++;
+            if (suffix > 10_000) {
+                throw new IllegalStateException("Unable to uniquify company name for mysqlId=" + mysqlId);
+            }
+        }
     }
 
     private static String joinParts(String... parts) {

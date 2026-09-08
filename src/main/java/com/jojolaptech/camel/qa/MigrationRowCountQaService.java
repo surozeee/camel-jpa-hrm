@@ -40,7 +40,7 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "2",
                     "role (secRole → role)",
-                    "SELECT COUNT(*) FROM secRole",
+                    "SELECT COUNT(*) FROM sec_role",
                     "SELECT COUNT(*) FROM role WHERE mysql_id IS NOT NULL",
                     MigrationComparisonMode.EQUAL,
                     null),
@@ -68,7 +68,7 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "6",
                     "branch address",
-                    "SELECT COUNT(*) FROM branch WHERE NULLIF(TRIM(address), '') IS NOT NULL OR NULLIF(TRIM(faxNo), '') IS NOT NULL",
+                    "SELECT COUNT(*) FROM branch WHERE NULLIF(TRIM(address), '') IS NOT NULL OR NULLIF(TRIM(fax_no), '') IS NOT NULL",
                     "SELECT COUNT(*) FROM branch WHERE address_id IS NOT NULL",
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Branch address rows have no mysql_id"),
@@ -689,7 +689,7 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "23h",
                     "attLogs → attendance_log",
-                    "SELECT COUNT(*) FROM attLogs WHERE isDeleted IS NULL OR isDeleted = 'N'",
+                    "SELECT COUNT(*) FROM att_logs WHERE is_deleted IS NULL OR is_deleted = 'N'",
                     "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id IS NOT NULL AND mysql_id < "
                             + 12_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
@@ -697,7 +697,7 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "23i",
                     "attendanceTransaction → attendance",
-                    "SELECT COUNT(*) FROM attendanceTransaction",
+                    "SELECT COUNT(*) FROM attendance_transaction",
                     "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id IS NOT NULL AND mysql_id < "
                             + 14_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
@@ -817,16 +817,24 @@ public class MigrationRowCountQaService {
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "Payments 35e12; new subs 39e12; may enrich existing validity subs without new row"),
             new MigrationRowCountCheck(
+                    "2a",
+                    "requestmap → role_permission",
+                    // config_attribute can list multiple ROLE_* values per URL
+                    "SELECT COUNT(*) FROM requestmap r WHERE NULLIF(TRIM(r.config_attribute), '') IS NOT NULL",
+                    "SELECT COUNT(*) FROM role_permission",
+                    MigrationComparisonMode.PG_AT_LEAST_MYSQL,
+                    "Many-to-many: one requestmap may link several roles"),
+            new MigrationRowCountCheck(
                     "24",
                     "secUser → users",
-                    "SELECT COUNT(*) FROM secUser",
+                    "SELECT COUNT(*) FROM sec_user",
                     "SELECT COUNT(*) FROM users WHERE mysql_id IS NOT NULL",
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     null),
             new MigrationRowCountCheck(
                     "25",
                     "user_detail",
-                    "SELECT COUNT(*) FROM secUser",
+                    "SELECT COUNT(*) FROM sec_user",
                     "SELECT COUNT(*) FROM user_detail",
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
                     "One detail per migrated user"),
@@ -971,6 +979,7 @@ public class MigrationRowCountQaService {
     static {
         PIPELINE_PG_COUNT_SQL.put("privilegeCount", "SELECT COUNT(*) FROM permission WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("roleCount", "SELECT COUNT(*) FROM role WHERE mysql_id IS NOT NULL");
+        PIPELINE_PG_COUNT_SQL.put("rolePermissionCount", "SELECT COUNT(*) FROM role_permission");
         PIPELINE_PG_COUNT_SQL.put("companyCount", "SELECT COUNT(*) FROM company WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("companyAddressCount", "SELECT COUNT(*) FROM hrm_company_address WHERE mysql_id IS NOT NULL");
         PIPELINE_PG_COUNT_SQL.put("branchCount", "SELECT COUNT(*) FROM branch WHERE mysql_id IS NOT NULL");

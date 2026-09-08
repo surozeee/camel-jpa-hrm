@@ -9,6 +9,8 @@ public final class MigrationRouteQaMapping {
     private static final Map<String, List<String>> ROUTE_TO_STEPS = Map.ofEntries(
             Map.entry("privilege-migration", List.of("1")),
             Map.entry("role-migration", List.of("2")),
+            Map.entry("role-permission-migration", List.of("2a")),
+            Map.entry("user-migration", List.of("24")),
             Map.entry("company-migration", List.of("3")),
             Map.entry("company-address-migration", List.of("4")),
             Map.entry("branch-migration", List.of("5")),

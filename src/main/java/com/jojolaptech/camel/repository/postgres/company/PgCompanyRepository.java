@@ -25,6 +25,9 @@ public interface PgCompanyRepository extends JpaRepository<CompanyEntity, UUID> 
     @Query("select lower(c.name) from CompanyEntity c where lower(c.name) in :names")
     Set<String> findExistingNamesIgnoreCase(@Param("names") Collection<String> names);
 
+    @Query("select lower(c.name) from CompanyEntity c")
+    Set<String> findAllNamesLowerCase();
+
     @Query("""
             select c from CompanyEntity c
             where c.email is not null and lower(trim(c.email)) in :emails

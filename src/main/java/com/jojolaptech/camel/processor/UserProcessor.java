@@ -9,6 +9,7 @@ import com.jojolaptech.camel.model.postgres.user.RoleEntity;
 import com.jojolaptech.camel.model.postgres.user.UserEntity;
 import com.jojolaptech.camel.model.postgres.user.enums.AuthProviderEnum;
 import com.jojolaptech.camel.model.postgres.user.enums.UserStatusEnum;
+import com.jojolaptech.camel.model.postgres.user.enums.UserTypeEnum;
 import com.jojolaptech.camel.repository.mysql.EmployeeSecUserRepository;
 import com.jojolaptech.camel.repository.mysql.SecUserSecRoleRepository;
 import com.jojolaptech.camel.repository.postgres.user.PgRoleRepository;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +50,14 @@ public class UserProcessor implements Processor {
         }
 
         List<Long> userIds = batch.stream().map(SecUser::getId).toList();
-        Set<Long> existingIds = userRepository.findMysqlIdsByMysqlIdIn(userIds);
+        Map<Long, UserEntity> existingByMysqlId = userRepository.findByMysqlIdIn(userIds).stream()
+                .collect(Collectors.toMap(UserEntity::getMysqlId, user -> user, (a, b) -> a));
+        // Trim before lookup — legacy usernames often have leading/trailing spaces that
+        // collide with already-migrated emails after trim on insert.
         Set<String> emails = batch.stream()
                 .map(SecUser::getUsername)
-                .filter(username -> username != null && !username.isBlank())
+                .map(UserProcessor::trimToNull)
+                .filter(username -> username != null)
                 .map(username -> username.toLowerCase(Locale.ROOT))
                 .collect(Collectors.toSet());
         Set<String> existingEmails = emails.isEmpty()
@@ -80,21 +86,8 @@ public class UserProcessor implements Processor {
 
         List<UserEntity> toSave = new ArrayList<>();
         Set<String> emailsInBatch = new HashSet<>();
+        int updated = 0;
         for (SecUser source : batch) {
-            if (existingIds.contains(source.getId())) {
-                continue;
-            }
-            String email = source.getUsername() == null ? null : source.getUsername().trim();
-            if (email == null || email.isBlank()) {
-                log.warn("Skipping secUser id={}, username is blank", source.getId());
-                continue;
-            }
-            String emailKey = email.toLowerCase(Locale.ROOT);
-            if (existingEmails.contains(emailKey) || !emailsInBatch.add(emailKey)) {
-                log.info("Skipping secUser id={}, email already exists", source.getId());
-                continue;
-            }
-
             List<SecUserSecRole> links = rolesByUserId.getOrDefault(source.getId(), List.of());
             List<RoleEntity> roles = new ArrayList<>();
             List<String> authorities = new ArrayList<>();
@@ -104,6 +97,47 @@ public class UserProcessor implements Processor {
                 if (role != null) {
                     roles.add(role);
                 }
+            }
+            boolean employeeLinked = employeeUserIds.contains(source.getId());
+            List<UserTypeEnum> userTypes = HrmAuthorityMapper.userTypes(authorities, employeeLinked);
+
+            UserEntity existing = existingByMysqlId.get(source.getId());
+            if (existing != null) {
+                boolean changed = false;
+                if (!Objects.equals(existing.getUserType(), userTypes)) {
+                    existing.setUserType(userTypes);
+                    changed = true;
+                }
+                Set<Long> existingRoleMysqlIds = existing.getRoles() == null
+                        ? Set.of()
+                        : existing.getRoles().stream()
+                                .map(RoleEntity::getMysqlId)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toSet());
+                Set<Long> desiredRoleMysqlIds = roles.stream()
+                        .map(RoleEntity::getMysqlId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+                if (!existingRoleMysqlIds.equals(desiredRoleMysqlIds)) {
+                    existing.setRoles(roles);
+                    changed = true;
+                }
+                if (changed) {
+                    toSave.add(existing);
+                    updated++;
+                }
+                continue;
+            }
+
+            String email = source.getUsername() == null ? null : source.getUsername().trim();
+            if (email == null || email.isBlank()) {
+                log.warn("Skipping secUser id={}, username is blank", source.getId());
+                continue;
+            }
+            String emailKey = email.toLowerCase(Locale.ROOT);
+            if (existingEmails.contains(emailKey) || !emailsInBatch.add(emailKey)) {
+                log.info("Skipping secUser id={}, email already exists", source.getId());
+                continue;
             }
 
             UserStatusEnum userStatus = resolveUserStatus(source);
@@ -120,7 +154,7 @@ public class UserProcessor implements Processor {
                     .enabled(source.isEnabled())
                     .userStatus(userStatus)
                     .roles(roles)
-                    .userType(HrmAuthorityMapper.userTypes(authorities, employeeUserIds.contains(source.getId())))
+                    .userType(userTypes)
                     .authProvider(AuthProviderEnum.DEFAULT)
                     .build();
             user.setStatus(source.isEnabled() ? StatusEnum.ACTIVE : StatusEnum.INACTIVE);
@@ -132,7 +166,12 @@ public class UserProcessor implements Processor {
             userRepository.flush();
         }
 
-        log.info("User batch imported {} of {} secUser rows", toSave.size(), batch.size());
+        int inserted = toSave.size() - updated;
+        log.info(
+                "User batch imported {} new / updated {} of {} secUser rows",
+                Math.max(inserted, 0),
+                updated,
+                batch.size());
         exchange.setProperty("batchImported", toSave.size());
     }
 

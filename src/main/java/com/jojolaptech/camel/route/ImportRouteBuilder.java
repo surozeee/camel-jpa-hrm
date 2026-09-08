@@ -171,6 +171,7 @@ import com.jojolaptech.camel.processor.EmployeePermanentShiftProcessor;
 
 import com.jojolaptech.camel.processor.PrivilegeProcessor;
 
+import com.jojolaptech.camel.processor.RolePermissionLinkProcessor;
 import com.jojolaptech.camel.processor.RoleProcessor;
 
 import com.jojolaptech.camel.processor.TaxationProcessor;
@@ -380,9 +381,6 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private static final int PAGE_SIZE = 100;
 
-    /** Temporary sample cap for att_logs / attendance_transaction (full load later). */
-    private static final int ATTENDANCE_SAMPLE_LIMIT = 5;
-
     private static final int MIGRATION_THROTTLE_MS = 1000;
 
 
@@ -390,6 +388,8 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final PrivilegeProcessor privilegeProcessor;
 
     private final RoleProcessor roleProcessor;
+
+    private final RolePermissionLinkProcessor rolePermissionLinkProcessor;
 
     private final CompanyProcessor companyProcessor;
 
@@ -898,6 +898,18 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .to("direct:role-migration")
 
                 .log("Step 2 completed: role-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:role-permission-migration")
+
+                .log("Step 2a completed: role-permission-migration")
+
+                .process(exchange -> throttleBetweenSteps())
+
+                .to("direct:user-migration")
+
+                .log("Step 24 completed: user-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
@@ -1421,13 +1433,12 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
-                // skipped until enroll mapping is fixed:
-                // .to("direct:attendance-log-migration")
-                // .log("Step 23h completed: attendance-log-migration")
-                // .process(exchange -> throttleBetweenSteps())
-                // .to("direct:attendance-transaction-migration")
-                // .log("Step 23i completed: attendance-transaction-migration")
-                // .process(exchange -> throttleBetweenSteps())
+                .to("direct:attendance-log-migration")
+                .log("Step 23h completed: attendance-log-migration")
+                .process(exchange -> throttleBetweenSteps())
+                .to("direct:attendance-transaction-migration")
+                .log("Step 23i completed: attendance-transaction-migration")
+                .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:attendance-forgot-migration")
 
@@ -1500,12 +1511,6 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .to("direct:user-license-subscription-migration")
 
                 .log("Step 24c completed: user-license-subscription-migration")
-
-                .process(exchange -> throttleBetweenSteps())
-
-                .to("direct:user-migration")
-
-                .log("Step 24 completed: user-migration")
 
                 .process(exchange -> throttleBetweenSteps())
 
@@ -2362,7 +2367,35 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> finishCount(exchange, "role-migration", "roleCount"));
 
-
+        from("direct:role-permission-migration")
+                .routeId("role-permission-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                    .process(exchange -> {
+                        int page = exchange.getProperty("page", Integer.class);
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var resultPage = requestmapRepository.findAll(pageable);
+                        exchange.getMessage().setBody(resultPage.getContent());
+                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("page", page + 1);
+                        log.info(
+                                "Fetched requestmap (role-permission) page={}, size={}, returnedRows={}, hasNext={}",
+                                page,
+                                PAGE_SIZE,
+                                resultPage.getNumberOfElements(),
+                                resultPage.hasNext());
+                    })
+                    .choice()
+                        .when(simple("${body.size} == 0"))
+                            .log("No requestmap rows in this page, continuing...")
+                        .otherwise()
+                            .process(rolePermissionLinkProcessor)
+                            .process(exchange -> addImported(exchange))
+                    .end()
+                .end()
+                .process(exchange -> finishCount(exchange, "role-permission-migration", "rolePermissionCount"));
 
         from("direct:company-migration")
 
@@ -5177,14 +5210,18 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
-                        // Sample only: first ATTENDANCE_SAMPLE_LIMIT rows (full migration later).
-                        var pageable = PageRequest.of(page, ATTENDANCE_SAMPLE_LIMIT, Sort.by("id").ascending());
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
                         var resultPage = attLogsRepository.findMigratable(pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", false);
+                        exchange.setProperty("hasNext", resultPage.hasNext());
                         exchange.setProperty("page", page + 1);
-                        log.info("attendance-log-migration sample fetch size={} (cap={})",
-                                resultPage.getNumberOfElements(), ATTENDANCE_SAMPLE_LIMIT);
+                        if (page == 0 || page % 50 == 0) {
+                            log.info(
+                                    "attendance-log-migration page={} fetched={} hasNext={}",
+                                    page,
+                                    resultPage.getNumberOfElements(),
+                                    resultPage.hasNext());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -5204,14 +5241,18 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
-                        // Sample only: first ATTENDANCE_SAMPLE_LIMIT rows (full migration later).
-                        var pageable = PageRequest.of(page, ATTENDANCE_SAMPLE_LIMIT, Sort.by("id").ascending());
+                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
                         var resultPage = attendanceTransactionRepository.findMigratable(pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", false);
+                        exchange.setProperty("hasNext", resultPage.hasNext());
                         exchange.setProperty("page", page + 1);
-                        log.info("attendance-transaction-migration sample fetch size={} (cap={})",
-                                resultPage.getNumberOfElements(), ATTENDANCE_SAMPLE_LIMIT);
+                        if (page == 0 || page % 50 == 0) {
+                            log.info(
+                                    "attendance-transaction-migration page={} fetched={} hasNext={}",
+                                    page,
+                                    resultPage.getNumberOfElements(),
+                                    resultPage.hasNext());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))

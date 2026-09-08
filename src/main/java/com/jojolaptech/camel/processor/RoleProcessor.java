@@ -3,10 +3,12 @@ package com.jojolaptech.camel.processor;
 import com.jojolaptech.camel.model.mysql.SecRole;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
 import com.jojolaptech.camel.model.postgres.user.RoleEntity;
+import com.jojolaptech.camel.model.postgres.user.enums.PermissionForEnum;
 import com.jojolaptech.camel.repository.postgres.user.PgRoleRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -33,23 +35,54 @@ public class RoleProcessor implements Processor {
             return;
         }
 
-        Set<Long> existing = roleRepository.findMysqlIdsByMysqlIdIn(
-                batch.stream().map(SecRole::getId).toList());
-        Set<String> names = batch.stream()
+        Map<Long, RoleEntity> byMysqlId = roleRepository
+                .findByMysqlIdIn(batch.stream().map(SecRole::getId).toList())
+                .stream()
+                .collect(Collectors.toMap(RoleEntity::getMysqlId, role -> role, (a, b) -> a));
+
+        Set<String> targetNames = batch.stream()
                 .map(role -> HrmAuthorityMapper.roleName(role.getAuthority()).toLowerCase(Locale.ROOT))
                 .collect(Collectors.toSet());
-        Set<String> existingNames = names.isEmpty()
+        Set<String> existingNames = targetNames.isEmpty()
                 ? Set.of()
-                : roleRepository.findExistingNamesIgnoreCase(names);
+                : roleRepository.findExistingNamesIgnoreCase(targetNames);
 
         List<RoleEntity> toSave = new ArrayList<>();
+        int updated = 0;
         for (SecRole source : batch) {
-            if (existing.contains(source.getId())) {
+            String roleName = HrmAuthorityMapper.roleName(source.getAuthority());
+            PermissionForEnum scope = HrmAuthorityMapper.roleScope(source.getAuthority());
+            RoleEntity existing = byMysqlId.get(source.getId());
+            if (existing != null) {
+                boolean changed = false;
+                if (!roleName.equals(existing.getName())) {
+                    String nameKey = roleName.toLowerCase(Locale.ROOT);
+                    boolean nameTakenByOther = existingNames.contains(nameKey)
+                            && (existing.getName() == null
+                                    || !existing.getName().equalsIgnoreCase(roleName));
+                    if (nameTakenByOther) {
+                        log.warn(
+                                "Cannot rename secRole id={} to '{}': name already used by another role",
+                                source.getId(),
+                                roleName);
+                    } else {
+                        existing.setName(roleName);
+                        changed = true;
+                    }
+                }
+                if (existing.getScope() != scope) {
+                    existing.setScope(scope);
+                    changed = true;
+                }
+                if (changed) {
+                    toSave.add(existing);
+                    updated++;
+                }
                 continue;
             }
-            String roleName = HrmAuthorityMapper.roleName(source.getAuthority());
+
             if (existingNames.contains(roleName.toLowerCase(Locale.ROOT))) {
-                log.info("Skipping secRole id={}, name already exists", source.getId());
+                log.info("Skipping secRole id={}, name already exists: {}", source.getId(), roleName);
                 continue;
             }
 
@@ -58,9 +91,11 @@ public class RoleProcessor implements Processor {
                     .name(roleName)
                     .description("Migrated from MySQL " + source.getAuthority())
                     .status(StatusEnum.ACTIVE)
-                    .scope(HrmAuthorityMapper.roleScope(source.getAuthority()))
+                    .scope(scope)
                     .build();
             toSave.add(role);
+            existingNames = new java.util.HashSet<>(existingNames);
+            existingNames.add(roleName.toLowerCase(Locale.ROOT));
         }
 
         if (!toSave.isEmpty()) {
@@ -68,7 +103,12 @@ public class RoleProcessor implements Processor {
             roleRepository.flush();
         }
 
-        log.info("Role batch imported {} of {} secRole rows", toSave.size(), batch.size());
+        int inserted = toSave.size() - updated;
+        log.info(
+                "Role batch imported {} new / updated {} of {} secRole rows",
+                Math.max(inserted, 0),
+                updated,
+                batch.size());
         exchange.setProperty("batchImported", toSave.size());
     }
 }

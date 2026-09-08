@@ -7,9 +7,7 @@ import com.jojolaptech.camel.service.CompanyTypeCatalogService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -37,30 +35,23 @@ public class CompanyProcessor implements Processor {
 
         Set<Long> existingIds = companyRepository.findMysqlIdsByMysqlIdIn(
                 batch.stream().map(Company::getId).toList());
-        Set<String> names = batch.stream()
-                .map(company -> OrgMigrationMapper.normalizeName(company.getName()))
-                .filter(name -> !name.isBlank())
-                .collect(Collectors.toSet());
-        Set<String> existingNames = names.isEmpty()
-                ? Set.of()
-                : companyRepository.findExistingNamesIgnoreCase(names);
+        // Full name set so suffix 1/2/3… collisions are detected against DB + in-batch.
+        Set<String> namesInUse = new HashSet<>(companyRepository.findAllNamesLowerCase());
 
         var companyType = companyTypeCatalogService.defaultCompanyType();
         List<CompanyEntity> toSave = new ArrayList<>();
-        Set<String> namesInBatch = new HashSet<>();
         for (Company source : batch) {
             if (existingIds.contains(source.getId())) {
                 continue;
             }
-            String name = OrgMigrationMapper.trimToNull(source.getName());
-            if (name == null) {
-                log.warn("Skipping company id={}, name is blank", source.getId());
-                continue;
-            }
-            String nameKey = name.toLowerCase(Locale.ROOT);
-            if (existingNames.contains(nameKey) || !namesInBatch.add(nameKey)) {
-                log.info("Skipping company id={}, name already exists", source.getId());
-                continue;
+
+            String cleaned = OrgMigrationMapper.trimToNull(source.getName());
+            String name = OrgMigrationMapper.uniqueCompanyName(source.getName(), source.getId(), namesInUse);
+            if (cleaned != null && !cleaned.equals(name)) {
+                log.info(
+                        "Company id={} name uniquified to '{}' (legacy duplicate/NUL name)",
+                        source.getId(),
+                        name);
             }
 
             CompanyEntity company = CompanyEntity.builder()

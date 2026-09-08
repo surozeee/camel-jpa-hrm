@@ -9,6 +9,8 @@ public final class MigrationSteps {
     public static final List<String> ALL = List.of(
             "privilege-migration",
             "role-migration",
+            "role-permission-migration",
+            "user-migration",
             "company-migration",
             "company-address-migration",
             "branch-migration",
@@ -112,9 +114,8 @@ public final class MigrationSteps {
             "mass-salary-adjustment-migration",
             "employee-loan-migration",
             "employee-loan-payment-migration",
-            // skipped until enroll mapping is fixed:
-            // "attendance-log-migration",
-            // "attendance-transaction-migration",
+            "attendance-log-migration",
+            "attendance-transaction-migration",
             "attendance-forgot-migration",
             "attendance-remark-migration",
             "device-logs-migration",
@@ -129,7 +130,6 @@ public final class MigrationSteps {
             "company-validity-subscription-migration",
             "subscription-payment-history-migration",
             "user-license-subscription-migration",
-            "user-migration",
             "user-detail-migration",
             "user-portal-link-migration",
             "vacancy-migration",
