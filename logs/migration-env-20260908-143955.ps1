@@ -1,0 +1,5 @@
+﻿$env:MIGRATION_MODE='from'
+$env:MIGRATION_FROM_STEP='privilege-migration'
+$env:MIGRATION_VERIFY_AFTER_EACH='true'
+$env:MIGRATION_FAIL_ON_VERIFY='false'
+Set-Location 'D:\Projects\camel-jpa-hrm'

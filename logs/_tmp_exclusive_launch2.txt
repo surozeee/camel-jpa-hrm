@@ -1,0 +1,2 @@
+LAUNCHED bat=logs\run-exclusive-attforgot-20260908-161538.cmd log=logs\migration-exclusive-20260908-161538.log applog=logs\migration-app-exclusive-20260908-161538.log
+PID=23252

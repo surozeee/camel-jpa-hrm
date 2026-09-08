@@ -1,0 +1,9 @@
+﻿proc DEAD
+jstack_err Command '['C:\\Program Files\\Java\\jdk-21\\bin\\jstack.exe', '22008']' returned non-zero exit status 1.
+privilege ERR relation "privilege" does not exist
+LINE 1: SELECT COUNT(*) FROM privilege
+     
+role 0
+company 0
+employee 0
+log_size 5484

@@ -1,0 +1,13 @@
+﻿ALL_count 143
+from_employee_count 90
+has_att_log True
+has_att_tx True
+103 employee-loan-migration
+104 employee-loan-payment-migration
+105 attendance-log-migration
+106 attendance-transaction-migration
+107 attendance-forgot-migration
+108 attendance-remark-migration
+111 old-attendance-transaction-migration
+class_att_strings []
+class_migration_count_approx 0

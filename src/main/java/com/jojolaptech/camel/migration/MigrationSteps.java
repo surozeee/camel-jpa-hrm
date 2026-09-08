@@ -69,7 +69,7 @@ public final class MigrationSteps {
             "employee-bank-detail-migration",
             "employee-device-enroll-migration",
             "emp-temp-shift-migration",
-            // skipped for now: emp-permanent-shift-migration (large attEmpShift scan)
+            "emp-permanent-shift-migration",
             "employee-experience-migration",
             "employee-award-migration",
             "employee-language-migration",
@@ -112,7 +112,9 @@ public final class MigrationSteps {
             "mass-salary-adjustment-migration",
             "employee-loan-migration",
             "employee-loan-payment-migration",
-            // skipped for now: attendance-log-migration, attendance-transaction-migration
+            // skipped until enroll mapping is fixed:
+            // "attendance-log-migration",
+            // "attendance-transaction-migration",
             "attendance-forgot-migration",
             "attendance-remark-migration",
             "device-logs-migration",

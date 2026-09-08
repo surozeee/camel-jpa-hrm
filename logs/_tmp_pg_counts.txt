@@ -1,0 +1,7 @@
+﻿company 954
+branch 2581
+employee 14600
+department ERR relation "department" does not exist
+LINE 1: SELECT COUNT(*) FROM department
+                       
+role 130

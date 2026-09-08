@@ -1,0 +1,18 @@
+PID=20176 JAVA21=True CMD="C:\Program Files\Java\jdk-21\bin\java.exe"  -Xmx2g -jar build\libs\Camel-Jpa-TN-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev 
+LOG_LEN=3339
+2026-09-08T15:58:31.743+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.CamelJpaTnApplication          : Starting CamelJpaTnApplication v0.0.1-SNAPSHOT using Java 21.0.2 with PID 20176 (D:\Projects\camel-jpa-hrm\build\libs\Camel-Jpa-TN-0.0.1-SNAPSHOT.jar started by suroj.awal in D:\Projects\camel-jpa-hrm)
+2026-09-08T15:58:31.745+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.CamelJpaTnApplication          : The following 1 profile is active: "dev"
+2026-09-08T15:58:32.284+05:45  INFO 20176 --- [camel-jpa-tn] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-08T15:58:32.488+05:45  INFO 20176 --- [camel-jpa-tn] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 197 ms. Found 140 JPA repository interfaces.
+2026-09-08T15:58:32.489+05:45  INFO 20176 --- [camel-jpa-tn] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-08T15:58:32.642+05:45  INFO 20176 --- [camel-jpa-tn] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 153 ms. Found 111 JPA repository interfaces.
+2026-09-08T15:58:33.785+05:45  INFO 20176 --- [camel-jpa-tn] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: mysqlPU]
+2026-09-08T15:58:33.995+05:45  INFO 20176 --- [camel-jpa-tn] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-09-08T15:58:34.105+05:45  INFO 20176 --- [camel-jpa-tn] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-09-08T15:58:34.559+05:45  INFO 20176 --- [camel-jpa-tn] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-08T15:58:35.733+05:45  INFO 20176 --- [camel-jpa-tn] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@84a9f65
+2026-09-08T15:58:35.738+05:45  INFO 20176 --- [camel-jpa-tn] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-08T15:58:36.016+05:45  WARN 20176 --- [camel-jpa-tn] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-08T15:58:36.019+05:45  WARN 20176 --- [camel-jpa-tn] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-09-08T15:58:38.361+05:45  INFO 20176 --- [camel-jpa-tn] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+STARTED Tue 09/08/2026 15:58:30.73 

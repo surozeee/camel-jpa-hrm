@@ -1,0 +1,12 @@
+﻿Camel-Jpa-TN-0.0.1-SNAPSHOT.jar
+  att_log True
+  att_tx True
+  sample True
+  utf8_migration_strings 0
+  attendance []
+migration-runner.jar
+  att_log False
+  att_tx True
+  sample True
+  utf8_migration_strings 0
+  attendance []

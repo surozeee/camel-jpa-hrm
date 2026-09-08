@@ -1,0 +1,11 @@
+﻿before 4
+jar 16824 "C:\Program Files\Java\jdk-21\bin\java.exe" -Xmx2g -jar D:\Projects\camel-jpa-hrm\build\libs\Camel-Jpa-TN-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+killed_jar 16824
+bootRun-wrapper 33532 "C:\Program Files\Java\jdk-21/bin/java.exe"  "-Xmx64m" "-Xms64m"   "-Dorg.gradle.appname=gradlew" -classpath "" -jar "D:\Projects\camel-jpa-hrm\\gradle\wrapper\
+app 29420 "C:\Program Files\Java\jdk-21\bin\java.exe" -XX:TieredStopAtLevel=1 -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -cp D:\Projects\ca
+bootRun-wrapper 34776 powershell -NoProfile -Command "
+Get-CimInstance Win32_Process | Where-Object {
+  $_.CommandLine -and (
+    $_.CommandLine -match 'CamelJpaTnApplication' -or
+  
+after [(33532, '"C:\\Program Files\\Java\\jdk-21/bin/java.exe"  "-Xmx64m" "-Xms64m"   "-Dorg.gradle'), (29420, '"C:\\Program Files\\Java\\jdk-21\\bin\\java.exe" -XX:TieredStopAtLevel=1 -Dfile.encod'), (28404, 'powershell -NoProfile -Command "\nGet-CimInstance Win32_Process | Where-Object {\n')]

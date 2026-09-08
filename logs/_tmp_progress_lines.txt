@@ -1,0 +1,4 @@
+2026-09-08T15:59:38.367+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.CamelJpaTnApplication          : Started CamelJpaTnApplication in 66.973 seconds (process running for 67.524)
+2026-09-08T15:59:42.049+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : Step-by-step migration starting
+2026-09-08T15:59:42.050+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : First step: attendance-forgot-migration
+2026-09-08T15:59:42.050+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : >>> [1/36] Running attendance-forgot-migration

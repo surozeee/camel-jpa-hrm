@@ -1,0 +1,49 @@
+﻿
+"main" #1 [15868] prio=5 os_prio=0 cpu=29515.62ms elapsed=324.98s tid=0x000001488e0abee0 nid=15868 runnable  
+[0x00000009ff5fa000]
+   java.lang.Thread.State: RUNNABLE
+	at org.postgresql.core.VisibleBufferedInputStream.readMore(VisibleBufferedInputStream.java:162)
+	at org.postgresql.core.VisibleBufferedInputStream.ensureBytes(VisibleBufferedInputStream.java:129)
+	at org.postgresql.core.VisibleBufferedInputStream.ensureBytes(VisibleBufferedInputStream.java:114)
+	at org.postgresql.core.VisibleBufferedInputStream.read(VisibleBufferedInputStream.java:74)
+	at org.postgresql.core.PGStream.receiveChar(PGStream.java:467)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2166)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:371)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:502)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:419)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeQuery(PgPreparedStatement.java:137)
+	at jdk.proxy2.$Proxy178.findByCompanyMysqlIdOrderByMysqlIdAsc(jdk.proxy2/Unknown Source)
+	at com.jojolaptech.camel.processor.FiscalYearProcessor.process(FiscalYearProcessor.java:124)
+	at com.jojolaptech.camel.migration.MigrationStepRunner.run(MigrationStepRunner.java:54)
+	at com.jojolaptech.camel.CamelJpaTnApplication.main(CamelJpaTnApplication.java:39)
+   java.lang.Thread.State: RUNNABLE
+   java.lang.Thread.State: RUNNABLE
+   java.lang.Thread.State: RUNNABLE
+"Service Thread" #13 [35008] daemon prio=9 os_prio=0 cpu=62.50ms elapsed=324.93s tid=0x00000148a30e0d40 nid=35008 
+runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+"Monitor Deflation Thread" #14 [28280] daemon prio=9 os_prio=0 cpu=31.25ms elapsed=324.93s tid=0x00000148a30f0470 
+nid=28280 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   java.lang.Thread.State: RUNNABLE
+"Notification Thread" #27 [10844] daemon prio=9 os_prio=0 cpu=0.00ms elapsed=324.88s tid=0x00000148a660e160 nid=10844 
+runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+"mysql-cj-abandoned-connection-cleanup" #51 [28164] daemon prio=5 os_prio=0 cpu=0.00ms elapsed=318.02s 
+tid=0x00000148a6610230 nid=28164 waiting on condition  [0x00000009811fe000]
+	at com.mysql.cj.jdbc.AbandonedConnectionCleanupThread.run(AbandonedConnectionCleanupThread.java:84)
+"PostgreSQL-JDBC-Cleaner" #57 [34036] daemon prio=5 os_prio=0 cpu=0.00ms elapsed=305.94s tid=0x00000148a66108c0 
+nid=34036 waiting on condition  [0x00000009826ff000]
+	at org.postgresql.util.LazyCleaner$1.run(LazyCleaner.java:129)
+   java.lang.Thread.State: RUNNABLE
+"VM Thread" os_prio=2 cpu=78.12ms elapsed=324.96s tid=0x00000148a30bd130 nid=34912 runnable  
+"GC Thread#0" os_prio=2 cpu=109.38ms elapsed=324.98s tid=0x00000148a2f21120 nid=32332 runnable  
+"GC Thread#1" os_prio=2 cpu=109.38ms elapsed=324.45s tid=0x00000148ec84e660 nid=29568 runnable  
+"GC Thread#2" os_prio=2 cpu=171.88ms elapsed=324.45s tid=0x00000148ec84ea00 nid=19444 runnable  
+"GC Thread#3" os_prio=2 cpu=78.12ms elapsed=324.45s tid=0x00000148ec84eda0 nid=32144 runnable  
+"GC Thread#4" os_prio=2 cpu=46.88ms elapsed=324.45s tid=0x00000148ec84f140 nid=33204 runnable  
+"GC Thread#5" os_prio=2 cpu=31.25ms elapsed=324.45s tid=0x00000148ec84f4e0 nid=34988 runnable  
+"GC Thread#6" os_prio=2 cpu=78.12ms elapsed=324.29s tid=0x00000148ecacf0b0 nid=26456 runnable  
+
+

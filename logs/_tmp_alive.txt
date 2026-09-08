@@ -1,0 +1,12 @@
+DEAD
+java_pid=33680
+from=employee-migration
+jar=migration-runner.jar
+port=9010
+started=09/08/2026 16:00:10
+watchdog_pid=7256
+LEN=38286 MTIME=09/08/2026 15:59:42
+2026-09-08T15:58:32.488+05:45  INFO 20176 --- [camel-jpa-tn] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 197 ms. Found 140 JPA repository interfaces.
+2026-09-08T15:58:32.642+05:45  INFO 20176 --- [camel-jpa-tn] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 153 ms. Found 111 JPA repository interfaces.
+2026-09-08T15:59:38.367+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.CamelJpaTnApplication          : Started CamelJpaTnApplication in 66.973 seconds (process running for 67.524)
+2026-09-08T15:59:42.050+05:45  INFO 20176 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : >>> [1/36] Running attendance-forgot-migration

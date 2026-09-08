@@ -1,0 +1,5 @@
+﻿$env:MIGRATION_MODE='from'
+$env:MIGRATION_FROM_STEP='emp-permanent-shift-migration'
+$env:MIGRATION_VERIFY_AFTER_EACH='true'
+Set-Location 'D:\Projects\camel-jpa-hrm'
+& .\gradlew.bat bootRun --args='--spring.profiles.active=dev' --no-daemon *> 'D:\Projects\camel-jpa-hrm\logs\migration-from-emp-permanent-shift-20260908-143106.log'

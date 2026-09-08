@@ -10,6 +10,8 @@ import com.jojolaptech.camel.processor.AttendanceForgotProcessor;
 import com.jojolaptech.camel.processor.AttendanceLogProcessor;
 import com.jojolaptech.camel.processor.AttendanceRemarkProcessor;
 import com.jojolaptech.camel.processor.AttendanceTransactionProcessor;
+import com.jojolaptech.camel.model.mysql.AttendanceForgot;
+import com.jojolaptech.camel.model.mysql.AttendanceRemark;
 import com.jojolaptech.camel.processor.DeviceLogsProcessor;
 import com.jojolaptech.camel.processor.OldAttendanceTransactionProcessor;
 import com.jojolaptech.camel.processor.TempDeviceLogsProcessor;
@@ -342,6 +344,11 @@ import java.time.LocalDateTime;
 
 import java.time.format.DateTimeFormatter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.jojolaptech.camel.model.mysql.AttEmpShift;
+
 import lombok.RequiredArgsConstructor;
 
 import org.apache.camel.builder.RouteBuilder;
@@ -372,6 +379,9 @@ public class ImportRouteBuilder extends RouteBuilder {
 
 
     private static final int PAGE_SIZE = 100;
+
+    /** Temporary sample cap for att_logs / attendance_transaction (full load later). */
+    private static final int ATTENDANCE_SAMPLE_LIMIT = 5;
 
     private static final int MIGRATION_THROTTLE_MS = 1000;
 
@@ -1211,10 +1221,9 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
-                // Skipped for now: attEmpShift → employee.branch_shift_id (very large; slow page scan)
-                // .to("direct:emp-permanent-shift-migration")
-                // .log("Step 22i completed: emp-permanent-shift-migration")
-                // .process(exchange -> throttleBetweenSteps())
+                .to("direct:emp-permanent-shift-migration")
+                .log("Step 22i completed: emp-permanent-shift-migration")
+                .process(exchange -> throttleBetweenSteps())
 
                 .to("direct:employee-experience-migration")
                 .log("Step 22j completed: employee-experience-migration")
@@ -1412,7 +1421,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
                 .process(exchange -> throttleBetweenSteps())
 
-                // Skipped for now: attLogs + attendanceTransaction (large / noisy enroll gaps)
+                // skipped until enroll mapping is fixed:
                 // .to("direct:attendance-log-migration")
                 // .log("Step 23h completed: attendance-log-migration")
                 // .process(exchange -> throttleBetweenSteps())
@@ -3984,21 +3993,36 @@ public class ImportRouteBuilder extends RouteBuilder {
 
         from("direct:emp-permanent-shift-migration")
                 .routeId("emp-permanent-shift-migration")
-                .setProperty("page").constant(0)
-                .setProperty("hasNext").constant(true)
                 .setProperty("importCount").constant(0)
+                .process(exchange -> {
+                    var latestIds = attEmpShiftRepository.findLatestIdsPerEmployee();
+                    log.info("Permanent shift: {} latest attEmpShift rows (one per employee)", latestIds.size());
+                    exchange.setProperty("latestPermanentShiftIds", latestIds);
+                    exchange.setProperty("permanentShiftOffset", 0);
+                    exchange.setProperty("hasNext", !latestIds.isEmpty());
+                })
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                     .process(exchange -> {
-                        int page = exchange.getProperty("page", Integer.class);
-                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = attEmpShiftRepository.findMigratable(pageable);
-                        exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
-                        exchange.setProperty("page", page + 1);
+                        @SuppressWarnings("unchecked")
+                        List<Long> latestIds =
+                                exchange.getProperty("latestPermanentShiftIds", List.class);
+                        int offset = exchange.getProperty("permanentShiftOffset", Integer.class);
+                        final int chunk = 500;
+                        int end = Math.min(offset + chunk, latestIds.size());
+                        List<Long> slice = latestIds.subList(offset, end);
+                        List<AttEmpShift> rows = slice.isEmpty()
+                                ? List.of()
+                                : attEmpShiftRepository.findByIdInWithGraph(slice);
+                        exchange.getMessage().setBody(rows);
+                        exchange.setProperty("permanentShiftOffset", end);
+                        exchange.setProperty("hasNext", end < latestIds.size());
+                        if (offset == 0 || end % 5000 == 0 || end >= latestIds.size()) {
+                            log.info("Permanent shift chunk {}-{} / {}", offset, end, latestIds.size());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
-                            .log("No attEmpShift rows in this page, continuing...")
+                            .log("No permanent-shift rows in this chunk")
                         .otherwise()
                             .process(employeePermanentShiftProcessor)
                             .process(exchange -> addImported(exchange))
@@ -5153,11 +5177,14 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
-                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        // Sample only: first ATTENDANCE_SAMPLE_LIMIT rows (full migration later).
+                        var pageable = PageRequest.of(page, ATTENDANCE_SAMPLE_LIMIT, Sort.by("id").ascending());
                         var resultPage = attLogsRepository.findMigratable(pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("hasNext", false);
                         exchange.setProperty("page", page + 1);
+                        log.info("attendance-log-migration sample fetch size={} (cap={})",
+                                resultPage.getNumberOfElements(), ATTENDANCE_SAMPLE_LIMIT);
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -5177,11 +5204,14 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
-                        var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        // Sample only: first ATTENDANCE_SAMPLE_LIMIT rows (full migration later).
+                        var pageable = PageRequest.of(page, ATTENDANCE_SAMPLE_LIMIT, Sort.by("id").ascending());
                         var resultPage = attendanceTransactionRepository.findMigratable(pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        exchange.setProperty("hasNext", false);
                         exchange.setProperty("page", page + 1);
+                        log.info("attendance-transaction-migration sample fetch size={} (cap={})",
+                                resultPage.getNumberOfElements(), ATTENDANCE_SAMPLE_LIMIT);
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -5203,10 +5233,20 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = attendanceForgotRepository.findMigratable(pageable);
-                        exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        var idPage = attendanceForgotRepository.findMigratableIds(pageable);
+                        var content = idPage.getContent().isEmpty()
+                                ? List.<AttendanceForgot>of()
+                                : attendanceForgotRepository.findByIdInWithGraph(idPage.getContent());
+                        exchange.getMessage().setBody(content);
+                        exchange.setProperty("hasNext", idPage.hasNext());
                         exchange.setProperty("page", page + 1);
+                        if (page == 0 || page % 50 == 0) {
+                            log.info(
+                                    "attendance-forgot-migration page={} fetched={} hasNext={}",
+                                    page,
+                                    content.size(),
+                                    idPage.hasNext());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -5227,9 +5267,12 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = attendanceRemarkRepository.findMigratable(pageable);
-                        exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        var idPage = attendanceRemarkRepository.findMigratableIds(pageable);
+                        var content = idPage.getContent().isEmpty()
+                                ? List.<AttendanceRemark>of()
+                                : attendanceRemarkRepository.findByIdInWithGraph(idPage.getContent());
+                        exchange.getMessage().setBody(content);
+                        exchange.setProperty("hasNext", idPage.hasNext());
                         exchange.setProperty("page", page + 1);
                     })
                     .choice()
