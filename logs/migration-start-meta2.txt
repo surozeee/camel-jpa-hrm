@@ -1,6 +1,7 @@
-java_pid=22980
-from=employee-migration
-jar=migration-runner.jar
-port=9010
-started=09/08/2026 16:12:11
-watchdog_pid=24160
+﻿cmd_pid=39004
+mode=from
+from=leave-application-migration
+verify=true
+appLog=logs\migration-app.log
+console=logs\migration-step-verify-20260909-160842.log
+started=09/09/2026 16:08:43

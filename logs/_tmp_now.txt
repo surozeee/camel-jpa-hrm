@@ -1,0 +1,60 @@
+﻿988:2026-09-09T12:57:00.874+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [24/144] Completed company-payroll-bank-migration in 507 ms
+989:2026-09-09T12:57:00.874+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route company-payroll-bank-migration
+990:2026-09-09T12:57:00.874+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [25/144] Running company-payroll-institution-migration
+995:2026-09-09T12:57:01.089+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [25/144] Completed company-payroll-institution-migration in 215 ms
+996:2026-09-09T12:57:01.089+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route company-payroll-institution-migration
+997:2026-09-09T12:57:01.089+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [26/144] Running parent-payroll-heading-lookup-migration
+1003:2026-09-09T12:57:01.225+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [26/144] Completed parent-payroll-heading-lookup-migration in 136 ms
+1004:2026-09-09T12:57:01.225+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route parent-payroll-heading-lookup-migration
+1005:2026-09-09T12:57:01.225+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [27/144] Running child-payroll-heading-lookup-migration
+1011:2026-09-09T12:57:01.377+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [27/144] Completed child-payroll-heading-lookup-migration in 152 ms
+1012:2026-09-09T12:57:01.377+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route child-payroll-heading-lookup-migration
+1013:2026-09-09T12:57:01.377+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [28/144] Running company-branch-payroll-heading-migration
+1019:2026-09-09T12:57:01.529+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [28/144] Completed company-branch-payroll-heading-migration in 152 ms
+1020:2026-09-09T12:57:01.529+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route company-branch-payroll-heading-migration
+1021:2026-09-09T12:57:01.529+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [29/144] Running payroll-label-lookup-migration
+1027:2026-09-09T12:57:01.674+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [29/144] Completed payroll-label-lookup-migration in 145 ms
+1028:2026-09-09T12:57:01.674+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route payroll-label-lookup-migration
+1029:2026-09-09T12:57:01.674+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [30/144] Running payroll-heading-priority-lookup-migration
+1034:2026-09-09T12:57:01.967+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [30/144] Completed payroll-heading-priority-lookup-migration in 293 ms
+1035:2026-09-09T12:57:01.967+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route payroll-heading-priority-lookup-migration
+1036:2026-09-09T12:57:01.967+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [31/144] Running payroll-heading-template-lookup-migration
+1041:2026-09-09T12:57:02.175+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [31/144] Completed payroll-heading-template-lookup-migration in 208 ms
+1042:2026-09-09T12:57:02.175+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route payroll-heading-template-lookup-migration
+1043:2026-09-09T12:57:02.175+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [32/144] Running payroll-heading-date-lookup-migration
+1049:2026-09-09T12:57:02.322+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [32/144] Completed payroll-heading-date-lookup-migration in 147 ms
+1050:2026-09-09T12:57:02.322+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route payroll-heading-date-lookup-migration
+1051:2026-09-09T12:57:02.322+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [33/144] Running payroll-heading-calculation-lookup-migration
+1057:2026-09-09T12:57:02.476+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [33/144] Completed payroll-heading-calculation-lookup-migration in 154 ms
+1058:2026-09-09T12:57:02.476+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route payroll-heading-calculation-lookup-migration
+1059:2026-09-09T12:57:02.476+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [34/144] Running pay-period-specific-heading-lookup-migration
+1065:2026-09-09T12:57:02.653+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [34/144] Completed pay-period-specific-heading-lookup-migration in 177 ms
+1066:2026-09-09T12:57:02.653+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route pay-period-specific-heading-lookup-migration
+1067:2026-09-09T12:57:02.653+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [35/144] Running branch-pay-period-lookup-migration
+1073:2026-09-09T12:57:02.799+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [35/144] Completed branch-pay-period-lookup-migration in 146 ms
+1074:2026-09-09T12:57:02.799+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route branch-pay-period-lookup-migration
+1075:2026-09-09T12:57:02.799+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [36/144] Running leave-type-migration
+1080:2026-09-09T12:57:16.941+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [36/144] Completed leave-type-migration in 14142 ms
+1081:2026-09-09T12:57:16.941+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route leave-type-migration
+1082:2026-09-09T12:57:16.941+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [37/144] Running branch-leave-type-migration
+1087:2026-09-09T12:58:32.866+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [37/144] Completed branch-leave-type-migration in 75925 ms
+1088:2026-09-09T12:58:32.866+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route branch-leave-type-migration
+1089:2026-09-09T12:58:32.866+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [38/144] Running att-timetable-shift-migration
+1132:2026-09-09T12:58:42.336+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [38/144] Completed att-timetable-shift-migration in 9470 ms
+1133:2026-09-09T12:58:42.336+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route att-timetable-shift-migration
+1134:2026-09-09T12:58:42.336+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [39/144] Running att-shift-pattern-migration
+1161:2026-09-09T12:59:06.178+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [39/144] Completed att-shift-pattern-migration in 23842 ms
+1162:2026-09-09T12:59:06.178+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route att-shift-pattern-migration
+1163:2026-09-09T12:59:06.178+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [40/144] Running branch-holiday-migration
+1168:2026-09-09T12:59:39.757+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [40/144] Completed branch-holiday-migration in 33579 ms
+1169:2026-09-09T12:59:39.757+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route branch-holiday-migration
+1170:2026-09-09T12:59:39.757+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [41/144] Running leave-accumulation-rule-migration
+1175:2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [41/144] Completed leave-accumulation-rule-migration in 846 ms
+1176:2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route leave-accumulation-rule-migration
+1177:2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [42/144] Running overtime-acc-leave-params-migration
+1183:2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [42/144] Completed overtime-acc-leave-params-migration in 7209 ms
+1184:2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route overtime-acc-leave-params-migration
+1185:2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [43/144] Running fy-closing-parameter-migration
+1194:2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [43/144] Completed fy-closing-parameter-migration in 1779 ms
+1195:2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route fy-closing-parameter-migration
+1196:2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [44/144] Running att-params-migration

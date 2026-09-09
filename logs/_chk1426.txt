@@ -1,0 +1,35 @@
+﻿pid=8800
+---meta---
+cmd_pid=38924
+mode=from
+from=employee-device-enroll-migration
+verify=true
+appLog=logs\migration-app.log
+console=logs\migration-step-verify-20260909-142450.log
+started=09/09/2026 14:24:50
+---tail app---
+2026-09-09T14:26:13.135+05:45  INFO 8800 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Steps to run: 82 (of 144)
+2026-09-09T14:26:13.135+05:45  INFO 8800 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Verify after each: true
+2026-09-09T14:26:13.135+05:45  INFO 8800 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : First step: employee-device-enroll-migration
+2026-09-09T14:26:13.135+05:45  INFO 8800 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Last step:  application-module-lookup-migration
+2026-09-09T14:26:13.135+05:45  INFO 8800 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : ==========================================
+2026-09-09T14:26:13.135+05:45  INFO 8800 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [1/82] Running employee-device-enroll-migration
+2026-09-09T14:26:14.578+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=1, noCompany=0, noDeviceMac=36
+2026-09-09T14:26:21.330+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=10
+2026-09-09T14:26:24.606+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=2, noCompany=0, noDeviceMac=0
+2026-09-09T14:26:25.799+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=1, noCompany=0, noDeviceMac=8
+2026-09-09T14:26:26.746+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=36
+2026-09-09T14:26:27.673+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=30
+2026-09-09T14:26:28.946+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=17
+2026-09-09T14:26:30.076+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=29
+2026-09-09T14:26:30.795+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=1, noCompany=0, noDeviceMac=63
+2026-09-09T14:26:31.735+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=10
+2026-09-09T14:26:32.696+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=1
+2026-09-09T14:26:34.140+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=3
+2026-09-09T14:26:34.741+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=2
+2026-09-09T14:26:35.367+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=6
+2026-09-09T14:26:37.198+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=2
+2026-09-09T14:26:38.016+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=2
+2026-09-09T14:26:40.982+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=1
+2026-09-09T14:26:41.804+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=1
+2026-09-09T14:26:42.587+05:45  WARN 8800 --- [camel-jpa-tn] [main] c.j.c.p.EmployeeDeviceEnrollProcessor    : Device enroll skips in batch: noBranch=0, noCompany=0, noDeviceMac=1

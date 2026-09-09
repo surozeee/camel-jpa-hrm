@@ -383,6 +383,10 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private static final int MIGRATION_THROTTLE_MS = 1000;
 
+    /** Inclusive lower bound for attLogs / attendanceTransaction migration window. */
+    private static final java.util.Date ATTENDANCE_MIGRATE_FROM =
+            java.sql.Timestamp.valueOf("2026-08-01 00:00:00");
+
 
 
     private final PrivilegeProcessor privilegeProcessor;
@@ -4009,10 +4013,20 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = attEmpTempShiftRepository.findMigratable(pageable);
-                        exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        var idPage = attEmpTempShiftRepository.findMigratableIds(pageable);
+                        var rows = idPage.getContent().isEmpty()
+                                ? java.util.List.<com.jojolaptech.camel.model.mysql.AttEmpTempShift>of()
+                                : attEmpTempShiftRepository.findByIdInWithGraph(idPage.getContent());
+                        exchange.getMessage().setBody(rows);
+                        exchange.setProperty("hasNext", idPage.hasNext());
                         exchange.setProperty("page", page + 1);
+                        if (page == 0 || page % 50 == 0) {
+                            log.info(
+                                    "emp-temp-shift-migration page={} fetched={} hasNext={}",
+                                    page,
+                                    rows.size(),
+                                    idPage.hasNext());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -4849,10 +4863,20 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = leaveApplicationRepository.findMigratable(pageable);
-                        exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        var idPage = leaveApplicationRepository.findMigratableIds(pageable);
+                        var rows = idPage.getContent().isEmpty()
+                                ? java.util.List.<com.jojolaptech.camel.model.mysql.LeaveApplication>of()
+                                : leaveApplicationRepository.findByIdInWithGraph(idPage.getContent());
+                        exchange.getMessage().setBody(rows);
+                        exchange.setProperty("hasNext", idPage.hasNext());
                         exchange.setProperty("page", page + 1);
+                        if (page == 0 || page % 50 == 0) {
+                            log.info(
+                                    "leave-application-migration page={} fetched={} hasNext={}",
+                                    page,
+                                    rows.size(),
+                                    idPage.hasNext());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -4873,10 +4897,20 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = leaveCancellationRepository.findMigratable(pageable);
-                        exchange.getMessage().setBody(resultPage.getContent());
-                        exchange.setProperty("hasNext", resultPage.hasNext());
+                        var idPage = leaveCancellationRepository.findMigratableIds(pageable);
+                        var rows = idPage.getContent().isEmpty()
+                                ? java.util.List.<com.jojolaptech.camel.model.mysql.LeaveCancellation>of()
+                                : leaveCancellationRepository.findByIdInWithGraph(idPage.getContent());
+                        exchange.getMessage().setBody(rows);
+                        exchange.setProperty("hasNext", idPage.hasNext());
                         exchange.setProperty("page", page + 1);
+                        if (page == 0 || page % 50 == 0) {
+                            log.info(
+                                    "leave-cancellation-migration page={} fetched={} hasNext={}",
+                                    page,
+                                    rows.size(),
+                                    idPage.hasNext());
+                        }
                     })
                     .choice()
                         .when(simple("${body.size} == 0"))
@@ -5211,16 +5245,20 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = attLogsRepository.findMigratable(pageable);
+                        var toDate = new java.util.Date();
+                        var resultPage =
+                                attLogsRepository.findMigratable(ATTENDANCE_MIGRATE_FROM, toDate, pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
                         exchange.setProperty("hasNext", resultPage.hasNext());
                         exchange.setProperty("page", page + 1);
                         if (page == 0 || page % 50 == 0) {
                             log.info(
-                                    "attendance-log-migration page={} fetched={} hasNext={}",
+                                    "attendance-log-migration page={} fetched={} hasNext={} from={} to={}",
                                     page,
                                     resultPage.getNumberOfElements(),
-                                    resultPage.hasNext());
+                                    resultPage.hasNext(),
+                                    ATTENDANCE_MIGRATE_FROM,
+                                    toDate);
                         }
                     })
                     .choice()
@@ -5242,16 +5280,20 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
-                        var resultPage = attendanceTransactionRepository.findMigratable(pageable);
+                        var toDate = new java.util.Date();
+                        var resultPage = attendanceTransactionRepository.findMigratable(
+                                ATTENDANCE_MIGRATE_FROM, toDate, pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
                         exchange.setProperty("hasNext", resultPage.hasNext());
                         exchange.setProperty("page", page + 1);
                         if (page == 0 || page % 50 == 0) {
                             log.info(
-                                    "attendance-transaction-migration page={} fetched={} hasNext={}",
+                                    "attendance-transaction-migration page={} fetched={} hasNext={} from={} to={}",
                                     page,
                                     resultPage.getNumberOfElements(),
-                                    resultPage.hasNext());
+                                    resultPage.hasNext(),
+                                    ATTENDANCE_MIGRATE_FROM,
+                                    toDate);
                         }
                     })
                     .choice()

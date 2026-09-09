@@ -1,0 +1,25 @@
+﻿2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-accumulation-rule-migration completed!
+2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : Total records imported: 0
+2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [41/144] Completed leave-accumulation-rule-migration in 846 ms
+2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route leave-accumulation-rule-migration
+2026-09-09T12:59:40.603+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [42/144] Running overtime-acc-leave-params-migration
+2026-09-09T12:59:41.374+05:45  WARN 21652 --- [camel-jpa-tn] [main] c.j.c.p.OvertimeAccLeaveParamsProcessor  : Skipping overtimeAccLeaveParams bundle company mysqlId=315, paramDate=Mon Jun 11 18:28:00 NPT 2018, missing leave id
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : overtime-acc-leave-params-migration completed!
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : Total records imported: 93
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [42/144] Completed overtime-acc-leave-params-migration in 7209 ms
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route overtime-acc-leave-params-migration
+2026-09-09T12:59:47.812+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [43/144] Running fy-closing-parameter-migration
+2026-09-09T12:59:48.556+05:45  WARN 21652 --- [camel-jpa-tn] [main] .c.p.FiscalYearClosingParameterProcessor : Skipping FY closing parameter id=31, company or fiscal year not migrated
+2026-09-09T12:59:48.556+05:45  WARN 21652 --- [camel-jpa-tn] [main] .c.p.FiscalYearClosingParameterProcessor : Skipping FY closing parameter id=70, company or fiscal year not migrated
+2026-09-09T12:59:48.556+05:45  WARN 21652 --- [camel-jpa-tn] [main] .c.p.FiscalYearClosingParameterProcessor : Skipping FY closing parameter id=151, company or fiscal year not migrated
+2026-09-09T12:59:48.556+05:45  WARN 21652 --- [camel-jpa-tn] [main] .c.p.FiscalYearClosingParameterProcessor : Skipping FY closing parameter id=277, company or fiscal year not migrated
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : fy-closing-parameter-migration completed!
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : Total records imported: 0
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [43/144] Completed fy-closing-parameter-migration in 1779 ms
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route fy-closing-parameter-migration
+2026-09-09T12:59:49.591+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [44/144] Running att-params-migration

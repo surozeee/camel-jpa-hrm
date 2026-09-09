@@ -1,0 +1,42 @@
+﻿alive pid=33968
+mtime=09/09/2026 16:43:01 now=09/09/2026 16:45:14
+2026-09-09T16:13:27.285+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=250 fetched=100 hasNext=true
+2026-09-09T16:14:08.514+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=300 fetched=100 hasNext=true
+2026-09-09T16:14:49.098+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=350 fetched=100 hasNext=true
+2026-09-09T16:15:31.641+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=400 fetched=100 hasNext=true
+2026-09-09T16:16:09.242+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=450 fetched=100 hasNext=true
+2026-09-09T16:16:48.380+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=500 fetched=100 hasNext=true
+2026-09-09T16:17:25.059+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=550 fetched=100 hasNext=true
+2026-09-09T16:18:04.274+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=600 fetched=100 hasNext=true
+2026-09-09T16:18:41.243+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=650 fetched=100 hasNext=true
+2026-09-09T16:19:23.773+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=700 fetched=100 hasNext=true
+2026-09-09T16:20:08.728+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=750 fetched=100 hasNext=true
+2026-09-09T16:20:54.294+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=800 fetched=100 hasNext=true
+2026-09-09T16:21:38.224+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=850 fetched=100 hasNext=true
+2026-09-09T16:22:19.734+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=900 fetched=100 hasNext=true
+2026-09-09T16:23:02.669+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=950 fetched=100 hasNext=true
+2026-09-09T16:23:46.936+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-application-migration page=1000 fetched=100 hasNext=true
+2026-09-09T16:24:06.053+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [1/48] Completed leave-application-migration in 843796 ms
+2026-09-09T16:24:06.055+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [2/48] Running leave-cancellation-migration
+2026-09-09T16:24:06.254+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : leave-cancellation-migration page=0 fetched=0 hasNext=false
+2026-09-09T16:24:06.263+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [2/48] Completed leave-cancellation-migration in 208 ms
+2026-09-09T16:24:06.263+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [3/48] Running calculated-auto-leave-credit-migration
+2026-09-09T16:30:50.117+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [3/48] Completed calculated-auto-leave-credit-migration in 403854 ms
+2026-09-09T16:30:50.117+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [4/48] Running calculated-ot-leave-accrual-migration
+2026-09-09T16:30:54.861+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [4/48] Completed calculated-ot-leave-accrual-migration in 4744 ms
+2026-09-09T16:30:54.861+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [5/48] Running employee-salary-migration
+2026-09-09T16:32:10.637+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [5/48] Completed employee-salary-migration in 75776 ms
+2026-09-09T16:32:10.637+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [6/48] Running payroll-opening-balance-migration
+2026-09-09T16:32:10.845+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [6/48] Completed payroll-opening-balance-migration in 208 ms
+2026-09-09T16:32:10.845+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [7/48] Running month-wise-salary-migration
+2026-09-09T16:33:05.560+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [7/48] Completed month-wise-salary-migration in 54715 ms
+2026-09-09T16:33:05.560+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [8/48] Running payroll-transaction-history-migration
+2026-09-09T16:33:07.364+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [8/48] Completed payroll-transaction-history-migration in 1804 ms
+2026-09-09T16:33:07.364+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [9/48] Running mass-salary-adjustment-migration
+2026-09-09T16:33:07.577+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [9/48] Completed mass-salary-adjustment-migration in 213 ms
+2026-09-09T16:33:07.577+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [10/48] Running employee-loan-migration
+2026-09-09T16:33:08.151+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [10/48] Completed employee-loan-migration in 574 ms
+2026-09-09T16:33:08.151+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [11/48] Running employee-loan-payment-migration
+2026-09-09T16:33:08.357+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [11/48] Completed employee-loan-payment-migration in 206 ms
+2026-09-09T16:33:08.358+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [12/48] Running attendance-log-migration
+2026-09-09T16:33:57.680+05:45  INFO 33968 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : attendance-log-migration page=0 fetched=100 hasNext=true from=2026-08-01 00:00:00.0 to=Wed Sep 09 16:33:08 NPT 2026

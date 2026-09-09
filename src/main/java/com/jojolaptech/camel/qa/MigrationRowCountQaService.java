@@ -689,19 +689,21 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "23h",
                     "attLogs → attendance_log",
-                    "SELECT COUNT(*) FROM att_logs WHERE is_deleted IS NULL OR is_deleted = 'N'",
+                    "SELECT COUNT(*) FROM attLogs WHERE (isDeleted IS NULL OR isDeleted = 'N')"
+                            + " AND checkTime >= '2026-08-01 00:00:00' AND checkTime <= NOW()",
                     "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id IS NOT NULL AND mysql_id < "
                             + 12_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
-                    "Skips deleted / missing enroll employee; residual device logs use ≥12e12"),
+                    "Window 2026-08-01..now; skips deleted / missing enroll; residual device logs ≥12e12"),
             new MigrationRowCountCheck(
                     "23i",
                     "attendanceTransaction → attendance",
-                    "SELECT COUNT(*) FROM attendance_transaction",
+                    "SELECT COUNT(*) FROM attendanceTransaction"
+                            + " WHERE logDate >= '2026-08-01 00:00:00' AND logDate <= NOW()",
                     "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id IS NOT NULL AND mysql_id < "
                             + 14_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
-                    "Log shells may lack mysql_id; old archive uses ≥14e12"),
+                    "Window 2026-08-01..now; old archive uses ≥14e12"),
             new MigrationRowCountCheck(
                     "23j",
                     "attendanceForgot → time request",

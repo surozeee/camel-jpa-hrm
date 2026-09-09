@@ -1,0 +1,38 @@
+﻿cpu=39.125 wsMB=526 now=09/09/2026 14:24:35
+---app---
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [main] o.a.c.impl.engine.AbstractCamelContext   :     Started pay-by-online-transaction-migration (direct://pay-by-online-transaction-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [main] o.a.c.impl.engine.AbstractCamelContext   :     Disabled master-migration-route (timer://master-import)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [main] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.6.0 (camel-1) started in 184ms (build:0ms init:0ms start:184ms)
+2026-09-09T14:19:20.223+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.CamelJpaTnApplication          : Started CamelJpaTnApplication in 77.842 seconds (process running for 78.371)
+2026-09-09T14:19:24.798+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.service.MasterDataSeedService  : Master platform seed completed, 1 records ensured
+2026-09-09T14:19:24.868+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.config.DataInitializer         : Platform master seed ensured 1 records
+2026-09-09T14:19:24.872+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : ==========================================
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Step-by-step migration starting
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Mode: from
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Steps to run: 81 (of 144)
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Verify after each: true
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : First step: emp-temp-shift-migration
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : Last step:  application-module-lookup-migration
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : ==========================================
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [1/81] Running emp-temp-shift-migration
+---console---
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started employee-summary-migration (direct://employee-summary-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started edited-overtime-details-migration (direct://edited-overtime-details-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started payroll-setting-lookup-migration (direct://payroll-setting-lookup-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started payroll-overtime-lookup-migration (direct://payroll-overtime-lookup-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started calculated-type-value-lookup-migration (direct://calculated-type-value-lookup-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started pay-by-online-transaction-migration (direct://pay-by-online-transaction-migration)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   :     Disabled master-migration-route (timer://master-import)
+2026-09-09T14:19:20.219+05:45  INFO 37012 --- [camel-jpa-tn] [           main] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.6.0 (camel-1) started in 184ms (build:0ms init:0ms start:184ms)
+2026-09-09T14:19:20.223+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.CamelJpaTnApplication          : Started CamelJpaTnApplication in 77.842 seconds (process running for 78.371)
+2026-09-09T14:19:24.798+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.service.MasterDataSeedService  : Master platform seed completed, 1 records ensured
+2026-09-09T14:19:24.868+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.config.DataInitializer         : Platform master seed ensured 1 records
+2026-09-09T14:19:24.872+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : ==========================================
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : Step-by-step migration starting
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : Mode: from
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : Steps to run: 81 (of 144)
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : Verify after each: true
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : First step: emp-temp-shift-migration
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : Last step:  application-module-lookup-migration
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : ==========================================
+2026-09-09T14:19:24.873+05:45  INFO 37012 --- [camel-jpa-tn] [           main] c.j.camel.migration.MigrationStepRunner  : >>> [1/81] Running emp-temp-shift-migration

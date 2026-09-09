@@ -1,0 +1,6 @@
+alive=True cpu=77.109375 mtime=09/09/2026 14:10:08 now=09/09/2026 14:17:12
+2026-09-09T14:10:08.537+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : Total records imported: 0
+2026-09-09T14:10:08.537+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T14:10:08.537+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [63/144] Completed employee-device-enroll-migration in 2897991 ms
+2026-09-09T14:10:08.537+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route employee-device-enroll-migration
+2026-09-09T14:10:08.537+05:45  INFO 21652 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [64/144] Running emp-temp-shift-migration

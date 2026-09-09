@@ -1,0 +1,7 @@
+﻿company 955
+branch 2581
+employee 23676
+users 9252
+hrm_attendance_log 30304
+hrm_attendance 15864
+hrm_attendance_forgot ERR relation "hrm_attendance_forgot" does not exist

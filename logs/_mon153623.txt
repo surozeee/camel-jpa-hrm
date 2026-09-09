@@ -1,0 +1,31 @@
+﻿alive pid=2588
+mtime=09/09/2026 15:35:20 now=09/09/2026 15:36:24
+2026-09-09T15:02:25.031+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [17/82] Completed employee-designation-link-migration in 196706 ms
+2026-09-09T15:02:25.031+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [18/82] Running employee-emergency-contact-migration
+2026-09-09T15:03:24.938+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [18/82] Completed employee-emergency-contact-migration in 59907 ms
+2026-09-09T15:03:24.938+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [19/82] Running employee-termination-migration
+2026-09-09T15:03:59.564+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [19/82] Completed employee-termination-migration in 34626 ms
+2026-09-09T15:03:59.564+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [20/82] Running branch-department-head-migration
+2026-09-09T15:03:59.766+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [20/82] Completed branch-department-head-migration in 202 ms
+2026-09-09T15:03:59.766+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [21/82] Running org-master-head-link-migration
+2026-09-09T15:03:59.959+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [21/82] Completed org-master-head-link-migration in 193 ms
+2026-09-09T15:03:59.959+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [22/82] Running employee-org-fk-backfill-migration
+2026-09-09T15:35:13.577+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [22/82] Completed employee-org-fk-backfill-migration in 1873618 ms
+2026-09-09T15:35:13.579+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [23/82] Running employee-job-level-history-migration
+2026-09-09T15:35:14.297+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [23/82] Completed employee-job-level-history-migration in 718 ms
+2026-09-09T15:35:14.297+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [24/82] Running job-status-history-migration
+2026-09-09T15:35:14.798+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [24/82] Completed job-status-history-migration in 501 ms
+2026-09-09T15:35:14.798+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [25/82] Running job-position-migration
+2026-09-09T15:35:20.493+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [25/82] Completed job-position-migration in 5695 ms
+2026-09-09T15:35:20.493+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [26/82] Running company-employee-contract-migration
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [26/82] Completed company-employee-contract-migration in 235 ms
+2026-09-09T15:35:20.729+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [27/82] Running employee-job-history-migration
+---tail---
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] company-employee-contract-migration      : No companyEmployeeContract rows in this page, continuing...
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : company-employee-contract-migration completed!
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : Total records imported: 0
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.route.ImportRouteBuilder       : ==========================================
+2026-09-09T15:35:20.728+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : <<< [26/82] Completed company-employee-contract-migration in 235 ms
+2026-09-09T15:35:20.729+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : QA: no row-count check mapped for route company-employee-contract-migration
+2026-09-09T15:35:20.729+05:45  INFO 2588 --- [camel-jpa-tn] [main] c.j.camel.migration.MigrationStepRunner  : >>> [27/82] Running employee-job-history-migration
