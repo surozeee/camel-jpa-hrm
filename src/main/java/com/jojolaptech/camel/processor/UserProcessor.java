@@ -119,7 +119,13 @@ public class UserProcessor implements Processor {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
                 if (!existingRoleMysqlIds.equals(desiredRoleMysqlIds)) {
-                    existing.setRoles(roles);
+                    // Mutate managed collection so Hibernate updates user_role join rows.
+                    if (existing.getRoles() == null) {
+                        existing.setRoles(new ArrayList<>());
+                    } else {
+                        existing.getRoles().clear();
+                    }
+                    existing.getRoles().addAll(roles);
                     changed = true;
                 }
                 if (changed) {

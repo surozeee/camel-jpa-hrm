@@ -23,7 +23,8 @@ import java.util.UUID;
 @Builder
 public class BranchUserEntity extends BaseAuditEntity {
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    // No cascade: user rows already exist; PERSIST on a detached UserEntity fails migration saves.
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private UserEntity user;
 

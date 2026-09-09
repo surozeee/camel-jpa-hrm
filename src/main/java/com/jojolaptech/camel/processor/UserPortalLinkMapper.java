@@ -24,19 +24,25 @@ final class UserPortalLinkMapper {
 
     static PortalKind resolvePortalKind(
             UserTypeEnum userType, PermissionForEnum roleScope, boolean employeeLinked, boolean employeeMigrated) {
-        if (employeeLinked && employeeMigrated) {
-            return PortalKind.EMPLOYEE;
-        }
         if (userType == UserTypeEnum.SUPER_ADMIN) {
             return PortalKind.NONE;
         }
-        if (roleScope == PermissionForEnum.BRANCH) {
-            return PortalKind.BRANCH;
-        }
-        if (userType == UserTypeEnum.COMPANY_ADMIN || roleScope == PermissionForEnum.COMPANY) {
+        // Prefer explicit admin portal over employee link (company admins are often also employees).
+        if (userType == UserTypeEnum.COMPANY_ADMIN
+                || userType == UserTypeEnum.COMPANY_MANAGER
+                || userType == UserTypeEnum.COMPANY_USER) {
             return PortalKind.COMPANY;
         }
-        if (employeeLinked) {
+        if (userType == UserTypeEnum.BRANCH_ADMIN
+                || userType == UserTypeEnum.BRANCH_MANAGER
+                || userType == UserTypeEnum.BRANCH_USER
+                || roleScope == PermissionForEnum.BRANCH) {
+            return PortalKind.BRANCH;
+        }
+        if (employeeLinked && employeeMigrated) {
+            return PortalKind.EMPLOYEE;
+        }
+        if (userType == UserTypeEnum.EMPLOYEE && employeeLinked) {
             return PortalKind.COMPANY;
         }
         return PortalKind.NONE;

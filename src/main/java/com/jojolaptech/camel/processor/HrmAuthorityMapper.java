@@ -61,9 +61,21 @@ final class HrmAuthorityMapper {
 
     static PermissionForEnum roleScope(String authority) {
         String code = roleCode(authority).toUpperCase(Locale.ROOT);
+        // ERP RoleSeedService stores platform catalog roles as SYSTEM (null company/org/branch).
         return switch (code) {
-            case "ADMIN", "SUPERADMIN", "SUPER_ADMIN" -> PermissionForEnum.SYSTEM;
-            case "DEPART", "BRANCH", "BRANCH_ADMIN", "BRANCH_MANAGER" -> PermissionForEnum.BRANCH;
+            case "ADMIN",
+                    "SUPERADMIN",
+                    "SUPER_ADMIN",
+                    "COMPANY",
+                    "COMPANY_ADMIN",
+                    "EMPLOYEE",
+                    "MANAGER",
+                    "ACCOUNT",
+                    "ACCOUNTANT",
+                    "BRANCH",
+                    "BRANCH_ADMIN",
+                    "DEPART",
+                    "BRANCH_MANAGER" -> PermissionForEnum.SYSTEM;
             default -> PermissionForEnum.COMPANY;
         };
     }

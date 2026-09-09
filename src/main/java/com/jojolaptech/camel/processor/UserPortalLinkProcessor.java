@@ -1,6 +1,7 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.CompanyEmployee;
+import com.jojolaptech.camel.model.mysql.CompanySecUser;
 import com.jojolaptech.camel.model.mysql.EmployeeSecUser;
 import com.jojolaptech.camel.model.mysql.SecUser;
 import com.jojolaptech.camel.model.mysql.SecUserSecRole;
@@ -15,6 +16,7 @@ import com.jojolaptech.camel.model.postgres.user.enums.PermissionForEnum;
 import com.jojolaptech.camel.model.postgres.user.enums.UserTypeEnum;
 import com.jojolaptech.camel.processor.UserPortalLinkMapper.PortalKind;
 import com.jojolaptech.camel.repository.mysql.CompanyEmployeeRepository;
+import com.jojolaptech.camel.repository.mysql.CompanySecUserRepository;
 import com.jojolaptech.camel.repository.mysql.EmployeeSecUserRepository;
 import com.jojolaptech.camel.repository.mysql.SecUserSecRoleRepository;
 import com.jojolaptech.camel.repository.postgres.company.PgBranchRepository;
@@ -51,6 +53,7 @@ public class UserPortalLinkProcessor implements Processor {
     private final EmployeeSecUserRepository employeeSecUserRepository;
     private final SecUserSecRoleRepository secUserSecRoleRepository;
     private final CompanyEmployeeRepository companyEmployeeRepository;
+    private final CompanySecUserRepository companySecUserRepository;
     private final PgEmployeeUserRepository employeeUserRepository;
     private final PgCompanyUserRepository companyUserRepository;
     private final PgBranchUserRepository branchUserRepository;
@@ -98,6 +101,11 @@ public class UserPortalLinkProcessor implements Processor {
                 .filter(row -> row.getCompany() != null)
                 .map(row -> row.getCompany().getId())
                 .collect(Collectors.toSet());
+
+        Map<Long, Long> companyMysqlIdByUserId = companySecUserRepository.findBySecUserIdIn(userIds).stream()
+                .collect(Collectors.toMap(CompanySecUser::getSecUserId, CompanySecUser::getCompanyId, (a, b) -> a));
+        companyMysqlIds.addAll(companyMysqlIdByUserId.values());
+
         Map<Long, CompanyEntity> companiesByMysqlId = companyRepository.findByMysqlIdIn(companyMysqlIds).stream()
                 .collect(Collectors.toMap(CompanyEntity::getMysqlId, company -> company, (left, right) -> left));
         Map<Long, List<BranchEntity>> branchesByCompanyMysqlId =
@@ -179,7 +187,14 @@ public class UserPortalLinkProcessor implements Processor {
                     if (linkedCompanyUsers.contains(source.getId())) {
                         continue;
                     }
-                    CompanyEntity company = resolveCompany(user, source, employeeLink, companyByEmail, activeCompanyEmployeeByEmployeeMysqlId, companiesByMysqlId);
+                    CompanyEntity company = resolveCompany(
+                            user,
+                            source,
+                            employeeLink,
+                            companyByEmail,
+                            activeCompanyEmployeeByEmployeeMysqlId,
+                            companiesByMysqlId,
+                            companyMysqlIdByUserId);
                     if (company == null) {
                         log.warn("Skipping company portal link for secUser id={}, company not resolved", source.getId());
                         continue;
@@ -239,7 +254,15 @@ public class UserPortalLinkProcessor implements Processor {
             EmployeeSecUser employeeLink,
             Map<String, CompanyEntity> companyByEmail,
             Map<Long, CompanyEmployee> activeCompanyEmployeeByEmployeeMysqlId,
-            Map<Long, CompanyEntity> companiesByMysqlId) {
+            Map<Long, CompanyEntity> companiesByMysqlId,
+            Map<Long, Long> companyMysqlIdByUserId) {
+        Long companyMysqlId = companyMysqlIdByUserId.get(source.getId());
+        if (companyMysqlId != null) {
+            CompanyEntity fromJoin = companiesByMysqlId.get(companyMysqlId);
+            if (fromJoin != null) {
+                return fromJoin;
+            }
+        }
         CompanyEntity company = UserPortalLinkMapper.resolveCompanyByEmail(user.getEmailAddress(), companyByEmail);
         if (company != null) {
             return company;
