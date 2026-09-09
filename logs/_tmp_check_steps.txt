@@ -1,5 +1,0 @@
-﻿steps 145
-attendance ['attendance-log-migration', 'attendance-transaction-migration', 'attendance-forgot-migration', 'attendance-remark-migration', 'old-attendance-transaction-migration']
-class_exists True mtime 1788861728.2163963
-class_has_att_log True
-class_has_att_tx True

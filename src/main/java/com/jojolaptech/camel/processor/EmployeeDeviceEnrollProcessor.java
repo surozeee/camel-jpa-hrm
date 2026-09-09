@@ -2,6 +2,7 @@ package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.Employee;
 import com.jojolaptech.camel.model.postgres.company.BranchEntity;
+import com.jojolaptech.camel.model.postgres.company.CompanyEntity;
 import com.jojolaptech.camel.model.postgres.company.DeviceMacEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeDeviceEnrollEntity;
 import com.jojolaptech.camel.model.postgres.company.EmployeeEntity;
@@ -29,6 +30,9 @@ import org.springframework.stereotype.Component;
 public class EmployeeDeviceEnrollProcessor implements Processor {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeDeviceEnrollProcessor.class);
+
+    /** Synthetic device rows for companies with no attDeviceMAC (avoids blocking enroll). */
+    private static final long PLACEHOLDER_MYSQL_ID_BASE = 60_000_000_000_000L;
 
     private final PgEmployeeRepository employeeRepository;
     private final PgBranchRepository branchRepository;
@@ -70,16 +74,20 @@ public class EmployeeDeviceEnrollProcessor implements Processor {
                 .map(b -> b.getCompany().getId())
                 .collect(Collectors.toSet());
         Map<UUID, DeviceMacEntity> firstDeviceByCompany = new HashMap<>();
+        Map<UUID, DeviceMacEntity> firstDeviceByBranch = new HashMap<>();
         if (!companyIds.isEmpty()) {
             for (DeviceMacEntity device : deviceMacRepository.findByCompanyIdIn(companyIds)) {
                 firstDeviceByCompany.putIfAbsent(device.getCompanyId(), device);
+                if (device.getBranchId() != null) {
+                    firstDeviceByBranch.putIfAbsent(device.getBranchId(), device);
+                }
             }
         }
 
         List<EmployeeDeviceEnrollEntity> toSave = new ArrayList<>();
         int skippedNoBranch = 0;
         int skippedNoCompany = 0;
-        int skippedNoDevice = 0;
+        int placeholdersCreated = 0;
         for (Employee source : batch) {
             EmployeeEntity employee = employeeByMysqlId.get(source.getId());
             if (employee == null || employee.getMysqlId() == null) {
@@ -101,9 +109,20 @@ public class EmployeeDeviceEnrollProcessor implements Processor {
                 skippedNoCompany++;
                 continue;
             }
-            DeviceMacEntity device = firstDeviceByCompany.get(branch.getCompany().getId());
+            CompanyEntity company = branch.getCompany();
+
+            DeviceMacEntity device = firstDeviceByBranch.get(branch.getId());
             if (device == null) {
-                skippedNoDevice++;
+                device = firstDeviceByCompany.get(company.getId());
+            }
+            if (device == null) {
+                device = ensurePlaceholderDevice(company, branch, firstDeviceByCompany, firstDeviceByBranch);
+                if (device != null) {
+                    placeholdersCreated++;
+                }
+            }
+            if (device == null) {
+                skippedNoCompany++;
                 continue;
             }
 
@@ -116,17 +135,63 @@ public class EmployeeDeviceEnrollProcessor implements Processor {
             existingEnrollIds.add(employee.getMysqlId());
         }
 
-        if (skippedNoBranch + skippedNoCompany + skippedNoDevice > 0) {
+        if (skippedNoBranch + skippedNoCompany + placeholdersCreated > 0) {
             log.warn(
-                    "Device enroll skips in batch: noBranch={}, noCompany={}, noDeviceMac={}",
+                    "Device enroll batch: noBranch={}, unresolved={}, placeholdersCreated={}",
                     skippedNoBranch,
                     skippedNoCompany,
-                    skippedNoDevice);
+                    placeholdersCreated);
         }
 
         if (!toSave.isEmpty()) {
             employeeDeviceEnrollRepository.saveAll(toSave);
         }
         exchange.setProperty("batchImported", toSave.size());
+    }
+
+    private DeviceMacEntity ensurePlaceholderDevice(
+            CompanyEntity company,
+            BranchEntity branch,
+            Map<UUID, DeviceMacEntity> firstDeviceByCompany,
+            Map<UUID, DeviceMacEntity> firstDeviceByBranch) {
+        Long companyMysqlId = company.getMysqlId();
+        if (companyMysqlId == null) {
+            return null;
+        }
+        String macAddress = "MIGRATE-NO-DEVICE-" + companyMysqlId;
+        DeviceMacEntity existing = deviceMacRepository.findByMacAddress(macAddress).orElse(null);
+        if (existing != null) {
+            firstDeviceByCompany.put(company.getId(), existing);
+            firstDeviceByBranch.putIfAbsent(branch.getId(), existing);
+            return existing;
+        }
+
+        Long placeholderMysqlId = PLACEHOLDER_MYSQL_ID_BASE + companyMysqlId;
+        if (deviceMacRepository.findByMysqlId(placeholderMysqlId).isPresent()) {
+            DeviceMacEntity byMysql = deviceMacRepository.findByMysqlId(placeholderMysqlId).orElse(null);
+            if (byMysql != null) {
+                firstDeviceByCompany.put(company.getId(), byMysql);
+                firstDeviceByBranch.putIfAbsent(branch.getId(), byMysql);
+                return byMysql;
+            }
+        }
+
+        DeviceMacEntity created = deviceMacRepository.save(DeviceMacEntity.builder()
+                .mysqlId(placeholderMysqlId)
+                .macAddress(macAddress)
+                .deviceName("Migrated placeholder (no attDeviceMAC)")
+                .deviceSerialNumber(macAddress)
+                .description("Auto-created so employee enrollId can migrate without a legacy device")
+                .companyId(company.getId())
+                .branchId(branch.getId())
+                .build());
+        firstDeviceByCompany.put(company.getId(), created);
+        firstDeviceByBranch.putIfAbsent(branch.getId(), created);
+        log.info(
+                "Created placeholder deviceMac for company mysqlId={} branch={} mac={}",
+                companyMysqlId,
+                branch.getId(),
+                macAddress);
+        return created;
     }
 }

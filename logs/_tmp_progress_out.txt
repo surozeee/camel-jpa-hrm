@@ -1,9 +1,0 @@
-﻿size 35800
-completed_count 0
-last_started ('1', '88', 'employee-migration\n')
-failed_count 0
-qa_fail_count 0
-error_lines 0
-finished False
-proc17900 DEAD/unknown
-camel_pids 16632

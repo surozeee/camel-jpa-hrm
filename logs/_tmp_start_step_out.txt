@@ -1,4 +1,0 @@
-﻿cmd_pid=3588
-from=attendance-forgot-migration
-console=logs\migration-step-verify-20260909-105253.log
-appLog=logs\migration-app.log

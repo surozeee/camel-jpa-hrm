@@ -1,7 +1,0 @@
-﻿cmd_pid=39004
-mode=from
-from=leave-application-migration
-verify=true
-appLog=logs\migration-app.log
-console=logs\migration-step-verify-20260909-160842.log
-started=09/09/2026 16:08:43

@@ -1,2 +1,0 @@
-﻿cmd_pid=26556
-appLog=D:\Projects\camel-jpa-hrm\logs\migration-app.log

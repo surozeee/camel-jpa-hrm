@@ -84,11 +84,11 @@ See `ImportRouteBuilder.java` for the full route list.
 | Step | Source (MySQL) | Target (PostgreSQL) |
 |------|----------------|---------------------|
 | 18a | `attDeviceMAC` | `hrm_device_mac` (mysql_id + unique mac) |
-| 22g | migrated `employee.enrollId` | `hrm_employee_device_enroll` (first company device) |
+| 22g | migrated `employee.enrollId` | `hrm_employee_device_enroll` (prefer branch device, else first company device; **placeholder** `MIGRATE-NO-DEVICE-{companyMysqlId}` / mysql_id ≥ 60e12 when company has no `attDeviceMAC`) |
 | 22h | `attEmpTempShift` | `hrm_employee_temp_shift` |
 | 22i | `attEmpShift` (latest per employee via `attShiftDetails` → timetable) | `employee.branch_shift_id` |
-| 23h | `attLogs` (non-deleted) | `hrm_attendance_log` + day shell `hrm_attendance` |
-| 23i | `attendanceTransaction` | upsert `hrm_attendance` (sets mysql_id) |
+| 23h | `attLogs` (non-deleted, **checkTime ≥ 2026-08-01 through now**) | `hrm_attendance_log` + day shell `hrm_attendance` |
+| 23i | `attendanceTransaction` (**logDate ≥ 2026-08-01 through now**) | upsert `hrm_attendance` (sets mysql_id) |
 | 23j | `attendanceForgot` | `hrm_attendance_time_request` |
 | 23k | `attendanceRemark` | append into existing `hrm_attendance.remarks` |
 | 23r | `deviceLogs` | residual `hrm_attendance_log` (+ day shell); mysql_id ≥ 12e12; skips enroll+datetime already present |

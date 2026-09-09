@@ -1,2 +1,0 @@
-LAUNCHED bat=logs\run-exclusive-attforgot-20260908-160435.cmd log=logs\migration-exclusive-20260908-160435.log
-PID=25196 "C:\Program Files\Java\jdk-21\bin\java.exe"  -Xmx2g -jar build\libs\Camel-Jpa-TN-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev 

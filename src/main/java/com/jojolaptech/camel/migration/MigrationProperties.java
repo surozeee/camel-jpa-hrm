@@ -30,6 +30,12 @@ public class MigrationProperties {
     /** When true and a verify check fails, abort remaining steps. */
     private boolean failOnVerifyMismatch = false;
 
+    /**
+     * Inclusive lower bound (yyyy-MM-dd or yyyy-MM-dd HH:mm:ss) for {@code attLogs} /
+     * {@code attendanceTransaction} only. Other steps import all rows. Upper bound is always now.
+     */
+    private String attendanceMigrateFrom = "2026-08-01";
+
     public boolean useStepRunner() {
         return "from".equalsIgnoreCase(mode) || "single".equalsIgnoreCase(mode);
     }

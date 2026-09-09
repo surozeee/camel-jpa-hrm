@@ -1,6 +1,0 @@
-﻿alive pid=37012
-appLog mtime=09/09/2026 14:19:24 len=36000
-console=migration-step-verify-20260909-141727.log mtime=09/09/2026 14:19:24 len=38958
-console=migration-step-verify-20260909-124831.log mtime=09/09/2026 14:10:08 len=549233
-console=migration-step-verify-20260909-105253.log mtime=09/09/2026 12:45:21 len=86283750
----app log---

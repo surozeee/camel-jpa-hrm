@@ -1,5 +1,0 @@
-owner=exclusive-attforgot pid-pending 
-from=attendance-forgot-migration
-jar=Camel-Jpa-TN-0.0.1-SNAPSHOT.jar
-log=logs\migration-exclusive-20260908-161719.log
-java_pid=5788

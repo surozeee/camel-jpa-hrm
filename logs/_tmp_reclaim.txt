@@ -1,4 +1,0 @@
-killing_java PID=33680 "C:\Program Files\Java\jdk-21\bin\java.exe" -Xmx6g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=logs/heapdump.hprof -Dlogging.file.name=logs/migration-app.l
-NO_CAMEL_LEFT
-JAR_OK 09/08/2026 15:55:10
-LOCK_WRITTEN

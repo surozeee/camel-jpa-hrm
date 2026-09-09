@@ -383,11 +383,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private static final int MIGRATION_THROTTLE_MS = 1000;
 
-    /** Inclusive lower bound for attLogs / attendanceTransaction migration window. */
-    private static final java.util.Date ATTENDANCE_MIGRATE_FROM =
-            java.sql.Timestamp.valueOf("2026-08-01 00:00:00");
-
-
+    private final com.jojolaptech.camel.migration.MigrationProperties migrationProperties;
 
     private final PrivilegeProcessor privilegeProcessor;
 
@@ -5245,9 +5241,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var fromDate = attendanceMigrateFromDate();
                         var toDate = new java.util.Date();
                         var resultPage =
-                                attLogsRepository.findMigratable(ATTENDANCE_MIGRATE_FROM, toDate, pageable);
+                                attLogsRepository.findMigratable(fromDate, toDate, pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
                         exchange.setProperty("hasNext", resultPage.hasNext());
                         exchange.setProperty("page", page + 1);
@@ -5257,7 +5254,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                                     page,
                                     resultPage.getNumberOfElements(),
                                     resultPage.hasNext(),
-                                    ATTENDANCE_MIGRATE_FROM,
+                                    fromDate,
                                     toDate);
                         }
                     })
@@ -5280,9 +5277,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                     .process(exchange -> {
                         int page = exchange.getProperty("page", Integer.class);
                         var pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("id").ascending());
+                        var fromDate = attendanceMigrateFromDate();
                         var toDate = new java.util.Date();
                         var resultPage = attendanceTransactionRepository.findMigratable(
-                                ATTENDANCE_MIGRATE_FROM, toDate, pageable);
+                                fromDate, toDate, pageable);
                         exchange.getMessage().setBody(resultPage.getContent());
                         exchange.setProperty("hasNext", resultPage.hasNext());
                         exchange.setProperty("page", page + 1);
@@ -5292,7 +5290,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                                     page,
                                     resultPage.getNumberOfElements(),
                                     resultPage.hasNext(),
-                                    ATTENDANCE_MIGRATE_FROM,
+                                    fromDate,
                                     toDate);
                         }
                     })
@@ -6693,7 +6691,21 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     }
 
-
+    /**
+     * Inclusive lower bound for attLogs / attendanceTransaction only (default 2026-08-01).
+     * Upper bound is always {@code new Date()} (now). All other routes import full history.
+     */
+    private java.util.Date attendanceMigrateFromDate() {
+        String raw = migrationProperties.getAttendanceMigrateFrom();
+        if (raw == null || raw.isBlank()) {
+            raw = "2026-08-01";
+        }
+        String normalized = raw.trim();
+        if (normalized.length() == 10) {
+            normalized = normalized + " 00:00:00";
+        }
+        return java.sql.Timestamp.valueOf(normalized);
+    }
 
     private static void addImported(org.apache.camel.Exchange exchange) {
 

@@ -1,1 +1,0 @@
-owner=ps-attforgot-detached log=D:\Projects\camel-jpa-hrm\logs\migration-PS-JAR-from-attforgot-20260908-155229.log runner=D:\Projects\camel-jpa-hrm\logs\run-attforgot-20260908-155229.cmd

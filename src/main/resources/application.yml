@@ -66,6 +66,8 @@ migration:
   only-step:
   verify-after-each: true
   fail-on-verify-mismatch: false
+  # attLogs + attendanceTransaction window (yyyy-MM-dd); upper bound = now
+  attendance-migrate-from: ${ATTENDANCE_MIGRATE_FROM:2026-08-01}
   chain-enabled: true
   qa:
     enabled: true

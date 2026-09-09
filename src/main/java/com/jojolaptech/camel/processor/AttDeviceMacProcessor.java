@@ -77,10 +77,6 @@ public class AttDeviceMacProcessor implements Processor {
                 log.warn("Skipping attDeviceMAC id={}, blank macId", source.getId());
                 continue;
             }
-            if (pendingMacs.contains(macAddress)) {
-                log.warn("Skipping attDeviceMAC id={}, macAddress={} already exists", source.getId(), macAddress);
-                continue;
-            }
             CompanyEntity company = companyByMysqlId.get(source.getCompany().getId());
             if (company == null) {
                 log.warn(
@@ -88,6 +84,24 @@ public class AttDeviceMacProcessor implements Processor {
                         source.getId(),
                         source.getCompany().getId());
                 continue;
+            }
+            // Global unique mac_address: remapped when the same MAC is reused across companies.
+            if (pendingMacs.contains(macAddress)) {
+                String remapped = macAddress + "#c" + source.getCompany().getId();
+                if (pendingMacs.contains(remapped)) {
+                    log.warn(
+                            "Skipping attDeviceMAC id={}, macAddress={} already exists (remap also taken)",
+                            source.getId(),
+                            macAddress);
+                    continue;
+                }
+                log.info(
+                        "Remapping duplicate attDeviceMAC id={} macAddress={} -> {} for company mysqlId={}",
+                        source.getId(),
+                        macAddress,
+                        remapped,
+                        source.getCompany().getId());
+                macAddress = remapped;
             }
             List<BranchEntity> branches =
                     branchesByCompanyMysqlId.getOrDefault(source.getCompany().getId(), List.of());

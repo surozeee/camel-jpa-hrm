@@ -1,4 +1,0 @@
-pid=29688
-ts=20260908-182643
-log=logs\migration-resume-20260908-182643.log
-from=attendance-forgot-migration
