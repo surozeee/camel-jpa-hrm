@@ -1,0 +1,10 @@
+﻿python.exe :   File "<string>", line 6
+At C:\Users\suroj.awal\Documents\WindowsPowerShell\profile.ps1:6 char:5
++     & "C:\Users\suroj.awal\AppData\Local\Programs\Python\Python314\py ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  File "<string>", line 6:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    " SHOW TABLES LIKE %att%log% \,
+    ^
+SyntaxError: unterminated string literal (detected at line 6)

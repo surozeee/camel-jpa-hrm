@@ -689,8 +689,8 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "23h",
                     "attLogs → attendance_log",
-                    "SELECT COUNT(*) FROM attLogs WHERE (isDeleted IS NULL OR isDeleted = 'N')"
-                            + " AND checkTime >= '2026-08-01 00:00:00' AND checkTime <= NOW()",
+                    "SELECT COUNT(*) FROM att_logs WHERE (is_deleted IS NULL OR is_deleted = 'N')"
+                            + " AND check_time >= '2026-08-01 00:00:00' AND check_time <= NOW()",
                     "SELECT COUNT(*) FROM hrm_attendance_log WHERE mysql_id IS NOT NULL AND mysql_id < "
                             + 12_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,
@@ -698,8 +698,8 @@ public class MigrationRowCountQaService {
             new MigrationRowCountCheck(
                     "23i",
                     "attendanceTransaction → attendance",
-                    "SELECT COUNT(*) FROM attendanceTransaction"
-                            + " WHERE logDate >= '2026-08-01 00:00:00' AND logDate <= NOW()",
+                    "SELECT COUNT(*) FROM attendance_transaction"
+                            + " WHERE log_date >= '2026-08-01 00:00:00' AND log_date <= NOW()",
                     "SELECT COUNT(*) FROM hrm_attendance WHERE mysql_id IS NOT NULL AND mysql_id < "
                             + 14_000_000_000_000L,
                     MigrationComparisonMode.PG_AT_MOST_MYSQL,

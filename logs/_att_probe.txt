@@ -1,0 +1,11 @@
+﻿tables_attLog ()
+tables_attlog (('att_logs',),)
+tables_attendance (('attendance_forgot',), ('attendance_remark',), ('attendance_transaction',))
+fail attLogs (1146, "Table 'hrmsuite.attLogs' doesn't exist")
+count_ok att_logs 15213193
+cols att_logs ['id', 'version', 'check_time', 'check_type', 'company_id', 'device_log_id', 'enroll_id', 'is_add', 'is_deleted', 'is_device', 'is_modified', 'modified_by', 'modified_date', 'sensor_id', 'verify_code', 'work_code', 'mac_id', 'browser_name', 'ip', 'os']
+fail attlogs (1146, "Table 'hrmsuite.attlogs' doesn't exist")
+fail AttLogs (1146, "Table 'hrmsuite.AttLogs' doesn't exist")
+QOK 67434 SELECT COUNT(*) FROM att_logs WHERE (is_deleted IS NULL OR is_deleted = 'N') AND
+QFAIL (1146, "Table 'hrmsuite.attLogs' doesn't exist")
+QFAIL (1146, "Table 'hrmsuite.attLogs' doesn't exist")

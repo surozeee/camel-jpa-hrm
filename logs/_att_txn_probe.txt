@@ -1,0 +1,3 @@
+﻿cols ['id', 'version', 'company_id', 'early_minutes', 'employee_id', 'late_minutes', 'log_date', 'log_in_time', 'log_out_time', 'over_time', 'remarks', 'shift_in_time', 'shift_out_time', 'work_time', 'under_time']
+ok 263883 SELECT COUNT(*) FROM attendance_transaction WHERE log_date >= '2026-08-01 00:00:00' AND log_date <= NOW()
+fail (1054, "Unknown column 'logDate' in 'where clause'")
